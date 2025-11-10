@@ -9,6 +9,7 @@ import {
   ArrowDownOutlined,
 } from '@ant-design/icons';
 import type { ColumnType } from 'antd/es/table';
+import { useTranslation } from 'react-i18next';
 import StatCard from '../../../components/common/StatCard';
 
 const { RangePicker } = DatePicker;
@@ -27,6 +28,7 @@ interface Transaction {
 }
 
 export default function TransactionsPage() {
+  const { t } = useTranslation();
   const [filterType, setFilterType] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
 
@@ -148,9 +150,9 @@ export default function TransactionsPage() {
 
   const getStatusTag = (status: Transaction['status']) => {
     const statusConfig = {
-      completed: { color: 'success', text: 'Completed' },
-      pending: { color: 'warning', text: 'Pending' },
-      failed: { color: 'error', text: 'Failed' },
+      completed: { color: 'success', text: t('transactions.completed') },
+      pending: { color: 'warning', text: t('transactions.pending') },
+      failed: { color: 'error', text: t('transactions.failed') },
     };
     const config = statusConfig[status];
     return <Tag color={config.color}>{config.text}</Tag>;
@@ -158,48 +160,48 @@ export default function TransactionsPage() {
 
   const columns: ColumnType<Transaction>[] = [
     {
-      title: 'Transaction ID',
+      title: t('transactions.transactionId'),
       dataIndex: 'id',
       key: 'id',
       fixed: 'left',
       width: 120,
     },
     {
-      title: 'Date & Time',
+      title: t('transactions.dateTime'),
       dataIndex: 'date',
       key: 'date',
       width: 180,
       sorter: (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
     },
     {
-      title: 'Type',
+      title: t('transactions.type'),
       dataIndex: 'type',
       key: 'type',
       width: 120,
       render: getTypeTag,
       filters: [
-        { text: 'Buy', value: 'buy' },
-        { text: 'Sell', value: 'sell' },
-        { text: 'Deposit', value: 'deposit' },
-        { text: 'Withdrawal', value: 'withdrawal' },
-        { text: 'Transfer', value: 'transfer' },
+        { text: t('transactions.buy'), value: 'buy' },
+        { text: t('transactions.sell'), value: 'sell' },
+        { text: t('transactions.deposit'), value: 'deposit' },
+        { text: t('transactions.withdrawal'), value: 'withdrawal' },
+        { text: t('transactions.transfer'), value: 'transfer' },
       ],
       onFilter: (value, record) => record.type === value,
     },
     {
-      title: 'Asset / Fund',
+      title: t('transactions.assetFund'),
       dataIndex: 'asset',
       key: 'asset',
       width: 200,
     },
     {
-      title: 'Investor',
+      title: t('transactions.investor'),
       dataIndex: 'investor',
       key: 'investor',
       width: 150,
     },
     {
-      title: 'Amount',
+      title: t('transactions.amount'),
       dataIndex: 'amount',
       key: 'amount',
       width: 120,
@@ -207,7 +209,7 @@ export default function TransactionsPage() {
       render: (amount: number) => amount.toLocaleString('en-US', { minimumFractionDigits: 2 }),
     },
     {
-      title: 'Price',
+      title: t('transactions.price'),
       dataIndex: 'price',
       key: 'price',
       width: 120,
@@ -215,7 +217,7 @@ export default function TransactionsPage() {
       render: (price: number) => `$${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
     },
     {
-      title: 'Total Value',
+      title: t('transactions.totalValue'),
       dataIndex: 'total',
       key: 'total',
       width: 150,
@@ -224,20 +226,20 @@ export default function TransactionsPage() {
       sorter: (a, b) => a.total - b.total,
     },
     {
-      title: 'Status',
+      title: t('common.status'),
       dataIndex: 'status',
       key: 'status',
       width: 120,
       render: getStatusTag,
       filters: [
-        { text: 'Completed', value: 'completed' },
-        { text: 'Pending', value: 'pending' },
-        { text: 'Failed', value: 'failed' },
+        { text: t('transactions.completed'), value: 'completed' },
+        { text: t('transactions.pending'), value: 'pending' },
+        { text: t('transactions.failed'), value: 'failed' },
       ],
       onFilter: (value, record) => record.status === value,
     },
     {
-      title: 'TX Hash',
+      title: t('transactions.txHash'),
       dataIndex: 'hash',
       key: 'hash',
       width: 150,
@@ -248,13 +250,13 @@ export default function TransactionsPage() {
       ),
     },
     {
-      title: 'Actions',
+      title: t('common.actions'),
       key: 'actions',
       fixed: 'right',
       width: 100,
       render: (_: any, record: Transaction) => (
         <Button type="link" size="small">
-          View Details
+          {t('transactions.viewDetails')}
         </Button>
       ),
     },
@@ -276,10 +278,10 @@ export default function TransactionsPage() {
     <div style={{ padding: '24px' }}>
       <div style={{ marginBottom: '24px' }}>
         <h1 style={{ fontFamily: 'Sansation, sans-serif', fontSize: '32px', marginBottom: '8px' }}>
-          Fund Transactions
+          {t('transactions.title')}
         </h1>
         <p style={{ color: '#666', fontSize: '16px' }}>
-          Monitor and manage all fund transactions in real-time
+          {t('transactions.subtitle')}
         </p>
       </div>
 
@@ -287,7 +289,7 @@ export default function TransactionsPage() {
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Total Volume (24h)"
+            title={t('transactions.totalVolume')}
             value={`$${totalVolume.toLocaleString('en-US')}`}
             icon={<SwapOutlined />}
             color="#1890ff"
@@ -295,7 +297,7 @@ export default function TransactionsPage() {
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Today's Transactions"
+            title={t('transactions.todayTransactions')}
             value={todayTransactions}
             icon={<ArrowDownOutlined />}
             color="#52c41a"
@@ -303,7 +305,7 @@ export default function TransactionsPage() {
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Pending Transactions"
+            title={t('transactions.pendingTransactions')}
             value={pendingCount}
             icon={<FilterOutlined />}
             color="#faad14"
@@ -312,7 +314,7 @@ export default function TransactionsPage() {
         <Col xs={24} sm={12} lg={6}>
           <Card className="professional-card">
             <Statistic
-              title="Success Rate"
+              title={t('transactions.successRate')}
               value={((transactions.filter((t) => t.status === 'completed').length / transactions.length) * 100).toFixed(1)}
               suffix="%"
               valueStyle={{ color: '#52c41a', fontSize: '24px', fontWeight: 600 }}
@@ -326,7 +328,7 @@ export default function TransactionsPage() {
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={12} md={6}>
             <Input
-              placeholder="Search by ID, investor, or asset"
+              placeholder={t('transactions.searchPlaceholder')}
               prefix={<SearchOutlined />}
               allowClear
             />
@@ -334,30 +336,30 @@ export default function TransactionsPage() {
           <Col xs={24} sm={12} md={6}>
             <Select
               style={{ width: '100%' }}
-              placeholder="Filter by type"
+              placeholder={t('transactions.filterByType')}
               value={filterType}
               onChange={setFilterType}
               options={[
-                { label: 'All Types', value: 'all' },
-                { label: 'Buy', value: 'buy' },
-                { label: 'Sell', value: 'sell' },
-                { label: 'Deposit', value: 'deposit' },
-                { label: 'Withdrawal', value: 'withdrawal' },
-                { label: 'Transfer', value: 'transfer' },
+                { label: t('transactions.allTypes'), value: 'all' },
+                { label: t('transactions.buy'), value: 'buy' },
+                { label: t('transactions.sell'), value: 'sell' },
+                { label: t('transactions.deposit'), value: 'deposit' },
+                { label: t('transactions.withdrawal'), value: 'withdrawal' },
+                { label: t('transactions.transfer'), value: 'transfer' },
               ]}
             />
           </Col>
           <Col xs={24} sm={12} md={6}>
             <Select
               style={{ width: '100%' }}
-              placeholder="Filter by status"
+              placeholder={t('transactions.filterByStatus')}
               value={filterStatus}
               onChange={setFilterStatus}
               options={[
-                { label: 'All Status', value: 'all' },
-                { label: 'Completed', value: 'completed' },
-                { label: 'Pending', value: 'pending' },
-                { label: 'Failed', value: 'failed' },
+                { label: t('transactions.allStatus'), value: 'all' },
+                { label: t('transactions.completed'), value: 'completed' },
+                { label: t('transactions.pending'), value: 'pending' },
+                { label: t('transactions.failed'), value: 'failed' },
               ]}
             />
           </Col>
@@ -368,8 +370,8 @@ export default function TransactionsPage() {
         <Row style={{ marginTop: '16px' }}>
           <Col>
             <Space>
-              <Button icon={<DownloadOutlined />}>Export CSV</Button>
-              <Button icon={<DownloadOutlined />}>Export PDF</Button>
+              <Button icon={<DownloadOutlined />}>{t('transactions.exportCSV')}</Button>
+              <Button icon={<DownloadOutlined />}>{t('transactions.exportPDF')}</Button>
             </Space>
           </Col>
         </Row>
@@ -386,7 +388,7 @@ export default function TransactionsPage() {
             total: filteredTransactions.length,
             pageSize: 10,
             showSizeChanger: true,
-            showTotal: (total) => `Total ${total} transactions`,
+            showTotal: (total) => t('transactions.total', { count: total }),
           }}
         />
       </Card>

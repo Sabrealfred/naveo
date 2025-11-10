@@ -11,6 +11,7 @@ import {
   BellOutlined,
 } from '@ant-design/icons';
 import type { ColumnType } from 'antd/es/table';
+import { useTranslation } from 'react-i18next';
 import StatCard from '../../../components/common/StatCard';
 
 interface ComplianceAlert {
@@ -34,6 +35,7 @@ interface RegulationCheck {
 }
 
 export default function CompliancePage() {
+  const { t } = useTranslation();
   const [filterSeverity, setFilterSeverity] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
 
@@ -147,18 +149,18 @@ export default function CompliancePage() {
 
   const getSeverityConfig = (severity: ComplianceAlert['severity']) => {
     const config = {
-      critical: { color: 'error', icon: <ExclamationCircleOutlined />, text: 'CRITICAL' },
-      warning: { color: 'warning', icon: <WarningOutlined />, text: 'WARNING' },
-      info: { color: 'info', icon: <InfoCircleOutlined />, text: 'INFO' },
+      critical: { color: 'error', icon: <ExclamationCircleOutlined />, text: t('compliance.critical').toUpperCase() },
+      warning: { color: 'warning', icon: <WarningOutlined />, text: t('compliance.warning').toUpperCase() },
+      info: { color: 'info', icon: <InfoCircleOutlined />, text: t('compliance.info').toUpperCase() },
     };
     return config[severity];
   };
 
   const getStatusTag = (status: ComplianceAlert['status']) => {
     const config = {
-      open: { color: 'red', text: 'Open' },
-      investigating: { color: 'orange', text: 'Investigating' },
-      resolved: { color: 'green', text: 'Resolved' },
+      open: { color: 'red', text: t('compliance.open') },
+      investigating: { color: 'orange', text: t('compliance.investigating') },
+      resolved: { color: 'green', text: t('compliance.resolved') },
     };
     const c = config[status];
     return <Tag color={c.color}>{c.text}</Tag>;
@@ -166,9 +168,9 @@ export default function CompliancePage() {
 
   const getRegulationStatus = (status: RegulationCheck['status']) => {
     const config = {
-      compliant: { color: 'success', icon: <CheckCircleOutlined />, text: 'Compliant' },
-      'non-compliant': { color: 'error', icon: <ExclamationCircleOutlined />, text: 'Non-Compliant' },
-      'review-needed': { color: 'warning', icon: <WarningOutlined />, text: 'Review Needed' },
+      compliant: { color: 'success', icon: <CheckCircleOutlined />, text: t('compliance.compliant') },
+      'non-compliant': { color: 'error', icon: <ExclamationCircleOutlined />, text: t('compliance.nonCompliant') },
+      'review-needed': { color: 'warning', icon: <WarningOutlined />, text: t('compliance.reviewNeeded') },
     };
     const c = config[status];
     return (
@@ -180,20 +182,20 @@ export default function CompliancePage() {
 
   const alertColumns: ColumnType<ComplianceAlert>[] = [
     {
-      title: 'Alert ID',
+      title: t('compliance.alertId'),
       dataIndex: 'id',
       key: 'id',
       width: 120,
     },
     {
-      title: 'Date & Time',
+      title: t('compliance.dateTime'),
       dataIndex: 'date',
       key: 'date',
       width: 180,
       sorter: (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
     },
     {
-      title: 'Severity',
+      title: t('compliance.severity'),
       dataIndex: 'severity',
       key: 'severity',
       width: 130,
@@ -206,56 +208,56 @@ export default function CompliancePage() {
         );
       },
       filters: [
-        { text: 'Critical', value: 'critical' },
-        { text: 'Warning', value: 'warning' },
-        { text: 'Info', value: 'info' },
+        { text: t('compliance.critical'), value: 'critical' },
+        { text: t('compliance.warning'), value: 'warning' },
+        { text: t('compliance.info'), value: 'info' },
       ],
       onFilter: (value, record) => record.severity === value,
     },
     {
-      title: 'Type',
+      title: t('compliance.type'),
       dataIndex: 'type',
       key: 'type',
       width: 150,
     },
     {
-      title: 'Description',
+      title: t('compliance.description'),
       dataIndex: 'description',
       key: 'description',
       width: 300,
     },
     {
-      title: 'Affected Entity',
+      title: t('compliance.affectedEntity'),
       dataIndex: 'affectedEntity',
       key: 'affectedEntity',
       width: 200,
     },
     {
-      title: 'Status',
+      title: t('common.status'),
       dataIndex: 'status',
       key: 'status',
       width: 140,
       render: getStatusTag,
     },
     {
-      title: 'Assigned To',
+      title: t('compliance.assignedTo'),
       dataIndex: 'assignedTo',
       key: 'assignedTo',
       width: 180,
     },
     {
-      title: 'Actions',
+      title: t('common.actions'),
       key: 'actions',
       fixed: 'right',
       width: 150,
       render: (_: any, record: ComplianceAlert) => (
         <Space>
           <Button type="link" size="small">
-            View
+            {t('compliance.view')}
           </Button>
           {record.status !== 'resolved' && (
             <Button type="link" size="small" danger>
-              Resolve
+              {t('compliance.resolve')}
             </Button>
           )}
         </Space>
@@ -265,43 +267,43 @@ export default function CompliancePage() {
 
   const regulationColumns: ColumnType<RegulationCheck>[] = [
     {
-      title: 'Regulation',
+      title: t('compliance.regulation'),
       dataIndex: 'regulation',
       key: 'regulation',
       width: 200,
     },
     {
-      title: 'Description',
+      title: t('compliance.description'),
       dataIndex: 'description',
       key: 'description',
       width: 350,
     },
     {
-      title: 'Status',
+      title: t('common.status'),
       dataIndex: 'status',
       key: 'status',
       width: 180,
       render: getRegulationStatus,
     },
     {
-      title: 'Last Check',
+      title: t('compliance.lastCheck'),
       dataIndex: 'lastCheck',
       key: 'lastCheck',
       width: 130,
     },
     {
-      title: 'Next Check',
+      title: t('compliance.nextCheck'),
       dataIndex: 'nextCheck',
       key: 'nextCheck',
       width: 130,
     },
     {
-      title: 'Actions',
+      title: t('common.actions'),
       key: 'actions',
       width: 120,
       render: () => (
         <Button type="link" size="small">
-          Run Check
+          {t('compliance.runCheck')}
         </Button>
       ),
     },
@@ -321,10 +323,10 @@ export default function CompliancePage() {
     <div style={{ padding: '24px' }}>
       <div style={{ marginBottom: '24px' }}>
         <h1 style={{ fontFamily: 'Sansation, sans-serif', fontSize: '32px', marginBottom: '8px' }}>
-          Compliance Dashboard
+          {t('compliance.title')}
         </h1>
         <p style={{ color: '#666', fontSize: '16px' }}>
-          Monitor regulatory compliance and manage alerts
+          {t('compliance.subtitle')}
         </p>
       </div>
 
@@ -332,7 +334,7 @@ export default function CompliancePage() {
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Critical Alerts"
+            title={t('compliance.criticalAlerts')}
             value={criticalCount}
             icon={<ExclamationCircleOutlined />}
             color="#ff4d4f"
@@ -340,7 +342,7 @@ export default function CompliancePage() {
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Open Alerts"
+            title={t('compliance.openAlerts')}
             value={openAlertsCount}
             icon={<BellOutlined />}
             color="#faad14"
@@ -348,7 +350,7 @@ export default function CompliancePage() {
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Total Regulations"
+            title={t('compliance.totalRegulations')}
             value={regulations.length}
             icon={<FileTextOutlined />}
             color="#1890ff"
@@ -357,7 +359,7 @@ export default function CompliancePage() {
         <Col xs={24} sm={12} lg={6}>
           <Card className="professional-card">
             <div style={{ marginBottom: '8px' }}>
-              <span style={{ fontSize: '14px', color: '#666' }}>Compliance Score</span>
+              <span style={{ fontSize: '14px', color: '#666' }}>{t('compliance.complianceScore')}</span>
             </div>
             <Progress
               type="circle"
@@ -378,33 +380,33 @@ export default function CompliancePage() {
         title={
           <Space>
             <SafetyOutlined />
-            <span>Compliance Alerts</span>
+            <span>{t('compliance.complianceAlerts')}</span>
           </Space>
         }
         extra={
           <Space>
             <Select
               style={{ width: 150 }}
-              placeholder="Severity"
+              placeholder={t('compliance.severity')}
               value={filterSeverity}
               onChange={setFilterSeverity}
               options={[
-                { label: 'All Severity', value: 'all' },
-                { label: 'Critical', value: 'critical' },
-                { label: 'Warning', value: 'warning' },
-                { label: 'Info', value: 'info' },
+                { label: t('compliance.allSeverity'), value: 'all' },
+                { label: t('compliance.critical'), value: 'critical' },
+                { label: t('compliance.warning'), value: 'warning' },
+                { label: t('compliance.info'), value: 'info' },
               ]}
             />
             <Select
               style={{ width: 150 }}
-              placeholder="Status"
+              placeholder={t('common.status')}
               value={filterStatus}
               onChange={setFilterStatus}
               options={[
-                { label: 'All Status', value: 'all' },
-                { label: 'Open', value: 'open' },
-                { label: 'Investigating', value: 'investigating' },
-                { label: 'Resolved', value: 'resolved' },
+                { label: t('compliance.allStatus'), value: 'all' },
+                { label: t('compliance.open'), value: 'open' },
+                { label: t('compliance.investigating'), value: 'investigating' },
+                { label: t('compliance.resolved'), value: 'resolved' },
               ]}
             />
           </Space>
@@ -418,7 +420,7 @@ export default function CompliancePage() {
           scroll={{ x: 1400 }}
           pagination={{
             pageSize: 5,
-            showTotal: (total) => `Total ${total} alerts`,
+            showTotal: (total) => t('compliance.totalAlerts', { total }),
           }}
         />
       </Card>
@@ -431,7 +433,7 @@ export default function CompliancePage() {
             title={
               <Space>
                 <AuditOutlined />
-                <span>Regulatory Compliance Checks</span>
+                <span>{t('compliance.regulatoryChecks')}</span>
               </Space>
             }
           >
@@ -449,7 +451,7 @@ export default function CompliancePage() {
           {/* Recent Activity Timeline */}
           <Card
             className="professional-card"
-            title="Recent Compliance Activity"
+            title={t('compliance.recentActivity')}
             style={{ marginBottom: '16px' }}
           >
             <Timeline
@@ -458,8 +460,8 @@ export default function CompliancePage() {
                   dot: <CheckCircleOutlined style={{ color: '#52c41a' }} />,
                   children: (
                     <>
-                      <div style={{ fontWeight: 500 }}>Trade Limit Alert Resolved</div>
-                      <div style={{ fontSize: '12px', color: '#999' }}>2 hours ago</div>
+                      <div style={{ fontWeight: 500 }}>{t('compliance.tradeLimitResolved')}</div>
+                      <div style={{ fontSize: '12px', color: '#999' }}>{t('compliance.hoursAgo', { hours: 2 })}</div>
                     </>
                   ),
                 },
@@ -467,8 +469,8 @@ export default function CompliancePage() {
                   dot: <ExclamationCircleOutlined style={{ color: '#ff4d4f' }} />,
                   children: (
                     <>
-                      <div style={{ fontWeight: 500 }}>AML Alert Raised</div>
-                      <div style={{ fontSize: '12px', color: '#999' }}>3 hours ago</div>
+                      <div style={{ fontWeight: 500 }}>{t('compliance.amlAlertRaised')}</div>
+                      <div style={{ fontSize: '12px', color: '#999' }}>{t('compliance.hoursAgo', { hours: 3 })}</div>
                     </>
                   ),
                 },
@@ -476,8 +478,8 @@ export default function CompliancePage() {
                   dot: <InfoCircleOutlined style={{ color: '#1890ff' }} />,
                   children: (
                     <>
-                      <div style={{ fontWeight: 500 }}>Regulatory Update</div>
-                      <div style={{ fontSize: '12px', color: '#999' }}>5 hours ago</div>
+                      <div style={{ fontWeight: 500 }}>{t('compliance.regulatoryUpdate')}</div>
+                      <div style={{ fontSize: '12px', color: '#999' }}>{t('compliance.hoursAgo', { hours: 5 })}</div>
                     </>
                   ),
                 },
@@ -485,8 +487,8 @@ export default function CompliancePage() {
                   dot: <WarningOutlined style={{ color: '#faad14' }} />,
                   children: (
                     <>
-                      <div style={{ fontWeight: 500 }}>KYC Expiration Warning</div>
-                      <div style={{ fontSize: '12px', color: '#999' }}>6 hours ago</div>
+                      <div style={{ fontWeight: 500 }}>{t('compliance.kycExpirationWarning')}</div>
+                      <div style={{ fontSize: '12px', color: '#999' }}>{t('compliance.hoursAgo', { hours: 6 })}</div>
                     </>
                   ),
                 },
@@ -495,25 +497,25 @@ export default function CompliancePage() {
           </Card>
 
           {/* Upcoming Reviews */}
-          <Card className="professional-card" title="Upcoming Compliance Reviews">
+          <Card className="professional-card" title={t('compliance.upcomingReviews')}>
             <Space direction="vertical" style={{ width: '100%' }} size="middle">
               <Alert
-                message="GDPR Compliance Review"
-                description="Due: November 15, 2024"
+                message={t('compliance.gdprReview')}
+                description={t('compliance.dueDate', { date: 'November 15, 2024' })}
                 type="warning"
                 showIcon
                 icon={<WarningOutlined />}
               />
               <Alert
-                message="AML/KYC Policy Check"
-                description="Due: November 19, 2024"
+                message={t('compliance.amlKycCheck')}
+                description={t('compliance.dueDate', { date: 'November 19, 2024' })}
                 type="info"
                 showIcon
                 icon={<InfoCircleOutlined />}
               />
               <Alert
-                message="Trade Reporting (EMIR)"
-                description="Due: November 14, 2024"
+                message={t('compliance.tradeReporting')}
+                description={t('compliance.dueDate', { date: 'November 14, 2024' })}
                 type="error"
                 showIcon
                 icon={<ExclamationCircleOutlined />}

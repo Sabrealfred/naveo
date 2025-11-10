@@ -6,9 +6,11 @@ import {
   BarChartOutlined,
 } from '@ant-design/icons';
 import { Pie, Column } from '@ant-design/charts';
+import { useTranslation } from 'react-i18next';
 import { StatCard } from '../../../components/common';
 
 export default function PortfolioManagementPage() {
+  const { t } = useTranslation();
   // Mock data - Fund's portfolio allocation
   const portfolioMetrics = {
     totalAUM: 85000000, // $85M
@@ -36,25 +38,25 @@ export default function PortfolioManagementPage() {
 
   const allocationColumns = [
     {
-      title: 'Asset',
+      title: t('portfolio.asset'),
       dataIndex: 'asset',
       key: 'asset',
       render: (text: string) => <span style={{ fontWeight: 500 }}>{text}</span>,
     },
     {
-      title: 'Current %',
+      title: t('portfolio.currentPercent'),
       dataIndex: 'percentage',
       key: 'percentage',
       render: (pct: number) => `${pct}%`,
     },
     {
-      title: 'Target %',
+      title: t('portfolio.targetPercent'),
       dataIndex: 'target',
       key: 'target',
       render: (pct: number) => `${pct}%`,
     },
     {
-      title: 'Variance',
+      title: t('portfolio.variance'),
       key: 'variance',
       render: (_: any, record: any) => {
         const variance = record.percentage - record.target;
@@ -66,14 +68,14 @@ export default function PortfolioManagementPage() {
       },
     },
     {
-      title: 'Value',
+      title: t('portfolio.value'),
       dataIndex: 'value',
       key: 'value',
       render: (val: number) => `$${(val / 1000000).toFixed(2)}M`,
       sorter: (a: any, b: any) => a.value - b.value,
     },
     {
-      title: 'Allocation Progress',
+      title: t('portfolio.allocationProgress'),
       key: 'progress',
       render: (_: any, record: any) => {
         const progress = (record.percentage / record.target) * 100;
@@ -112,10 +114,10 @@ export default function PortfolioManagementPage() {
     },
     statistic: {
       title: {
-        content: 'Total',
+        content: t('portfolio.total'),
       },
       content: {
-        content: 'Allocation',
+        content: t('portfolio.allocation'),
       },
     },
   };
@@ -124,10 +126,10 @@ export default function PortfolioManagementPage() {
     <div style={{ padding: '24px', background: 'var(--color-background)' }}>
       <div style={{ marginBottom: '24px' }}>
         <h1 style={{ marginBottom: '8px', fontFamily: 'var(--font-heading)' }}>
-          Portfolio Management
+          {t('portfolio.title')}
         </h1>
         <p style={{ color: 'var(--color-secondary)', fontSize: '14px' }}>
-          Fund asset allocation and rebalancing
+          {t('portfolio.subtitle')}
         </p>
       </div>
 
@@ -135,7 +137,7 @@ export default function PortfolioManagementPage() {
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Total AUM"
+            title={t('portfolio.totalAUM')}
             value={`$${(portfolioMetrics.totalAUM / 1000000).toFixed(1)}M`}
             icon={<DollarOutlined />}
             color="#2d2d2d"
@@ -143,7 +145,7 @@ export default function PortfolioManagementPage() {
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Total Assets"
+            title={t('portfolio.totalAssets')}
             value={portfolioMetrics.totalAssets.toString()}
             icon={<FundProjectionScreenOutlined />}
             color="#52c41a"
@@ -151,7 +153,7 @@ export default function PortfolioManagementPage() {
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Best Performer"
+            title={t('portfolio.bestPerformer')}
             value={portfolioMetrics.bestPerformer}
             icon={<RiseOutlined />}
             trend="up"
@@ -162,7 +164,7 @@ export default function PortfolioManagementPage() {
         <Col xs={24} sm={12} lg={6}>
           <Card className="professional-card">
             <Statistic
-              title="Concentration Risk"
+              title={t('portfolio.concentration')}
               value={portfolioMetrics.concentration}
               suffix="%"
               valueStyle={{ color: portfolioMetrics.concentration > 40 ? '#fa8c16' : '#52c41a' }}
@@ -175,12 +177,12 @@ export default function PortfolioManagementPage() {
       {/* Charts */}
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} lg={16}>
-          <Card title="YTD Performance by Asset" bordered={false} className="professional-card">
+          <Card title={t('portfolio.ytdPerformance')} bordered={false} className="professional-card">
             <Column {...performanceConfig} />
           </Card>
         </Col>
         <Col xs={24} lg={8}>
-          <Card title="Asset Allocation" bordered={false} className="professional-card">
+          <Card title={t('portfolio.allocation')} bordered={false} className="professional-card">
             <Pie {...allocationPieConfig} />
           </Card>
         </Col>
@@ -189,7 +191,7 @@ export default function PortfolioManagementPage() {
       {/* Allocation Table */}
       <Row gutter={[16, 16]}>
         <Col span={24}>
-          <Card title="Portfolio Allocation Details" bordered={false} className="professional-card">
+          <Card title={t('portfolio.allocationDetails')} bordered={false} className="professional-card">
             <Table
               dataSource={assetAllocation}
               columns={allocationColumns}
