@@ -390,7 +390,7 @@ const AssetsManagementPage = () => {
 
   const columns: ColumnsType<Asset> = [
     {
-      title: 'Asset',
+      title: t('adminClient.assets.name'),
       dataIndex: 'name',
       render: (value, record) => (
         <Space direction="vertical" size={0}>
@@ -400,7 +400,7 @@ const AssetsManagementPage = () => {
       ),
     },
     {
-      title: 'Tipo',
+      title: t('adminClient.assets.type'),
       dataIndex: 'type',
       filters: assetTypeOptions
         .filter((option) => option.value !== 'all')
@@ -408,32 +408,32 @@ const AssetsManagementPage = () => {
       onFilter: (value, record) => record.type === value,
     },
     {
-      title: 'Quantity',
+      title: t('adminClient.assets.quantity'),
       dataIndex: 'quantity',
       sorter: (a, b) => a.quantity - b.quantity,
       render: (value) => value.toLocaleString(),
     },
     {
-      title: 'Current Price',
+      title: t('adminClient.assets.currentPrice'),
       dataIndex: 'currentPrice',
       sorter: (a, b) => a.currentPrice - b.currentPrice,
       render: (value) => `$${value.toLocaleString()}`,
     },
     {
-      title: 'Total Value',
+      title: t('adminClient.assets.totalValue'),
       dataIndex: 'totalValue',
       sorter: (a, b) => a.quantity * a.currentPrice - b.quantity * b.currentPrice,
       render: (_, record) => `$${(record.quantity * record.currentPrice).toLocaleString()}`,
     },
     {
-      title: '% Portfolio',
+      title: t('adminClient.assets.portfolio'),
       render: (_, record) => {
         const percentage = (record.quantity * record.currentPrice * 100) / totalPortfolioValue;
         return `${percentage.toFixed(2)}%`;
       },
     },
     {
-      title: '24h Change',
+      title: t('adminClient.assets.change24h'),
       dataIndex: 'change24h',
       sorter: (a, b) => a.change24h - b.change24h,
       render: (value: number) => (
@@ -444,7 +444,7 @@ const AssetsManagementPage = () => {
       ),
     },
     {
-      title: 'Actions',
+      title: t('adminClient.assets.actions'),
       key: 'actions',
       render: (_, record) => (
         <Space>
@@ -456,7 +456,7 @@ const AssetsManagementPage = () => {
               setDetailsModalOpen(true);
             }}
           >
-            View
+            {t('adminClient.assets.viewDetails')}
           </Button>
           <Button
             size="small"
@@ -466,7 +466,7 @@ const AssetsManagementPage = () => {
               setEditModalOpen(true);
             }}
           >
-            Edit
+            {t('common.edit')}
           </Button>
           <Button
             size="small"
@@ -474,7 +474,7 @@ const AssetsManagementPage = () => {
             icon={<DeleteOutlined />}
             onClick={() => handleRemoveAsset(record.id)}
           >
-            Remove
+            {t('adminClient.assets.removeAsset')}
           </Button>
         </Space>
       ),
@@ -483,15 +483,15 @@ const AssetsManagementPage = () => {
 
   const handleRemoveAsset = (assetId: string) => {
     Modal.confirm({
-      title: 'Eliminar asset',
-      content: '¿Estás seguro de eliminar este asset del portafolio?',
-      okText: 'Eliminar',
+      title: t('adminClient.assets.removeAsset'),
+      content: t('adminClient.assets.deleteConfirm'),
+      okText: t('common.delete'),
       okType: 'danger',
-      cancelText: 'Cancelar',
+      cancelText: t('common.cancel'),
       centered: true,
       onOk: () => {
         setAssets((prev) => prev.filter((asset) => asset.id !== assetId));
-        message.success('Asset eliminado');
+        message.success(t('adminClient.assets.deleteSuccess'));
       },
     });
   };
@@ -517,7 +517,7 @@ const AssetsManagementPage = () => {
       return [...prev, payload];
     });
 
-    message.success(assetId ? 'Asset actualizado' : 'Asset creado');
+    message.success(assetId ? t('adminClient.assets.updateSuccess') : t('adminClient.assets.addSuccess'));
     setSelectedAsset(null);
     setAddModalOpen(false);
     setEditModalOpen(false);
@@ -536,21 +536,21 @@ const AssetsManagementPage = () => {
         ) : (
           <>
             <Col xs={24} md={6}>
-              <StatCard title="Total Assets" value={metrics.totalAssets} />
+              <StatCard title={t('adminClient.assets.totalAssets')} value={metrics.totalAssets} />
             </Col>
             <Col xs={24} md={6}>
-              <StatCard title="Portfolio Value" value={`$${metrics.totalValue.toLocaleString()}`} />
+              <StatCard title={t('adminClient.assets.portfolioValue')} value={`$${metrics.totalValue.toLocaleString()}`} />
             </Col>
             <Col xs={24} md={6}>
               <StatCard
-                title="Best Performer (24h)"
+                title={t('adminClient.assets.bestPerformer')}
                 value={metrics.bestPerformer ? metrics.bestPerformer.symbol : '—'}
                 trend={metrics.bestPerformer?.change24h}
               />
             </Col>
             <Col xs={24} md={6}>
               <StatCard
-                title="Worst Performer (24h)"
+                title={t('adminClient.assets.worstPerformer')}
                 value={metrics.worstPerformer ? metrics.worstPerformer.symbol : '—'}
                 trend={metrics.worstPerformer?.change24h}
               />
@@ -560,23 +560,24 @@ const AssetsManagementPage = () => {
       </Row>
 
       <Card
-        title="Gestión de Activos"
+        title={t('adminClient.assets.title')}
         extra={
           <Button type="primary" icon={<PlusOutlined />} onClick={() => setAddModalOpen(true)}>
-            Add Asset
+            {t('adminClient.assets.addAsset')}
           </Button>
         }
       >
         <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
           <Col xs={24} md={12}>
             <Input.Search
-              placeholder="Buscar por nombre o símbolo"
+              placeholder={t('adminClient.assets.search')}
               allowClear
               onChange={(event) => setSearchTerm(event.target.value)}
             />
           </Col>
           <Col xs={24} md={12}>
             <Select
+              placeholder={t('adminClient.assets.filterByType')}
               options={assetTypeOptions}
               value={filterType}
               onChange={setFilterType}
@@ -596,14 +597,14 @@ const AssetsManagementPage = () => {
 
       <AssetFormModal
         open={isAddModalOpen}
-        title="Agregar nuevo asset"
+        title={t('adminClient.assets.addAsset')}
         onSubmit={(values) => handleModalSubmit(values)}
         onCancel={() => setAddModalOpen(false)}
       />
 
       <AssetFormModal
         open={isEditModalOpen}
-        title="Editar asset"
+        title={t('adminClient.assets.editAsset')}
         initialValues={
           selectedAsset
             ? {
