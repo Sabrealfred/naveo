@@ -10,8 +10,10 @@ import {
 } from '@ant-design/icons';
 import { Line, Column, Pie } from '@ant-design/charts';
 import { StatCard, PerformanceChart } from '../../../components/common';
+import { useTranslation } from 'react-i18next';
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
   // Mock data for Fund Manager Dashboard - Replace with real Supabase data
   const fundMetrics = {
     fundName: 'Alpha Growth Fund',
@@ -270,7 +272,7 @@ export default function DashboardPage() {
           {fundMetrics.fundName}
         </h1>
         <p style={{ color: '#8c8c8c', fontSize: '14px' }}>
-          Fund Manager Dashboard
+          {t('adminClient.dashboard.subtitle')}
         </p>
       </div>
 
@@ -278,7 +280,7 @@ export default function DashboardPage() {
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Current NAV"
+            title={t('adminClient.dashboard.currentNAV')}
             value={`$${fundMetrics.currentNAV.toFixed(2)}`}
             icon={<TrophyOutlined />}
             trend={{ value: fundMetrics.monthlyReturn, isPositive: true }}
@@ -287,7 +289,7 @@ export default function DashboardPage() {
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Total AUM"
+            title={t('adminClient.dashboard.totalAUM')}
             value={`$${(fundMetrics.totalAUM / 1000000).toFixed(1)}M`}
             icon={<DollarOutlined />}
             color="#52c41a"
@@ -295,7 +297,7 @@ export default function DashboardPage() {
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Investors"
+            title={t('adminClient.dashboard.investors')}
             value={fundMetrics.investors.toString()}
             icon={<TeamOutlined />}
             color="#722ed1"
@@ -304,7 +306,7 @@ export default function DashboardPage() {
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="YTD Return"
+              title={t('adminClient.dashboard.ytdReturn')}
               value={fundMetrics.ytdReturn}
               precision={1}
               valueStyle={{ color: '#3f8600' }}
@@ -326,7 +328,7 @@ export default function DashboardPage() {
         <Col xs={12} sm={8} lg={6}>
           <Card size="small">
             <Statistic
-              title="Active Traders"
+              title={t('adminClient.dashboard.activeTraders')}
               value={fundMetrics.tradersActive}
               prefix={<SwapOutlined />}
             />
@@ -335,7 +337,7 @@ export default function DashboardPage() {
         <Col xs={12} sm={8} lg={6}>
           <Card size="small">
             <Statistic
-              title="Pending Orders"
+              title={t('adminClient.dashboard.pendingOrders')}
               value={fundMetrics.pendingOrders}
               valueStyle={{ color: '#fa8c16' }}
             />
@@ -344,7 +346,7 @@ export default function DashboardPage() {
         <Col xs={12} sm={8} lg={6}>
           <Card size="small">
             <Statistic
-              title="30d Return"
+              title={t('adminClient.dashboard.monthlyReturn')}
               value={fundMetrics.monthlyReturn}
               precision={1}
               suffix="%"
@@ -356,7 +358,7 @@ export default function DashboardPage() {
         <Col xs={12} sm={8} lg={6}>
           <Card size="small">
             <Button type="primary" block>
-              View Full NAV Report
+              {t('adminClient.dashboard.viewNavReport')}
             </Button>
           </Card>
         </Col>
@@ -365,12 +367,12 @@ export default function DashboardPage() {
       {/* Charts Section */}
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} lg={16}>
-          <Card title="NAV History" bordered={false}>
+          <Card title={t('adminClient.dashboard.navHistory')} bordered={false}>
             <Line {...navChartConfig} />
           </Card>
         </Col>
         <Col xs={24} lg={8}>
-          <Card title="Asset Allocation" bordered={false}>
+          <Card title={t('adminClient.dashboard.assetAllocation')} bordered={false}>
             <Pie {...assetAllocationConfig} />
           </Card>
         </Col>
@@ -378,12 +380,12 @@ export default function DashboardPage() {
 
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} lg={12}>
-          <Card title="Performance by Asset" bordered={false}>
+          <Card title={t('adminClient.dashboard.performanceByAsset')} bordered={false}>
             <Column {...performanceConfig} />
           </Card>
         </Col>
         <Col xs={24} lg={12}>
-          <Card title="Recent Transactions" bordered={false}>
+          <Card title={t('adminClient.dashboard.recentTransactions')} bordered={false}>
             <Table
               dataSource={recentTransactions}
               columns={transactionColumns}
@@ -397,7 +399,7 @@ export default function DashboardPage() {
       {/* Traders Table */}
       <Row gutter={[16, 16]}>
         <Col span={24}>
-          <Card title="Trader Performance" bordered={false}>
+          <Card title={t('adminClient.dashboard.traderPerformance')} bordered={false}>
             <Table
               dataSource={topTraders}
               columns={traderColumns}

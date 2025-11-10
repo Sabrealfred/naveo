@@ -11,8 +11,10 @@ import {
 } from '@ant-design/icons';
 import { Line, Pie } from '@ant-design/charts';
 import { StatCard } from '../../../components/common';
+import { useTranslation } from 'react-i18next';
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
   // Mock data for Investor Dashboard - Replace with real Supabase data
   const portfolioMetrics = {
     totalValue: 125000, // $125K
@@ -263,10 +265,10 @@ export default function DashboardPage() {
       {/* Welcome Header */}
       <div style={{ marginBottom: '24px' }}>
         <h1 style={{ marginBottom: '8px', fontFamily: 'var(--font-heading)' }}>
-          Welcome Back, John Doe
+          {t('investor.dashboard.welcome', { name: 'John Doe' })}
         </h1>
         <p style={{ color: '#8c8c8c', fontSize: '14px' }}>
-          Here's your portfolio summary
+          {t('investor.dashboard.summary')}
         </p>
       </div>
 
@@ -274,7 +276,7 @@ export default function DashboardPage() {
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Total Portfolio Value"
+            title={t('investor.dashboard.totalValue')}
             value={`$${portfolioMetrics.totalValue.toLocaleString()}`}
             icon={<WalletOutlined />}
             trend={{
@@ -286,7 +288,7 @@ export default function DashboardPage() {
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Total Return"
+            title={t('investor.dashboard.totalReturn')}
             value={`$${portfolioMetrics.totalReturn.toLocaleString()}`}
             icon={<RiseOutlined />}
             color="#52c41a"
@@ -294,7 +296,7 @@ export default function DashboardPage() {
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Available Cash"
+            title={t('investor.dashboard.availableCash')}
             value={`$${portfolioMetrics.availableCash.toLocaleString()}`}
             icon={<DollarOutlined />}
             color="#722ed1"
@@ -303,7 +305,7 @@ export default function DashboardPage() {
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Return %"
+              title={t('investor.dashboard.returnPercent')}
               value={portfolioMetrics.returnPercentage}
               precision={1}
               valueStyle={{ color: '#3f8600' }}
@@ -317,29 +319,29 @@ export default function DashboardPage() {
       {/* Quick Actions */}
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col span={24}>
-          <Card title="Quick Actions">
+          <Card title={t('investor.dashboard.quickActions')}>
             <Space size="middle">
               <Button
                 type="primary"
                 icon={<ArrowUpOutlined />}
                 size="large"
               >
-                Deposit Funds
+                {t('investor.dashboard.depositFunds')}
               </Button>
               <Button
                 icon={<SwapOutlined />}
                 size="large"
               >
-                Buy Tokens
+                {t('investor.dashboard.buyTokens')}
               </Button>
               <Button
                 icon={<ArrowDownOutlined />}
                 size="large"
               >
-                Withdraw
+                {t('investor.dashboard.withdraw')}
               </Button>
               <Button size="large">
-                View Reports
+                {t('investor.dashboard.viewReports')}
               </Button>
             </Space>
           </Card>
@@ -349,12 +351,12 @@ export default function DashboardPage() {
       {/* Charts */}
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} lg={16}>
-          <Card title="Portfolio Performance" bordered={false}>
+          <Card title={t('investor.dashboard.portfolioPerformance')} bordered={false}>
             <Line {...portfolioChartConfig} />
           </Card>
         </Col>
         <Col xs={24} lg={8}>
-          <Card title="Asset Allocation" bordered={false}>
+          <Card title={t('investor.dashboard.assetAllocation')} bordered={false}>
             <Pie {...allocationConfig} />
           </Card>
         </Col>
@@ -363,7 +365,7 @@ export default function DashboardPage() {
       {/* Holdings Table */}
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col span={24}>
-          <Card title="My Holdings" bordered={false}>
+          <Card title={t('investor.dashboard.myHoldings')} bordered={false}>
             <Table
               dataSource={myHoldings}
               columns={holdingsColumns}
@@ -377,9 +379,9 @@ export default function DashboardPage() {
       <Row gutter={[16, 16]}>
         <Col span={24}>
           <Card
-            title="Recent Transactions"
+            title={t('investor.dashboard.recentTransactions')}
             bordered={false}
-            extra={<Button type="link">View All</Button>}
+            extra={<Button type="link">{t('dashboard.viewAll')}</Button>}
           >
             <Table
               dataSource={recentTransactions}

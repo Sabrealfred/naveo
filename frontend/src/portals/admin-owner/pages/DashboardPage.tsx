@@ -9,8 +9,10 @@ import {
 } from '@ant-design/icons';
 import { Line, Column } from '@ant-design/charts';
 import { StatCard } from '../../../components/common';
+import { useTranslation } from 'react-i18next';
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
   // Mock data - Replace with real data from Supabase
   const platformStats = {
     totalAUM: 245680000, // $245.68M
@@ -104,26 +106,26 @@ export default function DashboardPage() {
 
   const fundColumns = [
     {
-      title: 'Fund Name',
+      title: t('adminOwner.funds.fundName'),
       dataIndex: 'name',
       key: 'name',
       render: (text: string) => <span style={{ fontWeight: 500 }}>{text}</span>,
     },
     {
-      title: 'AUM',
+      title: t('adminOwner.funds.aum'),
       dataIndex: 'aum',
       key: 'aum',
       render: (aum: number) => `$${(aum / 1000000).toFixed(2)}M`,
       sorter: (a: any, b: any) => a.aum - b.aum,
     },
     {
-      title: 'NAV',
+      title: t('adminOwner.funds.nav'),
       dataIndex: 'nav',
       key: 'nav',
       render: (nav: number) => `$${nav.toFixed(2)}`,
     },
     {
-      title: 'Performance',
+      title: t('adminOwner.funds.performance'),
       dataIndex: 'performance',
       key: 'performance',
       render: (perf: string) => (
@@ -131,17 +133,17 @@ export default function DashboardPage() {
       ),
     },
     {
-      title: 'Investors',
+      title: t('adminOwner.funds.investors'),
       dataIndex: 'investors',
       key: 'investors',
     },
     {
-      title: 'Status',
+      title: t('adminOwner.funds.status'),
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => (
         <Tag color={status === 'active' ? 'green' : 'orange'}>
-          {status.toUpperCase()}
+          {status === 'active' ? t('adminOwner.funds.active').toUpperCase() : t('adminOwner.funds.review').toUpperCase()}
         </Tag>
       ),
     },
@@ -149,17 +151,17 @@ export default function DashboardPage() {
 
   const activityColumns = [
     {
-      title: 'Activity',
+      title: t('adminOwner.activity.activity'),
       dataIndex: 'activity',
       key: 'activity',
     },
     {
-      title: 'Time',
+      title: t('adminOwner.activity.time'),
       dataIndex: 'time',
       key: 'time',
     },
     {
-      title: 'Type',
+      title: t('adminOwner.activity.type'),
       dataIndex: 'type',
       key: 'type',
       render: (type: string) => <Tag>{type}</Tag>,
@@ -169,14 +171,14 @@ export default function DashboardPage() {
   return (
     <div style={{ padding: '24px' }}>
       <h1 style={{ marginBottom: '24px', fontFamily: 'var(--font-heading)' }}>
-        Platform Overview
+        {t('adminOwner.dashboard.title')}
       </h1>
 
       {/* Key Metrics */}
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} sm={12} lg={8}>
           <StatCard
-            title="Total AUM"
+            title={t('adminOwner.dashboard.totalAUM')}
             value={`$${(platformStats.totalAUM / 1000000).toFixed(2)}M`}
             icon={<DollarOutlined />}
             trend={{ value: platformStats.platformGrowth, isPositive: true }}
@@ -185,7 +187,7 @@ export default function DashboardPage() {
         </Col>
         <Col xs={24} sm={12} lg={8}>
           <StatCard
-            title="Total Users"
+            title={t('adminOwner.dashboard.totalUsers')}
             value={platformStats.totalUsers.toLocaleString()}
             icon={<UserOutlined />}
             color="#52c41a"
@@ -193,7 +195,7 @@ export default function DashboardPage() {
         </Col>
         <Col xs={24} sm={12} lg={8}>
           <StatCard
-            title="Active Investors"
+            title={t('adminOwner.dashboard.activeInvestors')}
             value={platformStats.activeInvestors.toLocaleString()}
             icon={<TeamOutlined />}
             color="#722ed1"
@@ -201,7 +203,7 @@ export default function DashboardPage() {
         </Col>
         <Col xs={24} sm={12} lg={8}>
           <StatCard
-            title="Total Funds"
+            title={t('adminOwner.dashboard.totalFunds')}
             value={platformStats.totalFunds.toString()}
             icon={<TrophyOutlined />}
             color="#fa8c16"
@@ -209,7 +211,7 @@ export default function DashboardPage() {
         </Col>
         <Col xs={24} sm={12} lg={8}>
           <StatCard
-            title="Monthly Volume"
+            title={t('adminOwner.dashboard.monthlyVolume')}
             value={`$${(platformStats.monthlyVolume / 1000000).toFixed(2)}M`}
             icon={<SwapOutlined />}
             trend={{ value: 15.3, isPositive: true }}
@@ -219,7 +221,7 @@ export default function DashboardPage() {
         <Col xs={24} sm={12} lg={8}>
           <Card>
             <Statistic
-              title="Platform Growth"
+              title={t('adminOwner.dashboard.platformGrowth')}
               value={platformStats.platformGrowth}
               precision={1}
               valueStyle={{ color: '#3f8600' }}
@@ -239,12 +241,12 @@ export default function DashboardPage() {
       {/* Charts */}
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} lg={16}>
-          <Card title="Monthly Volume Trend" bordered={false}>
+          <Card title={t('adminOwner.dashboard.monthlyVolumeTrend')} bordered={false}>
             <Column {...volumeChartConfig} />
           </Card>
         </Col>
         <Col xs={24} lg={8}>
-          <Card title="Recent Platform Activity" bordered={false}>
+          <Card title={t('adminOwner.dashboard.recentActivity')} bordered={false}>
             <Table
               dataSource={recentActivities}
               columns={activityColumns}
@@ -258,7 +260,7 @@ export default function DashboardPage() {
       {/* Top Funds Table */}
       <Row gutter={[16, 16]}>
         <Col span={24}>
-          <Card title="Top Performing Funds" bordered={false}>
+          <Card title={t('adminOwner.dashboard.topFunds')} bordered={false}>
             <Table
               dataSource={topFunds}
               columns={fundColumns}

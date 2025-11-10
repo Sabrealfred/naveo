@@ -10,6 +10,8 @@ import {
   SettingOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../common/LanguageSwitcher';
 
 const { Header, Sider, Content } = Layout;
 
@@ -29,6 +31,7 @@ const DashboardLayout = ({
   const navigate = useNavigate();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
+  const { t } = useTranslation();
 
   // Handle menu navigation
   const handleMenuClick = ({ key }: { key: string }) => {
@@ -39,12 +42,12 @@ const DashboardLayout = ({
     {
       key: 'profile',
       icon: <UserOutlined />,
-      label: 'Mi Perfil',
+      label: t('layout.profile'),
     },
     {
       key: 'settings',
       icon: <SettingOutlined />,
-      label: 'Configuración',
+      label: t('layout.settings'),
     },
     {
       type: 'divider',
@@ -52,7 +55,7 @@ const DashboardLayout = ({
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: 'Cerrar Sesión',
+      label: t('layout.logout'),
       danger: true,
     },
   ];
@@ -110,6 +113,8 @@ const DashboardLayout = ({
           />
 
           <Space size="large">
+            <LanguageSwitcher />
+
             <Badge count={5}>
               <BellOutlined style={{ fontSize: '18px', cursor: 'pointer' }} />
             </Badge>
