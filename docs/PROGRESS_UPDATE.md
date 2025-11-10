@@ -123,6 +123,8 @@ cd frontend && npx vite build
 ---
 
 **Equipo:** Gemini (Claude)
-**Tiempo estimado invertido hoy:** ~4 h
-**Tareas completadas:** Internacionalización completa de la aplicación (inglés/español)
-**Siguiente check-in:** después de cablear datos Supabase y seed.
+**Tiempo estimado invertido hoy:** ~5 h
+**Tareas completadas:**
+- Internacionalización completa de dashboards principales (inglés/español) ✅
+- Extensión de i18n a AssetsManagementPage (modales y formularios) ✅
+**Siguiente check-in:** Continuar extensión de i18n a páginas secundarias restantes.
