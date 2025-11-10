@@ -344,5 +344,10 @@
     "moderate": "Moderate",
     "aggressive": "Aggressive",
     "saveChanges": "Save Changes"
+  },
+  "layout": {
+    "myProfile": "My Profile",
+    "settings": "Settings",
+    "logout": "Log Out"
   }
 }

@@ -353,5 +353,10 @@
     "moderate": "Moderado",
     "aggressive": "Agresivo",
     "saveChanges": "Guardar Cambios"
+  },
+  "layout": {
+    "myProfile": "Mi Perfil",
+    "settings": "Configuración",
+    "logout": "Cerrar Sesión"
   }
 }

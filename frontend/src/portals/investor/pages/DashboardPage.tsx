@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Card, Col, Row, Statistic, Table, Tag, Button, Space, Avatar } from 'antd';
 import {
   DollarOutlined,
@@ -11,12 +12,33 @@ import {
 } from '@ant-design/icons';
 import { Line, Pie } from '@ant-design/charts';
 import { StatCard } from '../../../components/common';
+import { BuySellModal } from '../../../components/modals';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 export default function DashboardPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const [buySellModalVisible, setBuySellModalVisible] = useState(false);
+  const [transactionType, setTransactionType] = useState<'buy' | 'sell'>('buy');
+  const [selectedFund, setSelectedFund] = useState<any>(null);
+
+  const handleBuySell = (type: 'buy' | 'sell', fund: any) => {
+    setTransactionType(type);
+    setSelectedFund({
+      name: fund.fund,
+      symbol: fund.fund.split(' ')[0], // e.g., "Alpha" from "Alpha Growth Fund"
+      currentNav: fund.nav,
+      shares: fund.shares, // Current shares for sell validation
+    });
+    setBuySellModalVisible(true);
+  };
+
+  const handleBuySellSubmit = (values: any) => {
+    console.log('Transaction submitted:', values);
+    // In production: Send to Supabase
+  };
 
   // Mock data for Investor Dashboard - Replace with real Supabase data
   const portfolioMetrics = {
@@ -222,10 +244,14 @@ export default function DashboardPage() {
     {
       title: t('common.actions'),
       key: 'actions',
-      render: () => (
+      render: (_: any, record: any) => (
         <Space>
-          <Button type="primary" size="small">{t('common.buy')}</Button>
-          <Button size="small">{t('common.sell')}</Button>
+          <Button type="primary" size="small" onClick={() => handleBuySell('buy', record)}>
+            {t('common.buy')}
+          </Button>
+          <Button size="small" onClick={() => handleBuySell('sell', record)}>
+            {t('common.sell')}
+          </Button>
         </Space>
       ),
     },
@@ -421,6 +447,16 @@ export default function DashboardPage() {
           </Card>
         </Col>
       </Row>
+
+      <BuySellModal
+        visible={buySellModalVisible}
+        onClose={() => setBuySellModalVisible(false)}
+        onSubmit={handleBuySellSubmit}
+        type={transactionType}
+        asset={selectedFund}
+        availableBalance={portfolioMetrics.availableCash}
+        totalShares={selectedFund?.shares || 0}
+      />
     </div>
   );
 }

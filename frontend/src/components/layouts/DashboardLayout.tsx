@@ -12,6 +12,7 @@ import {
 import type { MenuProps } from 'antd';
 import { MiraLogo } from '../common';
 import LanguageSwitcher from '../common/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 const { Header, Sider, Content } = Layout;
 
@@ -30,6 +31,7 @@ const DashboardLayout = ({
 }: DashboardLayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(false);
 
   // Handle menu navigation
@@ -41,12 +43,12 @@ const DashboardLayout = ({
     {
       key: 'profile',
       icon: <UserOutlined />,
-      label: 'Mi Perfil',
+      label: t('layout.myProfile'),
     },
     {
       key: 'settings',
       icon: <SettingOutlined />,
-      label: 'Configuración',
+      label: t('layout.settings'),
     },
     {
       type: 'divider',
@@ -54,7 +56,7 @@ const DashboardLayout = ({
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: 'Cerrar Sesión',
+      label: t('layout.logout'),
       danger: true,
     },
   ];
