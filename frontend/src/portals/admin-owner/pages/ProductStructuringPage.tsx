@@ -100,6 +100,7 @@ const ProductStructuringPage = () => {
         <Steps current={currentStep} onChange={setCurrentStep} style={{ marginBottom: 32 }}>
           <Steps.Step title="Asset Type" description="Select asset class" />
           <Steps.Step title="Share Classes" description="Configure classes" />
+          <Steps.Step title="Blockchain" description="Choose L1 & ZK" />
           <Steps.Step title="Smart Contracts" description="Setup layers" />
           <Steps.Step title="Token Economics" description="Define terms" />
           <Steps.Step title="Compliance" description="Set policies" />
@@ -169,6 +170,257 @@ const ProductStructuringPage = () => {
 
         {currentStep === 2 && (
           <div>
+            <h3>Blockchain Deployment Configuration</h3>
+            <p style={{ color: '#8c8c8c', marginBottom: 24 }}>
+              Select the Layer 1 blockchain and zero-knowledge options for your tokenized asset deployment
+            </p>
+
+            <Row gutter={[16, 24]}>
+              <Col span={24}>
+                <h4>Select Primary Layer 1 Blockchain</h4>
+                <p style={{ fontSize: 12, color: '#8c8c8c', marginBottom: 16 }}>
+                  Choose the main blockchain network where your smart contracts will be deployed
+                </p>
+              </Col>
+
+              {[
+                {
+                  chain: 'ethereum',
+                  name: 'Ethereum Mainnet',
+                  logo: '⟠',
+                  desc: 'Most secure and decentralized',
+                  gasEstimate: 'High ($50-200)',
+                  deployTime: '15-30 min',
+                  recommended: ['fund', 'private-equity'],
+                  pros: ['Highest security', 'Largest ecosystem', 'Maximum decentralization'],
+                  cons: ['High gas fees', 'Lower throughput'],
+                  color: '#627EEA',
+                },
+                {
+                  chain: 'polygon',
+                  name: 'Polygon PoS',
+                  logo: '⬡',
+                  desc: 'Low-cost, high-speed Ethereum sidechain',
+                  gasEstimate: 'Very Low ($0.01-0.10)',
+                  deployTime: '2-5 min',
+                  recommended: ['real-estate', 'fixed-income'],
+                  pros: ['Very low gas fees', 'Fast finality', 'EVM compatible'],
+                  cons: ['Lower security than Ethereum L1'],
+                  color: '#8247E5',
+                },
+                {
+                  chain: 'arbitrum',
+                  name: 'Arbitrum One',
+                  logo: '🔷',
+                  desc: 'Optimistic rollup L2 on Ethereum',
+                  gasEstimate: 'Low ($1-5)',
+                  deployTime: '5-10 min',
+                  recommended: ['fund', 'private-equity'],
+                  pros: ['Low fees', 'Ethereum security', 'EVM equivalent'],
+                  cons: ['7-day withdrawal period'],
+                  color: '#28A0F0',
+                },
+                {
+                  chain: 'optimism',
+                  name: 'Optimism',
+                  logo: '🔴',
+                  desc: 'Optimistic rollup with public goods focus',
+                  gasEstimate: 'Low ($1-5)',
+                  deployTime: '5-10 min',
+                  recommended: ['fund'],
+                  pros: ['Low fees', 'Ethereum security', 'Retroactive funding'],
+                  cons: ['7-day withdrawal period'],
+                  color: '#FF0420',
+                },
+                {
+                  chain: 'base',
+                  name: 'Base (Coinbase L2)',
+                  logo: '🔵',
+                  desc: 'Coinbase-backed Optimism fork',
+                  gasEstimate: 'Low ($0.50-2)',
+                  deployTime: '3-7 min',
+                  recommended: ['real-estate', 'fixed-income'],
+                  pros: ['Coinbase integration', 'Low fees', 'Growing ecosystem'],
+                  cons: ['Newer network', 'Centralized development'],
+                  color: '#0052FF',
+                },
+                {
+                  chain: 'avalanche',
+                  name: 'Avalanche C-Chain',
+                  logo: '🔺',
+                  desc: 'High-throughput smart contracts platform',
+                  gasEstimate: 'Low ($0.50-3)',
+                  deployTime: '1-3 min',
+                  recommended: ['real-estate'],
+                  pros: ['Sub-second finality', 'Low fees', 'Subnet capabilities'],
+                  cons: ['Smaller ecosystem than Ethereum'],
+                  color: '#E84142',
+                },
+              ].map((l1) => (
+                <Col xs={24} sm={12} lg={8} key={l1.chain}>
+                  <Card
+                    hoverable
+                    style={{
+                      border: form.getFieldValue('blockchain') === l1.chain ? `2px solid ${l1.color}` : undefined,
+                      height: '100%',
+                    }}
+                    onClick={() => form.setFieldsValue({ blockchain: l1.chain })}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: 12 }}>
+                      <span style={{ fontSize: 36, marginRight: 12 }}>{l1.logo}</span>
+                      <div>
+                        <div style={{ fontWeight: 600, fontSize: 16 }}>{l1.name}</div>
+                        <div style={{ fontSize: 11, color: '#8c8c8c' }}>{l1.desc}</div>
+                      </div>
+                    </div>
+
+                    <Divider style={{ margin: '12px 0' }} />
+
+                    <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                      <div style={{ fontSize: 12 }}>
+                        <strong>Gas Estimate:</strong> {l1.gasEstimate}
+                      </div>
+                      <div style={{ fontSize: 12 }}>
+                        <strong>Deploy Time:</strong> {l1.deployTime}
+                      </div>
+                      <div style={{ fontSize: 12 }}>
+                        <strong>Recommended For:</strong>
+                        <div style={{ marginTop: 4 }}>
+                          {l1.recommended.map(r => <Tag key={r} size="small" style={{ marginBottom: 4 }}>{r}</Tag>)}
+                        </div>
+                      </div>
+                    </Space>
+
+                    <Divider style={{ margin: '12px 0' }} />
+
+                    <div style={{ fontSize: 11 }}>
+                      <div style={{ color: '#52c41a', marginBottom: 4 }}>
+                        ✓ {l1.pros.join(' • ')}
+                      </div>
+                      <div style={{ color: '#ff4d4f' }}>
+                        ✗ {l1.cons.join(' • ')}
+                      </div>
+                    </div>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+
+            <Divider />
+
+            <Row gutter={[16, 24]}>
+              <Col span={24}>
+                <h4>Zero-Knowledge (ZK) Options</h4>
+                <p style={{ fontSize: 12, color: '#8c8c8c', marginBottom: 16 }}>
+                  Optionally enable zero-knowledge rollups for enhanced privacy and scalability
+                </p>
+              </Col>
+
+              {[
+                {
+                  zk: 'zksync',
+                  name: 'zkSync Era',
+                  logo: '⚡',
+                  desc: 'ZK rollup with native account abstraction',
+                  benefits: ['Enhanced privacy', 'Lower gas than Optimistic rollups', 'Account abstraction'],
+                  bestFor: 'High privacy requirements, institutional use',
+                  color: '#4E529A',
+                },
+                {
+                  zk: 'starknet',
+                  name: 'Starknet',
+                  logo: '⭐',
+                  desc: 'STARK-based ZK rollup',
+                  benefits: ['Post-quantum security', 'Cairo smart contracts', 'Scalable computation'],
+                  bestFor: 'Complex computation, long-term security',
+                  color: '#EC796B',
+                },
+                {
+                  zk: 'polygon-zkevm',
+                  name: 'Polygon zkEVM',
+                  logo: '⬡',
+                  desc: 'EVM-equivalent ZK rollup',
+                  benefits: ['Full EVM compatibility', 'Easy migration', 'Polygon ecosystem'],
+                  bestFor: 'EVM compatibility, Polygon users',
+                  color: '#8247E5',
+                },
+                {
+                  zk: 'none',
+                  name: 'No ZK Layer',
+                  logo: '⊘',
+                  desc: 'Deploy directly to selected L1',
+                  benefits: ['Simpler architecture', 'Direct L1 security', 'Lower complexity'],
+                  bestFor: 'Standard deployments, lower technical overhead',
+                  color: '#8c8c8c',
+                },
+              ].map((zk) => (
+                <Col xs={24} sm={12} lg={6} key={zk.zk}>
+                  <Card
+                    hoverable
+                    style={{
+                      border: form.getFieldValue('zkOption') === zk.zk ? `2px solid ${zk.color}` : undefined,
+                      height: '100%',
+                    }}
+                    onClick={() => form.setFieldsValue({ zkOption: zk.zk })}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: 12 }}>
+                      <span style={{ fontSize: 32, marginRight: 8 }}>{zk.logo}</span>
+                      <div style={{ fontWeight: 600, fontSize: 14 }}>{zk.name}</div>
+                    </div>
+                    <div style={{ fontSize: 11, color: '#8c8c8c', marginBottom: 12 }}>{zk.desc}</div>
+
+                    <div style={{ fontSize: 11, marginBottom: 8 }}>
+                      <strong>Benefits:</strong>
+                      <ul style={{ margin: '4px 0', paddingLeft: 16 }}>
+                        {zk.benefits.map((b, i) => <li key={i}>{b}</li>)}
+                      </ul>
+                    </div>
+
+                    <div style={{ fontSize: 11, color: '#1890ff' }}>
+                      <strong>Best For:</strong> {zk.bestFor}
+                    </div>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+
+            <Divider />
+
+            <Row gutter={16}>
+              <Col span={24}>
+                <h4>Additional Deployment Options</h4>
+              </Col>
+              <Col span={12}>
+                <Form layout="vertical">
+                  <Form.Item label="Cross-Chain Bridge">
+                    <Select defaultValue="wormhole" placeholder="Select bridge protocol">
+                      <Select.Option value="wormhole">Wormhole (Recommended by Securitize)</Select.Option>
+                      <Select.Option value="layerzero">LayerZero</Select.Option>
+                      <Select.Option value="axelar">Axelar</Select.Option>
+                      <Select.Option value="none">No cross-chain bridge</Select.Option>
+                    </Select>
+                  </Form.Item>
+                  <p style={{ fontSize: 11, color: '#8c8c8c', marginTop: -16 }}>
+                    Enable token transfers across multiple blockchains (Securitize uses Wormhole for multi-class tokens)
+                  </p>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form layout="vertical">
+                  <Form.Item label="Multi-Chain Deployment">
+                    <Switch defaultChecked={false} /> <span style={{ marginLeft: 8, fontSize: 12 }}>Deploy to multiple chains simultaneously</span>
+                  </Form.Item>
+                  <Form.Item label="Testnet Deployment First">
+                    <Switch defaultChecked={true} /> <span style={{ marginLeft: 8, fontSize: 12 }}>Deploy to testnet before mainnet</span>
+                  </Form.Item>
+                </Form>
+              </Col>
+            </Row>
+          </div>
+        )}
+
+        {currentStep === 3 && (
+          <div>
             <h3>Smart Contract Layer Configuration</h3>
             <p style={{ color: '#8c8c8c', marginBottom: 24 }}>Enable and configure multi-layer smart contract architecture (based on Securitize layered design)</p>
             <Collapse accordion>
@@ -198,7 +450,7 @@ const ProductStructuringPage = () => {
           </div>
         )}
 
-        {currentStep === 3 && (
+        {currentStep === 4 && (
           <div>
             <h3>Token Economics & Terms</h3>
             <p style={{ color: '#8c8c8c', marginBottom: 24 }}>Define the economic parameters and distribution mechanics</p>
@@ -218,7 +470,7 @@ const ProductStructuringPage = () => {
           </div>
         )}
 
-        {currentStep === 4 && (
+        {currentStep === 5 && (
           <div>
             <h3>Compliance Policies</h3>
             <p style={{ color: '#8c8c8c', marginBottom: 24 }}>Configure regulatory compliance and transfer restrictions</p>
