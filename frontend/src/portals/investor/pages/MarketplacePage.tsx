@@ -1,0 +1,247 @@
+import { useState } from 'react';
+import { Row, Col, Card, List, Avatar, Tag, Button, Space, Input, Select } from 'antd';
+import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
+import { BuySellModal } from '../../../components/modals';
+
+const MarketplacePage = () => {
+  const [buyModalVisible, setBuyModalVisible] = useState(false);
+  const [selectedToken, setSelectedToken] = useState<any>(null);
+
+  const availableTokens = [
+    {
+      key: '1',
+      name: 'Alpha Capital Fund',
+      description: 'Diversified crypto fund with focus on blue-chip assets',
+      nav: 135.45,
+      navValue: '135.45',
+      minInvestment: '10,000',
+      performance30d: '+18.5%',
+      performanceYTD: '+45.2%',
+      aum: '$25.5M',
+      risk: 'Alto',
+      category: 'Crypto Fund',
+      manager: 'Alpha Capital LLC',
+    },
+    {
+      key: '2',
+      name: 'Beta Real Estate Token',
+      description: 'Tokenized commercial real estate portfolio',
+      nav: 203.67,
+      navValue: '203.67',
+      minInvestment: '25,000',
+      performance30d: '+12.3%',
+      performanceYTD: '+28.9%',
+      aum: '$42.8M',
+      risk: 'Medio',
+      category: 'Real Estate',
+      manager: 'Beta Properties',
+    },
+    {
+      key: '3',
+      name: 'Gamma DeFi Yield',
+      description: 'Automated DeFi yield farming strategies',
+      nav: 98.42,
+      navValue: '98.42',
+      minInvestment: '5,000',
+      performance30d: '+22.1%',
+      performanceYTD: '+67.4%',
+      aum: '$18.2M',
+      risk: 'Muy Alto',
+      category: 'DeFi',
+      manager: 'Gamma Protocol',
+    },
+    {
+      key: '4',
+      name: 'Delta Stable Fund',
+      description: 'Conservative stablecoin yield strategy',
+      nav: 76.14,
+      navValue: '76.14',
+      minInvestment: '1,000',
+      performance30d: '+5.2%',
+      performanceYTD: '+18.3%',
+      aum: '$52.1M',
+      risk: 'Bajo',
+      category: 'Yield',
+      manager: 'Delta Capital',
+    },
+    {
+      key: '5',
+      name: 'Epsilon NFT Fund',
+      description: 'Curated blue-chip NFT collection',
+      nav: 156.23,
+      navValue: '156.23',
+      minInvestment: '50,000',
+      performance30d: '+8.7%',
+      performanceYTD: '+102.5%',
+      aum: '$8.9M',
+      risk: 'Muy Alto',
+      category: 'NFT',
+      manager: 'Epsilon Arts',
+    },
+    {
+      key: '6',
+      name: 'Zeta Index Fund',
+      description: 'Market-cap weighted crypto index',
+      nav: 112.89,
+      navValue: '112.89',
+      minInvestment: '5,000',
+      performance30d: '+14.6%',
+      performanceYTD: '+38.1%',
+      aum: '$67.3M',
+      risk: 'Medio',
+      category: 'Index',
+      manager: 'Zeta Indexes',
+    },
+  ];
+
+  const handleBuy = (token: any) => {
+    setSelectedToken(token);
+    setBuyModalVisible(true);
+  };
+
+  const handleBuySubmit = (values: any) => {
+    console.log('Buy order:', values);
+    // Aquí se implementaría la lógica de compra
+  };
+
+  return (
+    <div>
+      <h1 style={{ marginBottom: 24 }}>Marketplace de Tokens</h1>
+
+      {/* Filtros */}
+      <Card bordered={false} style={{ marginBottom: 24 }}>
+        <Row gutter={16}>
+          <Col xs={24} md={8}>
+            <Input
+              size="large"
+              placeholder="Buscar tokens..."
+              prefix={<SearchOutlined />}
+              allowClear
+            />
+          </Col>
+          <Col xs={24} md={8}>
+            <Select
+              size="large"
+              placeholder="Categoría"
+              style={{ width: '100%' }}
+              allowClear
+            >
+              <Select.Option value="all">Todas</Select.Option>
+              <Select.Option value="crypto">Crypto Funds</Select.Option>
+              <Select.Option value="realestate">Real Estate</Select.Option>
+              <Select.Option value="defi">DeFi</Select.Option>
+              <Select.Option value="nft">NFT</Select.Option>
+              <Select.Option value="index">Index Funds</Select.Option>
+            </Select>
+          </Col>
+          <Col xs={24} md={8}>
+            <Select
+              size="large"
+              placeholder="Nivel de Riesgo"
+              style={{ width: '100%' }}
+              allowClear
+            >
+              <Select.Option value="low">Bajo</Select.Option>
+              <Select.Option value="medium">Medio</Select.Option>
+              <Select.Option value="high">Alto</Select.Option>
+              <Select.Option value="very-high">Muy Alto</Select.Option>
+            </Select>
+          </Col>
+        </Row>
+      </Card>
+
+      {/* Lista de tokens */}
+      <Row gutter={[16, 16]}>
+        {availableTokens.map((token) => (
+          <Col xs={24} lg={12} key={token.key}>
+            <Card bordered={false}>
+              <div style={{ display: 'flex', marginBottom: 16 }}>
+                <Avatar
+                  size={64}
+                  style={{
+                    backgroundColor: '#1890ff',
+                    fontSize: 24,
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {token.name.charAt(0)}
+                </Avatar>
+                <div style={{ marginLeft: 16, flex: 1 }}>
+                  <h3 style={{ margin: 0, marginBottom: 4 }}>{token.name}</h3>
+                  <div style={{ color: '#666', fontSize: 14, marginBottom: 8 }}>
+                    {token.description}
+                  </div>
+                  <Space size={[0, 8]} wrap>
+                    <Tag>{token.category}</Tag>
+                    <Tag
+                      color={
+                        token.risk === 'Bajo'
+                          ? 'blue'
+                          : token.risk === 'Medio'
+                          ? 'orange'
+                          : 'red'
+                      }
+                    >
+                      Riesgo {token.risk}
+                    </Tag>
+                  </Space>
+                </div>
+              </div>
+
+              <Row gutter={16} style={{ marginBottom: 16 }}>
+                <Col span={12}>
+                  <div style={{ color: '#666', fontSize: 12 }}>NAV</div>
+                  <div style={{ fontSize: 18, fontWeight: 600 }}>${token.navValue}</div>
+                </Col>
+                <Col span={12}>
+                  <div style={{ color: '#666', fontSize: 12 }}>AUM</div>
+                  <div style={{ fontSize: 18, fontWeight: 600 }}>{token.aum}</div>
+                </Col>
+                <Col span={12}>
+                  <div style={{ color: '#666', fontSize: 12 }}>Performance 30d</div>
+                  <div style={{ fontSize: 16, fontWeight: 600, color: '#52c41a' }}>
+                    {token.performance30d}
+                  </div>
+                </Col>
+                <Col span={12}>
+                  <div style={{ color: '#666', fontSize: 12 }}>Min. Inversión</div>
+                  <div style={{ fontSize: 16, fontWeight: 600 }}>${token.minInvestment}</div>
+                </Col>
+              </Row>
+
+              <div style={{ color: '#999', fontSize: 12, marginBottom: 12 }}>
+                Gestor: {token.manager}
+              </div>
+
+              <Space style={{ width: '100%' }}>
+                <Button
+                  type="primary"
+                  size="large"
+                  onClick={() => handleBuy(token)}
+                  style={{ flex: 1 }}
+                >
+                  Invertir Ahora
+                </Button>
+                <Button size="large">Ver Detalles</Button>
+              </Space>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+
+      <BuySellModal
+        visible={buyModalVisible}
+        onClose={() => setBuyModalVisible(false)}
+        onSubmit={handleBuySubmit}
+        mode="buy"
+        availableTokens={availableTokens.map((t) => ({
+          label: t.name,
+          value: t.key,
+          nav: t.nav,
+        }))}
+      />
+    </div>
+  );
+};
+
+export default MarketplacePage;

@@ -1,0 +1,27 @@
+{
+  "name": "naveo",
+  "version": "1.0.0",
+  "description": "Plataforma Institucional Cripto: Tokenización, NAV System y Multiportal",
+  "scripts": {
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "npx supabase start",
+    "stop:backend": "npx supabase stop",
+    "status": "npx supabase status",
+    "db:reset": "npx supabase db reset",
+    "db:migrate": "npx supabase db push",
+    "install:all": "npm install && cd frontend && npm install"
+  },
+  "keywords": [
+    "crypto",
+    "tokenization",
+    "nav",
+    "defi",
+    "supabase",
+    "refine"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "supabase": "^2.54.11"
+  }
+}
