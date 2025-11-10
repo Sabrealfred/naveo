@@ -42,6 +42,7 @@ import {
   TokenLifecyclePage,
   BusinessRulesPage,
   ApprovalWorkflowsPage,
+  ProductStructuringPage,
 } from './pages';
 
 const AdminOwnerPortal = () => {
@@ -67,6 +68,7 @@ const AdminOwnerPortal = () => {
       icon: <DollarCircleOutlined />,
       label: 'Tokenization',
       children: [
+        { key: '/admin-owner/product-structuring', label: 'Product Structuring', icon: <ProjectOutlined /> },
         { key: '/admin-owner/token-lifecycle', label: 'Token Lifecycle', icon: <FireOutlined /> },
         { key: '/admin-owner/smart-contracts', label: 'Smart Contracts', icon: <ApartmentOutlined /> },
         { key: '/admin-owner/business-rules', label: 'Business Rules', icon: <SettingOutlined /> },
@@ -135,6 +137,7 @@ const AdminOwnerPortal = () => {
         <Route path="asset-pipeline" element={<AssetPipelinePage />} />
 
         {/* Tokenization Routes */}
+        <Route path="product-structuring" element={<ProductStructuringPage />} />
         <Route path="token-lifecycle" element={<TokenLifecyclePage />} />
         <Route path="smart-contracts" element={<SmartContractsPage />} />
         <Route path="business-rules" element={<BusinessRulesPage />} />
