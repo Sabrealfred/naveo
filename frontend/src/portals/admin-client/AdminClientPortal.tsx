@@ -13,6 +13,7 @@ import {
   DollarOutlined,
   SyncOutlined,
   BarChartOutlined,
+  LockOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import {
@@ -26,6 +27,7 @@ import {
   RebalancingPage,
   TradingDashboardPage,
   RiskDashboardPage,
+  GateManagementPage,
 } from './pages';
 
 const AdminClientPortal = () => {
@@ -81,6 +83,11 @@ const AdminClientPortal = () => {
       label: 'Capital Calls',
     },
     {
+      key: '/admin-client/gate-management',
+      icon: <LockOutlined />,
+      label: 'Gate Management',
+    },
+    {
       key: 'team',
       icon: <UserSwitchOutlined />,
       label: 'Equipo y Permisos',
@@ -126,6 +133,7 @@ const AdminClientPortal = () => {
         <Route path="investors" element={<div style={{ padding: 24 }}><h2>Investors Management - Coming Soon</h2></div>} />
         <Route path="subscription-calendar" element={<SubscriptionCalendarPage />} />
         <Route path="capital-calls" element={<CapitalCallPage />} />
+        <Route path="gate-management" element={<GateManagementPage />} />
         <Route path="officers" element={<OfficersManagementPage />} />
         <Route path="admins" element={<div style={{ padding: 24 }}><h2>Sub-Admins - Coming Soon</h2></div>} />
         <Route path="transactions" element={<div style={{ padding: 24 }}><h2>Transactions - Coming Soon</h2></div>} />
