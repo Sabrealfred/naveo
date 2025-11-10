@@ -20,6 +20,7 @@ import {
 } from '@ant-design/icons';
 import { Line, Pie } from '@ant-design/charts';
 import { StatCard } from '../../../components/common';
+import { useTranslation } from 'react-i18next';
 
 interface Holding {
   key: string;
@@ -128,6 +129,7 @@ const periodOptions = [
 ];
 
 const PortfolioPage = () => {
+  const { t } = useTranslation();
   const [period, setPeriod] = useState('1Y');
 
   const metrics = useMemo(() => {
@@ -173,40 +175,40 @@ const PortfolioPage = () => {
 
   const holdingsColumns = [
     {
-      title: 'Fund Name',
+      title: t('investor.holdings.fund'),
       dataIndex: 'fund',
       key: 'fund',
       sorter: (a: Holding, b: Holding) => a.fund.localeCompare(b.fund),
     },
     {
-      title: 'Shares',
+      title: t('investor.holdings.shares'),
       dataIndex: 'shares',
       key: 'shares',
       sorter: (a: Holding, b: Holding) => a.shares - b.shares,
     },
     {
-      title: 'Avg Buy Price',
+      title: t('investor.holdings.invested'),
       dataIndex: 'avgPrice',
       key: 'avgPrice',
       render: (value: number) => `$${value.toFixed(2)}`,
       sorter: (a: Holding, b: Holding) => a.avgPrice - b.avgPrice,
     },
     {
-      title: 'Current NAV',
+      title: t('investor.holdings.currentNav'),
       dataIndex: 'currentNav',
       key: 'currentNav',
       render: (value: number) => `$${value.toFixed(2)}`,
       sorter: (a: Holding, b: Holding) => a.currentNav - b.currentNav,
     },
     {
-      title: 'Current Value',
+      title: t('investor.holdings.currentValue'),
       dataIndex: 'value',
       key: 'value',
       render: (value: number) => `$${value.toLocaleString()}`,
       sorter: (a: Holding, b: Holding) => a.value - b.value,
     },
     {
-      title: 'P&L ($)',
+      title: t('adminClient.traders.profitLoss'),
       dataIndex: 'pnl',
       key: 'pnl',
       render: (value: number) => (
@@ -217,7 +219,7 @@ const PortfolioPage = () => {
       sorter: (a: Holding, b: Holding) => a.pnl - b.pnl,
     },
     {
-      title: 'P&L (%)',
+      title: t('investor.holdings.return'),
       dataIndex: 'pnlPercent',
       key: 'pnlPercent',
       render: (value: number) => (
@@ -229,15 +231,15 @@ const PortfolioPage = () => {
       sorter: (a: Holding, b: Holding) => a.pnlPercent - b.pnlPercent,
     },
     {
-      title: 'Actions',
+      title: t('common.actions'),
       key: 'actions',
       render: (_, record: Holding) => (
         <Space>
           <Button type="primary" icon={<ShoppingCartOutlined />}>
-            Buy More
+            {t('investor.portfolio.buyMore')}
           </Button>
-          <Button icon={<DollarOutlined />}>Sell</Button>
-          <Button type="link">View History</Button>
+          <Button icon={<DollarOutlined />}>{t('investor.holdings.sell')}</Button>
+          <Button type="link">{t('investor.portfolio.viewHistory')}</Button>
         </Space>
       ),
     },
@@ -248,7 +250,7 @@ const PortfolioPage = () => {
       <Row gutter={[16, 16]}>
         <Col xs={24} md={8}>
           <StatCard
-            title="Total Portfolio Value"
+            title={t('investor.portfolio.totalValue')}
             value={`$${metrics.totalValue.toLocaleString()}`}
             icon={<WalletOutlined />}
             color="#4f6bed"
@@ -258,7 +260,7 @@ const PortfolioPage = () => {
         </Col>
         <Col xs={24} md={8}>
           <StatCard
-            title="Total Return"
+            title={t('investor.portfolio.totalReturn')}
             value={`$${metrics.totalReturn.toLocaleString()}`}
             icon={<RiseOutlined />}
             color="#52c41a"
@@ -268,7 +270,7 @@ const PortfolioPage = () => {
         </Col>
         <Col xs={24} md={8}>
           <StatCard
-            title="Available Balance"
+            title={t('investor.portfolio.availableBalance')}
             value={`$${metrics.availableBalance.toLocaleString()}`}
             icon={<DollarOutlined />}
             color="#faad14"
@@ -279,7 +281,7 @@ const PortfolioPage = () => {
       <Row gutter={[16, 16]}>
         <Col xs={24} xl={16}>
           <Card
-            title="Performance History"
+            title={t('investor.portfolio.performanceChart')}
             extra={
               <Tabs
                 activeKey={period}
@@ -299,7 +301,7 @@ const PortfolioPage = () => {
               smooth
               tooltip={{
                 formatter: (datum) => ({
-                  name: 'Value',
+                  name: t('investor.dashboard.totalValue'),
                   value: `$${datum.value.toLocaleString()}`,
                 }),
               }}
@@ -307,7 +309,7 @@ const PortfolioPage = () => {
           </Card>
         </Col>
         <Col xs={24} xl={8}>
-          <Card title="Asset Allocation">
+          <Card title={t('investor.portfolio.assetAllocation')}>
             <Pie
               height={220}
               data={allocationData}
@@ -337,7 +339,7 @@ const PortfolioPage = () => {
         </Col>
       </Row>
 
-      <Card title="My Holdings">
+      <Card title={t('investor.portfolio.myHoldings')}>
         <Table
           rowKey="key"
           dataSource={holdings}
@@ -348,7 +350,7 @@ const PortfolioPage = () => {
 
       <Row gutter={[16, 16]}>
         <Col xs={24} md={12}>
-          <Card title="Recent Activity" extra={<Button type="link">View All Transactions</Button>}>
+          <Card title={t('investor.portfolio.recentActivity')} extra={<Button type="link">{t('dashboard.viewAll')}</Button>}>
             <List
               dataSource={activity}
               renderItem={(item) => (
