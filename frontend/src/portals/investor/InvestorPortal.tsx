@@ -8,6 +8,7 @@ import {
   FileTextOutlined,
   UserOutlined,
   LineChartOutlined,
+  BarChartOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import {
@@ -20,6 +21,7 @@ import {
   OnboardingPage,
   SuitabilityQuestionnairePage,
   SubscriptionWorkflowPage,
+  TradingPlatformPage,
 } from './pages';
 
 const InvestorPortal = () => {
@@ -43,6 +45,11 @@ const InvestorPortal = () => {
       key: '/investor/marketplace',
       icon: <ShoppingOutlined />,
       label: 'Marketplace',
+    },
+    {
+      key: '/investor/trading',
+      icon: <BarChartOutlined />,
+      label: 'Trading Platform',
     },
     {
       key: '/investor/subscription',
@@ -87,6 +94,7 @@ const InvestorPortal = () => {
         <Route path="portfolio" element={<PortfolioPage />} />
         <Route path="performance" element={<PerformanceAnalyticsPage />} />
         <Route path="marketplace" element={<MarketplacePage />} />
+        <Route path="trading" element={<TradingPlatformPage />} />
         <Route path="subscription" element={<SubscriptionWorkflowPage />} />
         <Route path="onboarding" element={<OnboardingPage />} />
         <Route path="suitability" element={<SuitabilityQuestionnairePage />} />

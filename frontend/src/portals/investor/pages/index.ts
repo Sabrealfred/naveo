@@ -7,3 +7,4 @@ export { default as PerformanceAnalyticsPage } from './PerformanceAnalyticsPage'
 export { default as OnboardingPage } from './OnboardingPage';
 export { default as SuitabilityQuestionnairePage } from './SuitabilityQuestionnairePage';
 export { default as SubscriptionWorkflowPage } from './SubscriptionWorkflowPage';
+export { default as TradingPlatformPage } from './TradingPlatformPage';
