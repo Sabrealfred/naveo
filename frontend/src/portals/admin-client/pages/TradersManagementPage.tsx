@@ -27,6 +27,7 @@ import {
 import { Column } from '@ant-design/charts';
 import { StatCard } from '../../../components/common';
 import { fetchTraders, type TraderRecord } from '../../../services/adminClient';
+import { useTranslation } from 'react-i18next';
 
 const { Text, Title } = Typography;
 
@@ -121,6 +122,7 @@ const statusColors: Record<TraderStatus, string> = {
 };
 
 const TradersManagementPage = () => {
+  const { t } = useTranslation();
   const [traders, setTraders] = useState<Trader[]>(mockTraders);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | TraderStatus>('all');
@@ -175,7 +177,7 @@ const TradersManagementPage = () => {
 
   const columns: ColumnsType<Trader> = [
     {
-      title: 'Name',
+      title: t('adminClient.tradersManagement.name'),
       dataIndex: 'name',
       render: (value, record) => (
         <Space direction="vertical" size={0}>
@@ -186,28 +188,28 @@ const TradersManagementPage = () => {
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
-      title: 'Role',
+      title: t('adminClient.tradersManagement.role'),
       dataIndex: 'role',
       filters: [
-        { text: 'Junior', value: 'Junior' },
-        { text: 'Senior', value: 'Senior' },
-        { text: 'Lead', value: 'Lead' },
+        { text: t('adminClient.tradersManagement.junior'), value: 'Junior' },
+        { text: t('adminClient.tradersManagement.senior'), value: 'Senior' },
+        { text: t('adminClient.tradersManagement.lead'), value: 'Lead' },
       ],
       onFilter: (value, record) => record.role === value,
     },
     {
-      title: 'Total Trades',
+      title: t('adminClient.tradersManagement.totalTrades'),
       dataIndex: 'trades',
       sorter: (a, b) => a.trades - b.trades,
     },
     {
-      title: 'Volume',
+      title: t('adminClient.tradersManagement.volume'),
       dataIndex: 'volume',
       render: (value: number) => `$${(value / 1_000_000).toFixed(2)}M`,
       sorter: (a, b) => a.volume - b.volume,
     },
     {
-      title: 'P&L',
+      title: t('adminClient.traders.profitLoss'),
       dataIndex: 'pnl',
       render: (value: number) => (
         <Tag color={value >= 0 ? 'green' : 'volcano'}>
@@ -217,7 +219,7 @@ const TradersManagementPage = () => {
       sorter: (a, b) => a.pnl - b.pnl,
     },
     {
-      title: 'Win Rate',
+      title: t('adminClient.traders.winRate'),
       dataIndex: 'winRate',
       render: (value: number) => (
         <Tag color={value > 60 ? 'blue' : 'default'}>
@@ -227,18 +229,18 @@ const TradersManagementPage = () => {
       sorter: (a, b) => a.winRate - b.winRate,
     },
     {
-      title: 'Status',
+      title: t('adminClient.tradersManagement.status'),
       dataIndex: 'status',
       render: (value: TraderStatus) => <Tag color={statusColors[value]}>{value.toUpperCase()}</Tag>,
       filters: [
-        { text: 'Active', value: 'active' },
-        { text: 'Pending', value: 'pending' },
-        { text: 'Suspended', value: 'suspended' },
+        { text: t('adminClient.traders.active'), value: 'active' },
+        { text: t('transactionsPage.pending'), value: 'pending' },
+        { text: t('adminClient.tradersManagement.suspend'), value: 'suspended' },
       ],
       onFilter: (value, record) => record.status === value,
     },
     {
-      title: 'Actions',
+      title: t('common.actions'),
       key: 'actions',
       render: (_, record) => (
         <Space>
@@ -250,7 +252,7 @@ const TradersManagementPage = () => {
               setPerformanceModalOpen(true);
             }}
           >
-            Performance
+            {t('adminClient.tradersManagement.viewPerformance')}
           </Button>
           <Button
             icon={<EditOutlined />}
@@ -260,7 +262,7 @@ const TradersManagementPage = () => {
               setPermissionsModalOpen(true);
             }}
           >
-            Permissions
+            {t('adminClient.tradersManagement.editPermissions')}
           </Button>
           <Switch
             checkedChildren={<UnlockOutlined />}
@@ -281,7 +283,7 @@ const TradersManagementPage = () => {
         trader.id === traderId ? { ...trader, status } : trader,
       ),
     );
-    message.success(`Trader ${status === 'active' ? 'activado' : 'suspendido'}`);
+    message.success(`${t('adminClient.traders.trader')} ${status === 'active' ? t('adminClient.tradersManagement.activate') : t('adminClient.tradersManagement.suspend')}`);
   };
 
   const handleInviteSubmit = (values: { name: string; email: string; role: Trader['role']; limit: number }) => {
@@ -300,7 +302,7 @@ const TradersManagementPage = () => {
     };
 
     setTraders((prev) => [newTrader, ...prev]);
-    message.success('Invitación enviada al trader');
+    message.success(t('adminClient.tradersManagement.addTrader'));
     setInviteModalOpen(false);
   };
 
@@ -328,38 +330,38 @@ const TradersManagementPage = () => {
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       <Row gutter={[16, 16]}>
         <Col xs={24} md={6}>
-          <StatCard title="Total Traders" value={metrics.total} />
+          <StatCard title={t('adminClient.tradersManagement.totalTraders')} value={metrics.total} />
         </Col>
         <Col xs={24} md={6}>
-          <StatCard title="Active Traders" value={metrics.active} />
+          <StatCard title={t('adminClient.tradersManagement.activeTraders')} value={metrics.active} />
         </Col>
         <Col xs={24} md={6}>
           <StatCard
-            title="Trading Volume"
+            title={t('adminClient.tradersManagement.totalVolume')}
             value={`$${(metrics.volume / 1_000_000).toFixed(1)}M`}
           />
         </Col>
         <Col xs={24} md={6}>
-          <StatCard title="Avg Win Rate" value={`${metrics.avgWinRate.toFixed(1)}%`} />
+          <StatCard title={t('adminClient.tradersManagement.avgWinRate')} value={`${metrics.avgWinRate.toFixed(1)}%`} />
         </Col>
       </Row>
 
       <Card
-        title="Traders Management"
+        title={t('adminClient.tradersManagement.title')}
         extra={
           <Button
             type="primary"
             icon={<UserAddOutlined />}
             onClick={() => setInviteModalOpen(true)}
           >
-            Add Trader
+            {t('adminClient.tradersManagement.addTrader')}
           </Button>
         }
       >
         <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
           <Col xs={24} md={16}>
             <Input
-              placeholder="Buscar por nombre o email"
+              placeholder={t('adminClient.tradersManagement.email')}
               allowClear
               onChange={(event) => setSearchTerm(event.target.value)}
             />
@@ -369,10 +371,10 @@ const TradersManagementPage = () => {
               value={statusFilter}
               onChange={(value) => setStatusFilter(value as 'all' | TraderStatus)}
               options={[
-                { label: 'Todos los estados', value: 'all' },
-                { label: 'Active', value: 'active' },
-                { label: 'Pending', value: 'pending' },
-                { label: 'Suspended', value: 'suspended' },
+                { label: t('adminClient.tradersManagement.status'), value: 'all' },
+                { label: t('adminClient.traders.active'), value: 'active' },
+                { label: t('transactionsPage.pending'), value: 'pending' },
+                { label: t('adminClient.tradersManagement.suspend'), value: 'suspended' },
               ]}
               style={{ width: '100%' }}
             />
@@ -388,46 +390,46 @@ const TradersManagementPage = () => {
       </Card>
 
       <Modal
-        title="Invitar nuevo trader"
+        title={t('adminClient.tradersManagement.addTrader')}
         open={isInviteModalOpen}
         onCancel={() => setInviteModalOpen(false)}
         footer={null}
       >
         <Form layout="vertical" onFinish={handleInviteSubmit}>
           <Form.Item
-            label="Nombre completo"
+            label={t('adminClient.tradersManagement.name')}
             name="name"
-            rules={[{ required: true, message: 'Ingresa el nombre' }]}
+            rules={[{ required: true, message: t('adminClient.tradersManagement.name') }]}
           >
             <Input placeholder="Jane Doe" />
           </Form.Item>
           <Form.Item
-            label="Email institucional"
+            label={t('adminClient.tradersManagement.email')}
             name="email"
             rules={[
-              { required: true, message: 'Ingresa el email' },
-              { type: 'email', message: 'Email inválido' },
+              { required: true, message: t('adminClient.tradersManagement.email') },
+              { type: 'email', message: t('login.emailInvalid') },
             ]}
           >
             <Input placeholder="trader@navfund.com" />
           </Form.Item>
           <Form.Item
-            label="Rol"
+            label={t('adminClient.tradersManagement.role')}
             name="role"
-            rules={[{ required: true, message: 'Selecciona un rol' }]}
+            rules={[{ required: true, message: t('adminClient.tradersManagement.role') }]}
           >
             <Select
               options={[
-                { label: 'Junior Trader', value: 'Junior' },
-                { label: 'Senior Trader', value: 'Senior' },
-                { label: 'Lead Trader', value: 'Lead' },
+                { label: t('adminClient.tradersManagement.junior'), value: 'Junior' },
+                { label: t('adminClient.tradersManagement.senior'), value: 'Senior' },
+                { label: t('adminClient.tradersManagement.lead'), value: 'Lead' },
               ]}
             />
           </Form.Item>
           <Form.Item
-            label="Trading Limit (USD)"
+            label={t('adminClient.tradersManagement.totalVolume')}
             name="limit"
-            rules={[{ required: true, message: 'Define un límite' }]}
+            rules={[{ required: true, message: t('adminClient.tradersManagement.totalVolume') }]}
           >
             <InputNumber
               min={500_000}
@@ -437,13 +439,13 @@ const TradersManagementPage = () => {
             />
           </Form.Item>
           <Button type="primary" htmlType="submit" block>
-            Enviar invitación
+            {t('common.submit')}
           </Button>
         </Form>
       </Modal>
 
       <Modal
-        title={`Performance de ${selectedTrader?.name ?? ''}`}
+        title={`${t('adminClient.tradersManagement.viewPerformance')} - ${selectedTrader?.name ?? ''}`}
         open={isPerformanceModalOpen}
         onCancel={() => {
           setPerformanceModalOpen(false);
@@ -456,27 +458,27 @@ const TradersManagementPage = () => {
           <Space direction="vertical" size="large" style={{ width: '100%' }}>
             <Row gutter={[16, 16]}>
               <Col span={6}>
-                <StatCard title="Total Trades" value={selectedTrader.trades} />
+                <StatCard title={t('adminClient.tradersManagement.totalTrades')} value={selectedTrader.trades} />
               </Col>
               <Col span={6}>
-                <StatCard title="Win Rate" value={`${selectedTrader.winRate}%`} />
+                <StatCard title={t('adminClient.traders.winRate')} value={`${selectedTrader.winRate}%`} />
               </Col>
               <Col span={6}>
                 <StatCard
-                  title="Best Trade"
+                  title={t('adminClient.traders.trades')}
                   value={`$${selectedTrader.bestTrade.toLocaleString()}`}
                 />
               </Col>
               <Col span={6}>
                 <StatCard
-                  title="Worst Trade"
+                  title={t('adminClient.traders.trades')}
                   value={`$${selectedTrader.worstTrade.toLocaleString()}`}
                   color="#ff4d4f"
                 />
               </Col>
             </Row>
 
-            <Card title="P&L Histórico">
+            <Card title={t('adminClient.traders.profitLoss')}>
               <Column
                 data={performanceHistory}
                 xField="month"
@@ -486,22 +488,22 @@ const TradersManagementPage = () => {
               />
             </Card>
 
-            <Card title="Últimas operaciones" bodyStyle={{ padding: 0 }}>
+            <Card title={t('adminClient.dashboard.recentTransactions')} bodyStyle={{ padding: 0 }}>
               <Table
                 dataSource={recentTrades}
                 rowKey="id"
                 pagination={false}
                 columns={[
                   { title: 'ID', dataIndex: 'id' },
-                  { title: 'Asset', dataIndex: 'symbol' },
-                  { title: 'Type', dataIndex: 'type' },
+                  { title: t('adminClient.transactions.asset'), dataIndex: 'symbol' },
+                  { title: t('adminClient.transactions.type'), dataIndex: 'type' },
                   {
-                    title: 'Size',
+                    title: t('adminClient.transactions.amount'),
                     dataIndex: 'size',
                     render: (value: number) => `$${value.toLocaleString()}`,
                   },
                   {
-                    title: 'P&L',
+                    title: t('adminClient.traders.profitLoss'),
                     dataIndex: 'pnl',
                     render: (value: number) => (
                       <Tag color={value >= 0 ? 'green' : 'volcano'}>
@@ -509,7 +511,7 @@ const TradersManagementPage = () => {
                       </Tag>
                     ),
                   },
-                  { title: 'Date', dataIndex: 'date' },
+                  { title: t('adminClient.assets.date'), dataIndex: 'date' },
                 ]}
               />
             </Card>
@@ -518,14 +520,14 @@ const TradersManagementPage = () => {
       </Modal>
 
       <Modal
-        title="Editar permisos"
+        title={t('adminClient.tradersManagement.editPermissions')}
         open={isPermissionsModalOpen}
         onCancel={() => {
           setPermissionsModalOpen(false);
           setSelectedTrader(null);
         }}
         onOk={() => {
-          message.success('Permisos actualizados');
+          message.success(t('adminClient.tradersManagement.editPermissions'));
           setPermissionsModalOpen(false);
         }}
       >
@@ -536,24 +538,24 @@ const TradersManagementPage = () => {
           </div>
 
           <Form layout="vertical">
-            <Form.Item label="Nivel de permisos">
+            <Form.Item label={t('adminClient.tradersManagement.role')}>
               <Select
                 defaultValue={selectedTrader?.role}
                 options={[
-                  { label: 'Junior - hasta $1M', value: 'Junior' },
-                  { label: 'Senior - hasta $5M', value: 'Senior' },
-                  { label: 'Lead - sin límite', value: 'Lead' },
+                  { label: `${t('adminClient.tradersManagement.junior')} - $1M`, value: 'Junior' },
+                  { label: `${t('adminClient.tradersManagement.senior')} - $5M`, value: 'Senior' },
+                  { label: `${t('adminClient.tradersManagement.lead')}`, value: 'Lead' },
                 ]}
               />
             </Form.Item>
-            <Form.Item label="Acceso a activos">
+            <Form.Item label={t('adminClient.assets.type')}>
               <Select
                 mode="multiple"
                 defaultValue={['crypto', 'defi']}
                 options={[
-                  { label: 'Crypto Majors', value: 'crypto' },
-                  { label: 'DeFi', value: 'defi' },
-                  { label: 'Real World Assets', value: 'rwa' },
+                  { label: t('marketplace.cryptoFund'), value: 'crypto' },
+                  { label: t('marketplace.defi'), value: 'defi' },
+                  { label: t('marketplace.realEstate'), value: 'rwa' },
                   { label: 'Derivatives', value: 'derivatives' },
                 ]}
               />
