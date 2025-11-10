@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import {
   DashboardOutlined,
+  DollarOutlined,
   ShoppingOutlined,
   WalletOutlined,
   SwapOutlined,
@@ -18,6 +19,7 @@ import {
   PerformanceAnalyticsPage,
   OnboardingPage,
   SuitabilityQuestionnairePage,
+  SubscriptionWorkflowPage,
 } from './pages';
 
 const InvestorPortal = () => {
@@ -41,6 +43,11 @@ const InvestorPortal = () => {
       key: '/investor/marketplace',
       icon: <ShoppingOutlined />,
       label: 'Marketplace',
+    },
+    {
+      key: '/investor/subscription',
+      icon: <DollarOutlined />,
+      label: 'Subscribe to Fund',
     },
     {
       key: '/investor/onboarding',
@@ -80,6 +87,7 @@ const InvestorPortal = () => {
         <Route path="portfolio" element={<PortfolioPage />} />
         <Route path="performance" element={<PerformanceAnalyticsPage />} />
         <Route path="marketplace" element={<MarketplacePage />} />
+        <Route path="subscription" element={<SubscriptionWorkflowPage />} />
         <Route path="onboarding" element={<OnboardingPage />} />
         <Route path="suitability" element={<SuitabilityQuestionnairePage />} />
         <Route path="transactions" element={<TransactionsPage />} />
