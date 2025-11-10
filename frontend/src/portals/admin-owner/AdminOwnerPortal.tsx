@@ -32,6 +32,7 @@ import {
   AssetPipelinePage,
   DueDiligencePage,
   ProductStructuringPage,
+  KYCAMLManagementPage,
 } from './pages';
 
 const AdminOwnerPortal = () => {
@@ -61,6 +62,11 @@ const AdminOwnerPortal = () => {
       key: '/admin-owner/product-structuring',
       icon: <ProjectOutlined />,
       label: 'Product Structuring',
+    },
+    {
+      key: '/admin-owner/kyc-aml',
+      icon: <SafetyOutlined />,
+      label: 'KYC/AML Management',
     },
     {
       key: '/admin-owner/clients',
@@ -121,6 +127,7 @@ const AdminOwnerPortal = () => {
         <Route path="asset-pipeline" element={<AssetPipelinePage />} />
         <Route path="due-diligence" element={<DueDiligencePage />} />
         <Route path="product-structuring" element={<ProductStructuringPage />} />
+        <Route path="kyc-aml" element={<KYCAMLManagementPage />} />
         <Route path="clients" element={<ClientsManagementPage />} />
         <Route path="users" element={<UsersPermissionsPage />} />
         <Route path="integrations/kyc" element={<IntegrationsKYCPage />} />
