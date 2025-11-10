@@ -30,6 +30,8 @@ import {
   AuditLogsPage,
   NotificationsCenterPage,
   AssetPipelinePage,
+  DueDiligencePage,
+  ProductStructuringPage,
 } from './pages';
 
 const AdminOwnerPortal = () => {
@@ -49,6 +51,16 @@ const AdminOwnerPortal = () => {
       key: '/admin-owner/asset-pipeline',
       icon: <ProjectOutlined />,
       label: 'Asset Pipeline',
+    },
+    {
+      key: '/admin-owner/due-diligence',
+      icon: <FileTextOutlined />,
+      label: 'Due Diligence',
+    },
+    {
+      key: '/admin-owner/product-structuring',
+      icon: <ProjectOutlined />,
+      label: 'Product Structuring',
     },
     {
       key: '/admin-owner/clients',
@@ -107,6 +119,8 @@ const AdminOwnerPortal = () => {
         <Route index element={<DashboardPage />} />
         <Route path="funds" element={<FundsManagementPage />} />
         <Route path="asset-pipeline" element={<AssetPipelinePage />} />
+        <Route path="due-diligence" element={<DueDiligencePage />} />
+        <Route path="product-structuring" element={<ProductStructuringPage />} />
         <Route path="clients" element={<ClientsManagementPage />} />
         <Route path="users" element={<UsersPermissionsPage />} />
         <Route path="integrations/kyc" element={<IntegrationsKYCPage />} />

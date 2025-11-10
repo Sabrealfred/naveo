@@ -2,6 +2,8 @@ export { default as DashboardPage } from './DashboardPage';
 export { default as FundsManagementPage } from './FundsManagementPage';
 export { default as ClientsManagementPage } from './ClientsManagementPage';
 export { default as AssetPipelinePage } from './AssetPipelinePage';
+export { default as DueDiligencePage } from './DueDiligencePage';
+export { default as ProductStructuringPage } from './ProductStructuringPage';
 
 export { default as CompliancePage } from './CompliancePage';
 export { default as ReportsPage } from './ReportsPage';
