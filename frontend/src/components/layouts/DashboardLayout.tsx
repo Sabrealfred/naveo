@@ -11,6 +11,7 @@ import {
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { MiraLogo } from '../common';
+import LanguageSwitcher from '../common/LanguageSwitcher';
 
 const { Header, Sider, Content } = Layout;
 
@@ -118,6 +119,8 @@ const DashboardLayout = ({
           />
 
           <Space size="large">
+            <LanguageSwitcher />
+
             <Badge count={5}>
               <BellOutlined style={{ fontSize: '18px', cursor: 'pointer' }} />
             </Badge>

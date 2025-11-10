@@ -4,6 +4,9 @@ import routerProvider from '@refinedev/react-router';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { dataProvider, liveProvider } from '@refinedev/supabase';
 import { ConfigProvider } from 'antd';
+import enUS from 'antd/locale/en_US';
+import esES from 'antd/locale/es_ES';
+import { useTranslation } from 'react-i18next';
 import { supabaseClient } from './services/supabaseClient';
 
 // Import portal components (will create these next)
@@ -52,10 +55,18 @@ const miraLabsTheme = {
 };
 
 function App() {
+  const { i18n } = useTranslation();
+
+  // Get Ant Design locale based on current language
+  const getAntdLocale = () => {
+    const currentLang = i18n.language || 'es';
+    return currentLang.startsWith('en') ? enUS : esES;
+  };
+
   return (
     <BrowserRouter>
       <RefineKbarProvider>
-        <ConfigProvider theme={miraLabsTheme}>
+        <ConfigProvider theme={miraLabsTheme} locale={getAntdLocale()}>
           <Refine
             dataProvider={dataProvider(supabaseClient)}
             liveProvider={liveProvider(supabaseClient)}
