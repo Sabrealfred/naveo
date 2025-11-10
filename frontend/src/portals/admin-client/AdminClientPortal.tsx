@@ -11,6 +11,7 @@ import {
   UserSwitchOutlined,
   CalendarOutlined,
   DollarOutlined,
+  SyncOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import {
@@ -21,6 +22,7 @@ import {
   TradersManagementPage,
   SubscriptionCalendarPage,
   CapitalCallPage,
+  RebalancingPage,
 } from './pages';
 
 const AdminClientPortal = () => {
@@ -44,6 +46,11 @@ const AdminClientPortal = () => {
       key: '/admin-client/nav',
       icon: <LineChartOutlined />,
       label: 'Sistema NAV',
+    },
+    {
+      key: '/admin-client/rebalancing',
+      icon: <SyncOutlined />,
+      label: 'Portfolio Rebalancing',
     },
     {
       key: '/admin-client/investors',
@@ -96,6 +103,7 @@ const AdminClientPortal = () => {
       <Routes>
         <Route index element={<DashboardPage />} />
         <Route path="nav" element={<NAVSystemPage />} />
+        <Route path="rebalancing" element={<RebalancingPage />} />
         <Route path="assets" element={<AssetsManagementPage />} />
         <Route path="traders" element={<TradersManagementPage />} />
         {/* Temporary placeholder for missing pages */}
