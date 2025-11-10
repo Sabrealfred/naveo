@@ -22,6 +22,7 @@ import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-de
 import { Line } from '@ant-design/charts';
 import { StatCard } from '../../../components/common';
 import { fetchAssets, type AssetRecord } from '../../../services/adminClient';
+import { useTranslation } from 'react-i18next';
 
 type AssetType = 'Crypto' | 'Token' | 'Stablecoin';
 
@@ -115,12 +116,7 @@ const defaultAssets: Asset[] = [
   },
 ];
 
-const assetTypeOptions = [
-  { label: 'Todos los tipos', value: 'all' },
-  { label: 'Crypto', value: 'Crypto' },
-  { label: 'Token', value: 'Token' },
-  { label: 'Stablecoin', value: 'Stablecoin' },
-];
+// assetTypeOptions moved inside components to use translations
 
 const usePortfolioMetrics = (assets: Asset[]) =>
   useMemo(() => {
@@ -150,6 +146,14 @@ const AssetFormModal = ({
   onCancel: () => void;
 }) => {
   const [form] = Form.useForm<AssetFormValues>();
+  const { t } = useTranslation();
+
+  const assetTypeOptions = [
+    { label: t('adminClient.assets.allTypes'), value: 'all' },
+    { label: t('adminClient.assets.crypto'), value: 'Crypto' },
+    { label: t('adminClient.assets.token'), value: 'Token' },
+    { label: t('adminClient.assets.stablecoin'), value: 'Stablecoin' },
+  ];
 
   const handleOk = async () => {
     const values = await form.validateFields();
@@ -160,8 +164,8 @@ const AssetFormModal = ({
     <Modal
       open={open}
       title={title}
-      okText="Guardar"
-      cancelText="Cancelar"
+      okText={t('adminClient.assets.save')}
+      cancelText={t('common.cancel')}
       onOk={handleOk}
       onCancel={() => {
         form.resetFields();
@@ -181,48 +185,48 @@ const AssetFormModal = ({
           }
         }
       >
-        <Form.Item name="symbol" label="Symbol" rules={[{ required: true, message: 'Ingresa el símbolo' }]}>
+        <Form.Item name="symbol" label={t('adminClient.assets.symbol')} rules={[{ required: true, message: t('adminClient.assets.enterSymbol') }]}>
           <Input placeholder="BTC" />
         </Form.Item>
-        <Form.Item name="name" label="Nombre" rules={[{ required: true, message: 'Ingresa el nombre del activo' }]}>
+        <Form.Item name="name" label={t('adminClient.assets.name')} rules={[{ required: true, message: t('adminClient.assets.enterName') }]}>
           <Input placeholder="Bitcoin" />
         </Form.Item>
-        <Form.Item name="type" label="Tipo" rules={[{ required: true }]}>
+        <Form.Item name="type" label={t('adminClient.assets.type')} rules={[{ required: true }]}>
           <Select options={assetTypeOptions.filter((option) => option.value !== 'all')} />
         </Form.Item>
         <Form.Item
           name="quantity"
-          label="Cantidad"
-          rules={[{ required: true, message: 'Ingresa la cantidad' }]}
+          label={t('adminClient.assets.quantity')}
+          rules={[{ required: true, message: t('adminClient.assets.enterQuantity') }]}
         >
           <InputNumber min={0} precision={2} style={{ width: '100%' }} />
         </Form.Item>
         <Form.Item
           name="purchasePrice"
-          label="Precio de compra"
-          rules={[{ required: true, message: 'Ingresa el precio de compra' }]}
+          label={t('adminClient.assets.purchasePrice')}
+          rules={[{ required: true, message: t('adminClient.assets.enterPurchasePrice') }]}
         >
           <InputNumber min={0} prefix="$" style={{ width: '100%' }} />
         </Form.Item>
         <Form.Item
           name="currentPrice"
-          label="Precio actual"
-          tooltip="Prellenado con referencia de mercado si está disponible"
-          rules={[{ required: true, message: 'Ingresa el precio actual' }]}
+          label={t('adminClient.assets.currentPrice')}
+          tooltip={t('adminClient.assets.marketReference')}
+          rules={[{ required: true, message: t('adminClient.assets.enterCurrentPrice') }]}
         >
           <InputNumber min={0} prefix="$" style={{ width: '100%' }} />
         </Form.Item>
         <Form.Item
           name="change24h"
-          label="Variación 24h (%)"
-          rules={[{ required: true, message: 'Ingresa el cambio porcentual' }]}
+          label={t('adminClient.assets.change24h')}
+          rules={[{ required: true, message: t('adminClient.assets.enterChange') }]}
         >
           <InputNumber min={-100} max={100} precision={2} suffix="%" style={{ width: '100%' }} />
         </Form.Item>
         <Form.Item
           name="purchaseDate"
-          label="Fecha de compra"
-          rules={[{ required: true, message: 'Selecciona la fecha' }]}
+          label={t('adminClient.assets.purchaseDate')}
+          rules={[{ required: true, message: t('adminClient.assets.selectDate') }]}
         >
           <DatePicker style={{ width: '100%' }} format="YYYY-MM-DD" />
         </Form.Item>
@@ -240,6 +244,8 @@ const AssetDetailsModal = ({
   open: boolean;
   onClose: () => void;
 }) => {
+  const { t } = useTranslation();
+
   const priceHistory = useMemo(() => {
     if (!asset) return [];
     const basePrice = asset.currentPrice;
@@ -258,7 +264,7 @@ const AssetDetailsModal = ({
   return (
     <Modal
       open={open}
-      title={`Detalle de ${asset?.name ?? ''}`}
+      title={t('adminClient.assets.detailOf', { name: asset?.name ?? '' })}
       width={720}
       footer={null}
       onCancel={onClose}
@@ -268,26 +274,26 @@ const AssetDetailsModal = ({
           <Row gutter={16}>
             <Col span={8}>
               <StatCard
-                title="Precio actual"
+                title={t('adminClient.assets.currentPrice')}
                 value={`$${asset.currentPrice.toLocaleString()}`}
                 trend={asset.change24h}
               />
             </Col>
             <Col span={8}>
               <StatCard
-                title="Cantidad"
+                title={t('adminClient.assets.quantity')}
                 value={asset.quantity.toLocaleString()}
               />
             </Col>
             <Col span={8}>
               <StatCard
-                title="Valor total"
+                title={t('adminClient.assets.totalValue')}
                 value={`$${(asset.quantity * asset.currentPrice).toLocaleString()}`}
               />
             </Col>
           </Row>
 
-          <Card title="Histórico de precio (12M)">
+          <Card title={t('adminClient.assets.priceHistory')}>
             <Line
               height={240}
               data={priceHistory}
@@ -299,24 +305,24 @@ const AssetDetailsModal = ({
             />
           </Card>
 
-          <Card title="Actividad reciente">
+          <Card title={t('adminClient.assets.recentActivity')}>
             <Table
               rowKey="date"
               dataSource={recentTransactions}
               pagination={false}
               columns={[
-                { title: 'Tipo', dataIndex: 'type' },
+                { title: t('adminClient.transactions.type'), dataIndex: 'type' },
                 {
-                  title: 'Cantidad',
+                  title: t('adminClient.assets.quantity'),
                   dataIndex: 'amount',
                   render: (value) => `${value} ${asset.symbol}`,
                 },
                 {
-                  title: 'Precio',
+                  title: t('adminClient.assets.price'),
                   dataIndex: 'price',
                   render: (value) => `$${value.toLocaleString()}`,
                 },
-                { title: 'Fecha', dataIndex: 'date' },
+                { title: t('adminClient.assets.date'), dataIndex: 'date' },
               ]}
             />
           </Card>
@@ -327,6 +333,7 @@ const AssetDetailsModal = ({
 };
 
 const AssetsManagementPage = () => {
+  const { t } = useTranslation();
   const [assets, setAssets] = useState<Asset[]>(defaultAssets);
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState<string>('all');
@@ -335,6 +342,13 @@ const AssetsManagementPage = () => {
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [isDetailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
+
+  const assetTypeOptions = [
+    { label: t('adminClient.assets.allTypes'), value: 'all' },
+    { label: t('adminClient.assets.crypto'), value: 'Crypto' },
+    { label: t('adminClient.assets.token'), value: 'Token' },
+    { label: t('adminClient.assets.stablecoin'), value: 'Stablecoin' },
+  ];
 
   useEffect(() => {
     let mounted = true;
