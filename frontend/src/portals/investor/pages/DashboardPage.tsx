@@ -11,8 +11,11 @@ import {
 } from '@ant-design/icons';
 import { Line, Pie } from '@ant-design/charts';
 import { StatCard } from '../../../components/common';
+import { useTranslation } from 'react-i18next';
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
+
   // Mock data for Investor Dashboard - Replace with real Supabase data
   const portfolioMetrics = {
     totalValue: 125000, // $125K
@@ -48,7 +51,7 @@ export default function DashboardPage() {
       invested: 35000,
       currentValue: 44747.5,
       return: 27.85,
-      color: '#1890ff',
+      color: '#2d2d2d',
     },
     {
       key: '2',
@@ -120,9 +123,13 @@ export default function DashboardPage() {
     xField: 'date',
     yField: 'value',
     smooth: true,
+    color: '#2d2d2d',
+    areaStyle: {
+      fill: 'l(270) 0:#ffffff 0.5:#f0f0f0 1:#fafafa',
+    },
     meta: {
       value: {
-        alias: 'Portfolio Value',
+        alias: t('dashboard.portfolioPerformance'),
         formatter: (v: number) => `$${(v / 1000).toFixed(0)}K`,
       },
     },
@@ -133,9 +140,28 @@ export default function DashboardPage() {
     angleField: 'value',
     colorField: 'asset',
     radius: 0.8,
+    innerRadius: 0.6,
     label: {
       type: 'outer' as const,
-      content: '{name} {percentage}',
+      content: '{name}\n{percentage}',
+      style: {
+        fontSize: 12,
+        textAlign: 'center',
+      },
+    },
+    statistic: {
+      title: false as const,
+      content: {
+        style: {
+          fontSize: '18px',
+          fontFamily: 'Sansation, sans-serif',
+        },
+        content: 'Assets',
+      },
+    },
+    colorField: 'asset',
+    theme: {
+      colors10: ['#2d2d2d', '#52c41a', '#722ed1', '#fa8c16', '#13c2c2'],
     },
   };
 
@@ -192,12 +218,12 @@ export default function DashboardPage() {
       ),
     },
     {
-      title: 'Actions',
+      title: t('common.actions'),
       key: 'actions',
       render: () => (
         <Space>
-          <Button type="primary" size="small">Buy</Button>
-          <Button size="small">Sell</Button>
+          <Button type="primary" size="small">{t('common.buy')}</Button>
+          <Button size="small">{t('common.sell')}</Button>
         </Space>
       ),
     },
@@ -247,7 +273,7 @@ export default function DashboardPage() {
       key: 'date',
     },
     {
-      title: 'Status',
+      title: t('common.status'),
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => (
@@ -259,14 +285,14 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div style={{ padding: '24px' }}>
+    <div style={{ padding: '24px', background: 'var(--color-background)' }}>
       {/* Welcome Header */}
       <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ marginBottom: '8px', fontFamily: 'var(--font-heading)' }}>
-          Welcome Back, John Doe
+        <h1 style={{ marginBottom: '8px', fontFamily: 'var(--font-heading)', color: 'var(--color-foreground)' }}>
+          {t('dashboard.welcome')}, John Doe
         </h1>
-        <p style={{ color: '#8c8c8c', fontSize: '14px' }}>
-          Here's your portfolio summary
+        <p style={{ color: 'var(--color-secondary)', fontSize: '14px' }}>
+          {t('dashboard.portfolioSummary')}
         </p>
       </div>
 
@@ -274,19 +300,19 @@ export default function DashboardPage() {
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Total Portfolio Value"
+            title={t('dashboard.totalPortfolioValue')}
             value={`$${portfolioMetrics.totalValue.toLocaleString()}`}
             icon={<WalletOutlined />}
             trend={{
               value: portfolioMetrics.returnPercentage,
               isPositive: true,
             }}
-            color="#1890ff"
+            color="#2d2d2d"
           />
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Total Return"
+            title={t('dashboard.totalReturn')}
             value={`$${portfolioMetrics.totalReturn.toLocaleString()}`}
             icon={<RiseOutlined />}
             color="#52c41a"
@@ -294,19 +320,19 @@ export default function DashboardPage() {
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Available Cash"
+            title={t('dashboard.availableCash')}
             value={`$${portfolioMetrics.availableCash.toLocaleString()}`}
             icon={<DollarOutlined />}
             color="#722ed1"
           />
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          <Card>
+          <Card className="professional-card">
             <Statistic
-              title="Return %"
+              title={t('dashboard.returnPercentage')}
               value={portfolioMetrics.returnPercentage}
               precision={1}
-              valueStyle={{ color: '#3f8600' }}
+              valueStyle={{ color: '#52c41a', fontFamily: 'var(--font-heading)' }}
               prefix={<RiseOutlined />}
               suffix="%"
             />
@@ -317,29 +343,29 @@ export default function DashboardPage() {
       {/* Quick Actions */}
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col span={24}>
-          <Card title="Quick Actions">
-            <Space size="middle">
+          <Card title={t('dashboard.quickActions')} className="professional-card">
+            <Space size="middle" wrap>
               <Button
                 type="primary"
                 icon={<ArrowUpOutlined />}
                 size="large"
               >
-                Deposit Funds
+                {t('dashboard.depositFunds')}
               </Button>
               <Button
                 icon={<SwapOutlined />}
                 size="large"
               >
-                Buy Tokens
+                {t('dashboard.buyTokens')}
               </Button>
               <Button
                 icon={<ArrowDownOutlined />}
                 size="large"
               >
-                Withdraw
+                {t('dashboard.withdraw')}
               </Button>
               <Button size="large">
-                View Reports
+                {t('dashboard.viewReports')}
               </Button>
             </Space>
           </Card>
@@ -349,12 +375,12 @@ export default function DashboardPage() {
       {/* Charts */}
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} lg={16}>
-          <Card title="Portfolio Performance" bordered={false}>
+          <Card title={t('dashboard.portfolioPerformance')} bordered={false} className="professional-card">
             <Line {...portfolioChartConfig} />
           </Card>
         </Col>
         <Col xs={24} lg={8}>
-          <Card title="Asset Allocation" bordered={false}>
+          <Card title={t('dashboard.assetAllocation')} bordered={false} className="professional-card">
             <Pie {...allocationConfig} />
           </Card>
         </Col>
@@ -363,11 +389,12 @@ export default function DashboardPage() {
       {/* Holdings Table */}
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col span={24}>
-          <Card title="My Holdings" bordered={false}>
+          <Card title={t('dashboard.myHoldings')} bordered={false} className="professional-card">
             <Table
               dataSource={myHoldings}
               columns={holdingsColumns}
               pagination={false}
+              scroll={{ x: 800 }}
             />
           </Card>
         </Col>
@@ -377,14 +404,16 @@ export default function DashboardPage() {
       <Row gutter={[16, 16]}>
         <Col span={24}>
           <Card
-            title="Recent Transactions"
+            title={t('dashboard.recentTransactions')}
             bordered={false}
-            extra={<Button type="link">View All</Button>}
+            className="professional-card"
+            extra={<Button type="link">{t('dashboard.viewAll')}</Button>}
           >
             <Table
               dataSource={recentTransactions}
               columns={transactionColumns}
               pagination={{ pageSize: 5 }}
+              scroll={{ x: 800 }}
             />
           </Card>
         </Col>

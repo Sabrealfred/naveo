@@ -1,11 +1,12 @@
 interface MiraLogoProps {
   variant?: 'light' | 'dark';
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   className?: string;
 }
 
 export function MiraLogo({ variant = 'light', size = 'md', className = '' }: MiraLogoProps) {
   const sizeConfig = {
+    xs: { width: 80, height: 27 },
     sm: { width: 120, height: 40 },
     md: { width: 180, height: 60 },
     lg: { width: 240, height: 80 },

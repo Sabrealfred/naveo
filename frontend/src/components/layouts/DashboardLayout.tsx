@@ -75,7 +75,7 @@ const DashboardLayout = ({
       >
         <div style={{
           height: '64px',
-          margin: '16px',
+          padding: collapsed ? '16px 8px' : '16px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -84,12 +84,13 @@ const DashboardLayout = ({
           {collapsed ? (
             <div style={{
               color: '#fff',
-              fontSize: '20px',
+              fontSize: '18px',
               fontWeight: 'bold',
-              fontFamily: 'Sansation, sans-serif'
+              fontFamily: 'Sansation, sans-serif',
+              letterSpacing: '0.05em'
             }}>M</div>
           ) : (
-            <MiraLogo variant="dark" size="sm" />
+            <MiraLogo variant="dark" size="xs" />
           )}
         </div>
         <Menu
