@@ -17,6 +17,9 @@ import {
   AssetsManagementPage,
   OfficersManagementPage,
   TradersManagementPage,
+  PortfolioManagementPage,
+  InvestorsManagementPage,
+  SubAdminsManagementPage,
 } from './pages';
 
 const AdminClientPortal = () => {
@@ -83,12 +86,12 @@ const AdminClientPortal = () => {
         <Route index element={<DashboardPage />} />
         <Route path="nav" element={<NAVSystemPage />} />
         <Route path="assets" element={<AssetsManagementPage />} />
+        <Route path="portfolio" element={<PortfolioManagementPage />} />
+        <Route path="investors" element={<InvestorsManagementPage />} />
         <Route path="traders" element={<TradersManagementPage />} />
-        {/* Temporary placeholder for missing pages */}
-        <Route path="portfolio" element={<div style={{ padding: 24 }}><h2>Portfolio - Coming Soon</h2></div>} />
-        <Route path="investors" element={<div style={{ padding: 24 }}><h2>Investors Management - Coming Soon</h2></div>} />
         <Route path="officers" element={<OfficersManagementPage />} />
-        <Route path="admins" element={<div style={{ padding: 24 }}><h2>Sub-Admins - Coming Soon</h2></div>} />
+        <Route path="admins" element={<SubAdminsManagementPage />} />
+        {/* Temporary placeholder for remaining pages */}
         <Route path="transactions" element={<div style={{ padding: 24 }}><h2>Transactions - Coming Soon</h2></div>} />
         <Route path="compliance" element={<div style={{ padding: 24 }}><h2>Compliance - Coming Soon</h2></div>} />
         <Route path="reports" element={<div style={{ padding: 24 }}><h2>Reports - Coming Soon</h2></div>} />

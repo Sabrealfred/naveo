@@ -4,3 +4,5 @@ export { default as TransactionsPage } from './TransactionsPage';
 export { default as KYCStatusPage } from './KYCStatusPage';
 export { default as PortfolioPage } from './PortfolioPage';
 export { default as PerformanceAnalyticsPage } from './PerformanceAnalyticsPage';
+export { default as InvestorReportsPage } from './InvestorReportsPage';
+export { default as ProfilePage } from './ProfilePage';

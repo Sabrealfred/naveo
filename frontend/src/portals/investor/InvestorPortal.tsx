@@ -16,6 +16,8 @@ import {
   TransactionsPage,
   KYCStatusPage,
   PerformanceAnalyticsPage,
+  InvestorReportsPage,
+  ProfilePage,
 } from './pages';
 
 const InvestorPortal = () => {
@@ -69,10 +71,9 @@ const InvestorPortal = () => {
         <Route path="performance" element={<PerformanceAnalyticsPage />} />
         <Route path="marketplace" element={<MarketplacePage />} />
         <Route path="transactions" element={<TransactionsPage />} />
+        <Route path="reports" element={<InvestorReportsPage />} />
+        <Route path="profile" element={<ProfilePage />} />
         <Route path="kyc-status" element={<KYCStatusPage />} />
-        {/* Temporary placeholder for missing pages */}
-        <Route path="reports" element={<div style={{ padding: 24 }}><h2>Reports - Coming Soon</h2></div>} />
-        <Route path="profile" element={<div style={{ padding: 24 }}><h2>Profile - Coming Soon</h2></div>} />
       </Routes>
     </DashboardLayout>
   );
