@@ -3,19 +3,21 @@ import { Table, Tag, Button, Space, Tabs } from 'antd';
 import { DownloadOutlined, EyeOutlined } from '@ant-design/icons';
 import { AdvancedFilter } from '../../../components/filters';
 import type { TabsProps } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 const TransactionsPage = () => {
+  const { t } = useTranslation();
   const [filteredData, setFilteredData] = useState<any[]>([]);
 
   const columns = [
     {
-      title: 'Fecha',
+      title: t('transactionsPage.date'),
       dataIndex: 'date',
       key: 'date',
       sorter: (a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime(),
     },
     {
-      title: 'Tipo',
+      title: t('transactionsPage.type'),
       dataIndex: 'type',
       key: 'type',
       render: (type: string) => {
@@ -26,39 +28,39 @@ const TransactionsPage = () => {
           withdrawal: 'purple',
         };
         const labelMap: Record<string, string> = {
-          buy: 'Compra',
-          sell: 'Venta',
-          deposit: 'Depósito',
-          withdrawal: 'Retiro',
+          buy: t('transactionsPage.buy'),
+          sell: t('transactionsPage.sell'),
+          deposit: t('transactionsPage.deposit'),
+          withdrawal: t('transactionsPage.withdrawal'),
         };
         return <Tag color={colorMap[type]}>{labelMap[type]}</Tag>;
       },
     },
     {
-      title: 'Activo',
+      title: t('transactionsPage.asset'),
       dataIndex: 'asset',
       key: 'asset',
     },
     {
-      title: 'Cantidad',
+      title: t('transactionsPage.amount'),
       dataIndex: 'amount',
       key: 'amount',
     },
     {
-      title: 'Precio',
+      title: t('transactionsPage.price'),
       dataIndex: 'price',
       key: 'price',
       render: (price: string) => `$${price}`,
     },
     {
-      title: 'Total',
+      title: t('transactionsPage.total'),
       dataIndex: 'total',
       key: 'total',
       render: (total: string) => `$${total}`,
       sorter: (a: any, b: any) => parseFloat(a.total.replace(/,/g, '')) - parseFloat(b.total.replace(/,/g, '')),
     },
     {
-      title: 'Estado',
+      title: t('transactionsPage.status'),
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => {
@@ -68,15 +70,15 @@ const TransactionsPage = () => {
           failed: 'error',
         };
         const labelMap: Record<string, string> = {
-          completed: 'Completado',
-          pending: 'Pendiente',
-          failed: 'Fallido',
+          completed: t('transactionsPage.completed'),
+          pending: t('transactionsPage.pending'),
+          failed: t('transactionsPage.failed'),
         };
         return <Tag color={colorMap[status]}>{labelMap[status]}</Tag>;
       },
     },
     {
-      title: 'Acciones',
+      title: t('transactionsPage.actions'),
       key: 'actions',
       render: (_: any, record: any) => (
         <Space>
@@ -85,14 +87,14 @@ const TransactionsPage = () => {
             size="small"
             icon={<EyeOutlined />}
           >
-            Ver
+            {t('transactionsPage.viewDetails')}
           </Button>
           <Button
             type="link"
             size="small"
             icon={<DownloadOutlined />}
           >
-            Recibo
+            {t('transactionsPage.downloadReceipt')}
           </Button>
         </Space>
       ),
@@ -195,7 +197,7 @@ const TransactionsPage = () => {
   const tabItems: TabsProps['items'] = [
     {
       key: 'all',
-      label: 'Todas',
+      label: t('transactionsPage.allTransactions'),
       children: (
         <div>
           <AdvancedFilter
@@ -213,7 +215,7 @@ const TransactionsPage = () => {
     },
     {
       key: 'buys',
-      label: 'Compras',
+      label: t('transactionsPage.purchases'),
       children: (
         <Table
           columns={columns}
@@ -224,7 +226,7 @@ const TransactionsPage = () => {
     },
     {
       key: 'sells',
-      label: 'Ventas',
+      label: t('transactionsPage.sales'),
       children: (
         <Table
           columns={columns}
@@ -235,7 +237,7 @@ const TransactionsPage = () => {
     },
     {
       key: 'deposits',
-      label: 'Depósitos',
+      label: t('transactionsPage.deposits'),
       children: (
         <Table
           columns={columns}
@@ -246,7 +248,7 @@ const TransactionsPage = () => {
     },
     {
       key: 'withdrawals',
-      label: 'Retiros',
+      label: t('transactionsPage.withdrawals'),
       children: (
         <Table
           columns={columns}
@@ -258,11 +260,14 @@ const TransactionsPage = () => {
   ];
 
   return (
-    <div>
+    <div style={{ padding: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <h1 style={{ margin: 0 }}>Historial de Transacciones</h1>
+        <div>
+          <h1 style={{ margin: 0, fontFamily: 'var(--font-heading)' }}>{t('transactionsPage.title')}</h1>
+          <p style={{ color: '#8c8c8c', fontSize: '14px', marginTop: 8 }}>{t('transactionsPage.subtitle')}</p>
+        </div>
         <Button type="primary" icon={<DownloadOutlined />}>
-          Exportar a Excel
+          {t('transactionsPage.exportAll')}
         </Button>
       </div>
 
