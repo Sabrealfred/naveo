@@ -4,3 +4,4 @@ export { default as AssetsManagementPage } from './AssetsManagementPage';
 export { default as TradersManagementPage } from './TradersManagementPage';
 export { default as OfficersManagementPage } from './OfficersManagementPage';
 export { default as SubscriptionCalendarPage } from './SubscriptionCalendarPage';
+export { default as CapitalCallPage } from './CapitalCallPage';

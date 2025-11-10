@@ -10,6 +10,7 @@ import {
   SwapOutlined,
   UserSwitchOutlined,
   CalendarOutlined,
+  DollarOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import {
@@ -19,6 +20,7 @@ import {
   OfficersManagementPage,
   TradersManagementPage,
   SubscriptionCalendarPage,
+  CapitalCallPage,
 } from './pages';
 
 const AdminClientPortal = () => {
@@ -52,6 +54,11 @@ const AdminClientPortal = () => {
       key: '/admin-client/subscription-calendar',
       icon: <CalendarOutlined />,
       label: 'Subscription Calendar',
+    },
+    {
+      key: '/admin-client/capital-calls',
+      icon: <DollarOutlined />,
+      label: 'Capital Calls',
     },
     {
       key: 'team',
@@ -95,6 +102,7 @@ const AdminClientPortal = () => {
         <Route path="portfolio" element={<div style={{ padding: 24 }}><h2>Portfolio - Coming Soon</h2></div>} />
         <Route path="investors" element={<div style={{ padding: 24 }}><h2>Investors Management - Coming Soon</h2></div>} />
         <Route path="subscription-calendar" element={<SubscriptionCalendarPage />} />
+        <Route path="capital-calls" element={<CapitalCallPage />} />
         <Route path="officers" element={<OfficersManagementPage />} />
         <Route path="admins" element={<div style={{ padding: 24 }}><h2>Sub-Admins - Coming Soon</h2></div>} />
         <Route path="transactions" element={<div style={{ padding: 24 }}><h2>Transactions - Coming Soon</h2></div>} />
