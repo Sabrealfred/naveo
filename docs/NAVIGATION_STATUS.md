@@ -123,7 +123,10 @@
 - ✅ Translation files expanded with all sections
 - ✅ LanguageSwitcher integrated in DashboardLayout
 - ✅ Ant Design ConfigProvider with dynamic locale (enUS/esES)
-- ⏳ Page-level i18n integration (next phase)
+- ✅ Page-level i18n integration complete (all 8 Gemini + Sprint 2.5 pages)
+  - TransactionsPage, CompliancePage, FundReportsPage (Admin Client)
+  - PortfolioManagementPage, InvestorsManagementPage, SubAdminsManagementPage (Admin Client)
+  - InvestorReportsPage, ProfilePage (Investor portal)
 
 ### Responsive: ✅ Complete
 - Breakpoints: xs/sm/md/lg/xl working
