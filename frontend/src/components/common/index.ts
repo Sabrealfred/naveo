@@ -9,6 +9,8 @@ export { default as TransactionHeatmap } from './TransactionHeatmap';
 export { default as ComparisonChart } from './ComparisonChart';
 export { default as PerformanceGauge } from './PerformanceGauge';
 export { default as LanguageSwitcher } from './LanguageSwitcher';
+export { default as ResponsiveContainer } from './ResponsiveContainer';
+export type { ResponsiveContainerProps } from './ResponsiveContainer';
 
 // Advanced components
 export { default as AdvancedDataTable } from './AdvancedDataTable';
