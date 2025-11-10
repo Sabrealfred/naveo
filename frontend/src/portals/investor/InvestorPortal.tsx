@@ -16,6 +16,8 @@ import {
   TransactionsPage,
   KYCStatusPage,
   PerformanceAnalyticsPage,
+  OnboardingPage,
+  SuitabilityQuestionnairePage,
 } from './pages';
 
 const InvestorPortal = () => {
@@ -39,6 +41,16 @@ const InvestorPortal = () => {
       key: '/investor/marketplace',
       icon: <ShoppingOutlined />,
       label: 'Marketplace',
+    },
+    {
+      key: '/investor/onboarding',
+      icon: <UserOutlined />,
+      label: 'Onboarding',
+    },
+    {
+      key: '/investor/suitability',
+      icon: <FileTextOutlined />,
+      label: 'Suitability Assessment',
     },
     {
       key: '/investor/transactions',
@@ -68,6 +80,8 @@ const InvestorPortal = () => {
         <Route path="portfolio" element={<PortfolioPage />} />
         <Route path="performance" element={<PerformanceAnalyticsPage />} />
         <Route path="marketplace" element={<MarketplacePage />} />
+        <Route path="onboarding" element={<OnboardingPage />} />
+        <Route path="suitability" element={<SuitabilityQuestionnairePage />} />
         <Route path="transactions" element={<TransactionsPage />} />
         <Route path="kyc-status" element={<KYCStatusPage />} />
         {/* Temporary placeholder for missing pages */}
