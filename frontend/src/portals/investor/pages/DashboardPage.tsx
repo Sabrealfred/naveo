@@ -12,9 +12,11 @@ import {
 import { Line, Pie } from '@ant-design/charts';
 import { StatCard } from '../../../components/common';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 export default function DashboardPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   // Mock data for Investor Dashboard - Replace with real Supabase data
   const portfolioMetrics = {
@@ -355,6 +357,7 @@ export default function DashboardPage() {
               <Button
                 icon={<SwapOutlined />}
                 size="large"
+                onClick={() => navigate('/investor/marketplace')}
               >
                 {t('dashboard.buyTokens')}
               </Button>
@@ -364,7 +367,7 @@ export default function DashboardPage() {
               >
                 {t('dashboard.withdraw')}
               </Button>
-              <Button size="large">
+              <Button size="large" onClick={() => navigate('/investor/reports')}>
                 {t('dashboard.viewReports')}
               </Button>
             </Space>
@@ -407,7 +410,7 @@ export default function DashboardPage() {
             title={t('dashboard.recentTransactions')}
             bordered={false}
             className="professional-card"
-            extra={<Button type="link">{t('dashboard.viewAll')}</Button>}
+            extra={<Button type="link" onClick={() => navigate('/investor/transactions')}>{t('dashboard.viewAll')}</Button>}
           >
             <Table
               dataSource={recentTransactions}

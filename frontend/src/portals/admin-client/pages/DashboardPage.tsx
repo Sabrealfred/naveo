@@ -10,8 +10,10 @@ import {
 } from '@ant-design/icons';
 import { Line, Column, Pie } from '@ant-design/charts';
 import { StatCard, PerformanceChart } from '../../../components/common';
+import { useNavigate } from 'react-router-dom';
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
   // Mock data for Fund Manager Dashboard - Replace with real Supabase data
   const fundMetrics = {
     fundName: 'Alpha Growth Fund',
@@ -355,7 +357,7 @@ export default function DashboardPage() {
         </Col>
         <Col xs={12} sm={8} lg={6}>
           <Card size="small">
-            <Button type="primary" block>
+            <Button type="primary" block onClick={() => navigate('/admin-client/nav')}>
               View Full NAV Report
             </Button>
           </Card>
