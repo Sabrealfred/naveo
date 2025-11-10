@@ -4,3 +4,4 @@ export { default as AssetsManagementPage } from './AssetsManagementPage';
 export { default as TradersManagementPage } from './TradersManagementPage';
 export { default as OfficersManagementPage } from './OfficersManagementPage';
 export { default as KYCManagementPage } from './KYCManagementPage';
+export { default as AnalyticsPage } from './AnalyticsPage';

@@ -9,6 +9,7 @@ import {
   SafetyOutlined,
   SwapOutlined,
   UserSwitchOutlined,
+  BarChartOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import {
@@ -18,6 +19,7 @@ import {
   OfficersManagementPage,
   TradersManagementPage,
   KYCManagementPage,
+  AnalyticsPage,
 } from './pages';
 
 const AdminClientPortal = () => {
@@ -41,6 +43,11 @@ const AdminClientPortal = () => {
       key: '/admin-client/nav',
       icon: <LineChartOutlined />,
       label: 'Sistema NAV',
+    },
+    {
+      key: '/admin-client/analytics',
+      icon: <BarChartOutlined />,
+      label: 'Analytics',
     },
     {
       key: '/admin-client/investors',
@@ -83,6 +90,7 @@ const AdminClientPortal = () => {
       <Routes>
         <Route index element={<DashboardPage />} />
         <Route path="nav" element={<NAVSystemPage />} />
+        <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="assets" element={<AssetsManagementPage />} />
         <Route path="traders" element={<TradersManagementPage />} />
         {/* Temporary placeholder for missing pages */}
