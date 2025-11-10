@@ -20,6 +20,7 @@ import {
   TradersManagementPage,
   KYCManagementPage,
   AnalyticsPage,
+  ReportsPage,
 } from './pages';
 
 const AdminClientPortal = () => {
@@ -100,7 +101,7 @@ const AdminClientPortal = () => {
         <Route path="admins" element={<div style={{ padding: 24 }}><h2>Sub-Admins - Coming Soon</h2></div>} />
         <Route path="transactions" element={<div style={{ padding: 24 }}><h2>Transactions - Coming Soon</h2></div>} />
         <Route path="compliance" element={<KYCManagementPage />} />
-        <Route path="reports" element={<div style={{ padding: 24 }}><h2>Reports - Coming Soon</h2></div>} />
+        <Route path="reports" element={<ReportsPage />} />
       </Routes>
     </DashboardLayout>
   );
