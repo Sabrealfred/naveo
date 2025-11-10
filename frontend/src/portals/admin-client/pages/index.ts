@@ -7,3 +7,4 @@ export { default as SubscriptionCalendarPage } from './SubscriptionCalendarPage'
 export { default as CapitalCallPage } from './CapitalCallPage';
 export { default as RebalancingPage } from './RebalancingPage';
 export { default as TradingDashboardPage } from './TradingDashboardPage';
+export { default as RiskDashboardPage } from './RiskDashboardPage';

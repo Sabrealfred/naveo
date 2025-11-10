@@ -25,6 +25,7 @@ import {
   CapitalCallPage,
   RebalancingPage,
   TradingDashboardPage,
+  RiskDashboardPage,
 } from './pages';
 
 const AdminClientPortal = () => {
@@ -58,6 +59,11 @@ const AdminClientPortal = () => {
       key: '/admin-client/trading',
       icon: <BarChartOutlined />,
       label: 'Trading Dashboard',
+    },
+    {
+      key: '/admin-client/risk',
+      icon: <SafetyOutlined />,
+      label: 'Risk Dashboard',
     },
     {
       key: '/admin-client/investors',
@@ -112,6 +118,7 @@ const AdminClientPortal = () => {
         <Route path="nav" element={<NAVSystemPage />} />
         <Route path="rebalancing" element={<RebalancingPage />} />
         <Route path="trading" element={<TradingDashboardPage />} />
+        <Route path="risk" element={<RiskDashboardPage />} />
         <Route path="assets" element={<AssetsManagementPage />} />
         <Route path="traders" element={<TradersManagementPage />} />
         {/* Temporary placeholder for missing pages */}
