@@ -179,7 +179,8 @@ export default function DashboardPage() {
             title="Total AUM"
             value={`$${(platformStats.totalAUM / 1000000).toFixed(2)}M`}
             icon={<DollarOutlined />}
-            trend={{ value: platformStats.platformGrowth, isPositive: true }}
+            trend={platformStats.platformGrowth >= 0 ? 'up' : 'down'}
+            trendValue={Math.abs(platformStats.platformGrowth)}
             color="#1890ff"
           />
         </Col>
@@ -212,7 +213,8 @@ export default function DashboardPage() {
             title="Monthly Volume"
             value={`$${(platformStats.monthlyVolume / 1000000).toFixed(2)}M`}
             icon={<SwapOutlined />}
-            trend={{ value: 15.3, isPositive: true }}
+            trend="up"
+            trendValue={15.3}
             color="#13c2c2"
           />
         </Col>

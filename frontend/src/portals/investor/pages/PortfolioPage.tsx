@@ -231,7 +231,7 @@ const PortfolioPage = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (_, record: Holding) => (
+      render: (_text: unknown, _record: Holding) => (
         <Space>
           <Button type="primary" icon={<ShoppingCartOutlined />}>
             Buy More
@@ -298,7 +298,7 @@ const PortfolioPage = () => {
               yField="value"
               smooth
               tooltip={{
-                formatter: (datum) => ({
+                formatter: (datum: { value: number }) => ({
                   name: 'Value',
                   value: `$${datum.value.toLocaleString()}`,
                 }),

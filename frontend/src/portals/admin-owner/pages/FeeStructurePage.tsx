@@ -175,7 +175,8 @@ export default function FeeStructurePage() {
             title="Monthly Revenue"
             value={`$${(feeMetrics.monthlyRevenue / 1000).toFixed(0)}K`}
             icon={<DollarOutlined />}
-            trend={{ value: 12.5, isPositive: true }}
+            trend="up"
+            trendValue={12.5}
             color="#1890ff"
           />
         </Col>

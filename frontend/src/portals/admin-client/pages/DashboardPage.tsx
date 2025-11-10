@@ -281,7 +281,8 @@ export default function DashboardPage() {
             title="Current NAV"
             value={`$${fundMetrics.currentNAV.toFixed(2)}`}
             icon={<TrophyOutlined />}
-            trend={{ value: fundMetrics.monthlyReturn, isPositive: true }}
+            trend={fundMetrics.monthlyReturn >= 0 ? 'up' : 'down'}
+            trendValue={Math.abs(fundMetrics.monthlyReturn)}
             color="#1890ff"
           />
         </Col>

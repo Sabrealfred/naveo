@@ -248,7 +248,8 @@ export default function PlatformAnalyticsPage() {
             title="Total Users"
             value={platformMetrics.totalUsers.toLocaleString()}
             icon={<UserOutlined />}
-            trend={{ value: platformMetrics.userGrowthRate, isPositive: true }}
+            trend={platformMetrics.userGrowthRate >= 0 ? 'up' : 'down'}
+            trendValue={Math.abs(platformMetrics.userGrowthRate)}
             color="#1890ff"
           />
         </Col>
@@ -265,7 +266,8 @@ export default function PlatformAnalyticsPage() {
             title="Total Volume"
             value={`$${(platformMetrics.totalVolume / 1000000).toFixed(1)}M`}
             icon={<DollarOutlined />}
-            trend={{ value: platformMetrics.transactionGrowth, isPositive: true }}
+            trend={platformMetrics.transactionGrowth >= 0 ? 'up' : 'down'}
+            trendValue={Math.abs(platformMetrics.transactionGrowth)}
             color="#722ed1"
           />
         </Col>

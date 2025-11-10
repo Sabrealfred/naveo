@@ -277,10 +277,8 @@ export default function DashboardPage() {
             title="Total Portfolio Value"
             value={`$${portfolioMetrics.totalValue.toLocaleString()}`}
             icon={<WalletOutlined />}
-            trend={{
-              value: portfolioMetrics.returnPercentage,
-              isPositive: true,
-            }}
+            trend={portfolioMetrics.returnPercentage >= 0 ? 'up' : 'down'}
+            trendValue={Math.abs(portfolioMetrics.returnPercentage)}
             color="#1890ff"
           />
         </Col>

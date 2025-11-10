@@ -481,7 +481,7 @@ const TradersManagementPage = () => {
                 data={performanceHistory}
                 xField="month"
                 yField="pnl"
-                color={({ pnl }) => (pnl >= 0 ? '#52c41a' : '#ff4d4f')}
+                color={({ pnl }: { pnl: number }) => (pnl >= 0 ? '#52c41a' : '#ff4d4f')}
                 height={260}
               />
             </Card>
