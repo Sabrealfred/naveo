@@ -9,6 +9,7 @@ import {
   UserOutlined,
   LineChartOutlined,
   BarChartOutlined,
+  RollbackOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import {
@@ -22,6 +23,7 @@ import {
   SuitabilityQuestionnairePage,
   SubscriptionWorkflowPage,
   TradingPlatformPage,
+  RedemptionPage,
 } from './pages';
 
 const InvestorPortal = () => {
@@ -55,6 +57,11 @@ const InvestorPortal = () => {
       key: '/investor/subscription',
       icon: <DollarOutlined />,
       label: 'Subscribe to Fund',
+    },
+    {
+      key: '/investor/redemption',
+      icon: <RollbackOutlined />,
+      label: 'Redemption',
     },
     {
       key: '/investor/onboarding',
@@ -96,6 +103,7 @@ const InvestorPortal = () => {
         <Route path="marketplace" element={<MarketplacePage />} />
         <Route path="trading" element={<TradingPlatformPage />} />
         <Route path="subscription" element={<SubscriptionWorkflowPage />} />
+        <Route path="redemption" element={<RedemptionPage />} />
         <Route path="onboarding" element={<OnboardingPage />} />
         <Route path="suitability" element={<SuitabilityQuestionnairePage />} />
         <Route path="transactions" element={<TransactionsPage />} />
