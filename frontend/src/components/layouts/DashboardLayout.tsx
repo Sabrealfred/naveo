@@ -10,6 +10,7 @@ import {
   SettingOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
+import { MiraLogo } from '../common';
 
 const { Header, Sider, Content } = Layout;
 
@@ -78,12 +79,18 @@ const DashboardLayout = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#1890ff',
-          fontSize: collapsed ? '20px' : '24px',
-          fontWeight: 'bold',
           transition: 'all 0.2s'
         }}>
-          {collapsed ? 'N' : 'NAVEO'}
+          {collapsed ? (
+            <div style={{
+              color: '#fff',
+              fontSize: '20px',
+              fontWeight: 'bold',
+              fontFamily: 'Sansation, sans-serif'
+            }}>M</div>
+          ) : (
+            <MiraLogo variant="dark" size="sm" />
+          )}
         </div>
         <Menu
           theme="dark"
