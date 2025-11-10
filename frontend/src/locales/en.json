@@ -56,7 +56,21 @@
     "back": "Back",
     "next": "Next",
     "previous": "Previous",
-    "submit": "Submit"
+    "submit": "Submit",
+    "of": "of",
+    "upload": "Upload",
+    "clear": "Clear",
+    "file": "file",
+    "files": "files",
+    "selected": "selected",
+    "fileTooLarge": "File must be smaller than {{size}}MB",
+    "invalidFileType": "Invalid file type",
+    "uploadSuccess": "uploaded successfully",
+    "uploadFailed": "upload failed",
+    "selectFile": "Please select a file first",
+    "dragOrClick": "Click or drag file to this area to upload",
+    "maxSize": "Max size",
+    "acceptedTypes": "Accepted types"
   },
   "layout": {
     "profile": "My Profile",

@@ -56,7 +56,21 @@
     "back": "Atrás",
     "next": "Siguiente",
     "previous": "Anterior",
-    "submit": "Enviar"
+    "submit": "Enviar",
+    "of": "de",
+    "upload": "Subir",
+    "clear": "Limpiar",
+    "file": "archivo",
+    "files": "archivos",
+    "selected": "seleccionado(s)",
+    "fileTooLarge": "El archivo debe ser menor a {{size}}MB",
+    "invalidFileType": "Tipo de archivo inválido",
+    "uploadSuccess": "subido exitosamente",
+    "uploadFailed": "falló la subida",
+    "selectFile": "Por favor selecciona un archivo primero",
+    "dragOrClick": "Haz clic o arrastra el archivo a esta área para subirlo",
+    "maxSize": "Tamaño máximo",
+    "acceptedTypes": "Tipos aceptados"
   },
   "layout": {
     "profile": "Mi Perfil",
