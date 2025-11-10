@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { Row, Col, Card, List, Avatar, Tag, Button, Space, Input, Select } from 'antd';
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import { BuySellModal } from '../../../components/modals';
+import { useTranslation } from 'react-i18next';
 
 const MarketplacePage = () => {
+  const { t } = useTranslation();
   const [buyModalVisible, setBuyModalVisible] = useState(false);
   const [selectedToken, setSelectedToken] = useState<any>(null);
 
@@ -105,8 +107,11 @@ const MarketplacePage = () => {
   };
 
   return (
-    <div>
-      <h1 style={{ marginBottom: 24 }}>Marketplace de Tokens</h1>
+    <div style={{ padding: '24px' }}>
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{ margin: 0, fontFamily: 'var(--font-heading)' }}>{t('marketplace.title')}</h1>
+        <p style={{ color: '#8c8c8c', fontSize: '14px', marginTop: 8 }}>{t('marketplace.subtitle')}</p>
+      </div>
 
       {/* Filtros */}
       <Card bordered={false} style={{ marginBottom: 24 }}>
@@ -114,7 +119,7 @@ const MarketplacePage = () => {
           <Col xs={24} md={8}>
             <Input
               size="large"
-              placeholder="Buscar tokens..."
+              placeholder={t('marketplace.searchPlaceholder')}
               prefix={<SearchOutlined />}
               allowClear
             />
@@ -122,29 +127,29 @@ const MarketplacePage = () => {
           <Col xs={24} md={8}>
             <Select
               size="large"
-              placeholder="Categoría"
+              placeholder={t('marketplace.category')}
               style={{ width: '100%' }}
               allowClear
             >
-              <Select.Option value="all">Todas</Select.Option>
-              <Select.Option value="crypto">Crypto Funds</Select.Option>
-              <Select.Option value="realestate">Real Estate</Select.Option>
-              <Select.Option value="defi">DeFi</Select.Option>
-              <Select.Option value="nft">NFT</Select.Option>
-              <Select.Option value="index">Index Funds</Select.Option>
+              <Select.Option value="all">{t('marketplace.allCategories')}</Select.Option>
+              <Select.Option value="crypto">{t('marketplace.cryptoFund')}</Select.Option>
+              <Select.Option value="realestate">{t('marketplace.realEstate')}</Select.Option>
+              <Select.Option value="defi">{t('marketplace.defi')}</Select.Option>
+              <Select.Option value="nft">{t('marketplace.nft')}</Select.Option>
+              <Select.Option value="yield">{t('marketplace.yield')}</Select.Option>
             </Select>
           </Col>
           <Col xs={24} md={8}>
             <Select
               size="large"
-              placeholder="Nivel de Riesgo"
+              placeholder={t('marketplace.riskLevel')}
               style={{ width: '100%' }}
               allowClear
             >
-              <Select.Option value="low">Bajo</Select.Option>
-              <Select.Option value="medium">Medio</Select.Option>
-              <Select.Option value="high">Alto</Select.Option>
-              <Select.Option value="very-high">Muy Alto</Select.Option>
+              <Select.Option value="low">{t('marketplace.low')}</Select.Option>
+              <Select.Option value="medium">{t('marketplace.medium')}</Select.Option>
+              <Select.Option value="high">{t('marketplace.high')}</Select.Option>
+              <Select.Option value="very-high">{t('marketplace.veryHigh')}</Select.Option>
             </Select>
           </Col>
         </Row>
@@ -182,7 +187,12 @@ const MarketplacePage = () => {
                           : 'red'
                       }
                     >
-                      Riesgo {token.risk}
+                      {t('marketplace.riskLevel')}: {
+                        token.risk === 'Bajo' ? t('marketplace.low') :
+                        token.risk === 'Medio' ? t('marketplace.medium') :
+                        token.risk === 'Alto' ? t('marketplace.high') :
+                        t('marketplace.veryHigh')
+                      }
                     </Tag>
                   </Space>
                 </div>
@@ -190,27 +200,27 @@ const MarketplacePage = () => {
 
               <Row gutter={16} style={{ marginBottom: 16 }}>
                 <Col span={12}>
-                  <div style={{ color: '#666', fontSize: 12 }}>NAV</div>
+                  <div style={{ color: '#666', fontSize: 12 }}>{t('marketplace.currentNav')}</div>
                   <div style={{ fontSize: 18, fontWeight: 600 }}>${token.navValue}</div>
                 </Col>
                 <Col span={12}>
-                  <div style={{ color: '#666', fontSize: 12 }}>AUM</div>
+                  <div style={{ color: '#666', fontSize: 12 }}>{t('marketplace.totalAum')}</div>
                   <div style={{ fontSize: 18, fontWeight: 600 }}>{token.aum}</div>
                 </Col>
                 <Col span={12}>
-                  <div style={{ color: '#666', fontSize: 12 }}>Performance 30d</div>
+                  <div style={{ color: '#666', fontSize: 12 }}>{t('marketplace.performance30d')}</div>
                   <div style={{ fontSize: 16, fontWeight: 600, color: '#52c41a' }}>
                     {token.performance30d}
                   </div>
                 </Col>
                 <Col span={12}>
-                  <div style={{ color: '#666', fontSize: 12 }}>Min. Inversión</div>
+                  <div style={{ color: '#666', fontSize: 12 }}>{t('marketplace.minInv')}</div>
                   <div style={{ fontSize: 16, fontWeight: 600 }}>${token.minInvestment}</div>
                 </Col>
               </Row>
 
               <div style={{ color: '#999', fontSize: 12, marginBottom: 12 }}>
-                Gestor: {token.manager}
+                {t('marketplace.fundManager')}: {token.manager}
               </div>
 
               <Space style={{ width: '100%' }}>
@@ -220,9 +230,9 @@ const MarketplacePage = () => {
                   onClick={() => handleBuy(token)}
                   style={{ flex: 1 }}
                 >
-                  Invertir Ahora
+                  {t('marketplace.invest')}
                 </Button>
-                <Button size="large">Ver Detalles</Button>
+                <Button size="large">{t('marketplace.viewDetails')}</Button>
               </Space>
             </Card>
           </Col>
