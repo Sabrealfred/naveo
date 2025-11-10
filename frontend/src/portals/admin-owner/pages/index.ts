@@ -1,2 +1,17 @@
+export { default as DashboardPage } from './DashboardPage';
 export { default as FundsManagementPage } from './FundsManagementPage';
+export { default as ClientsManagementPage } from './ClientsManagementPage';
+export { default as AssetPipelinePage } from './AssetPipelinePage';
+
 export { default as CompliancePage } from './CompliancePage';
+export { default as ReportsPage } from './ReportsPage';
+export { default as UsersPermissionsPage } from './UsersPermissionsPage';
+export { default as ConfigurationPage } from './ConfigurationPage';
+export { default as IntegrationsBlockchainPage } from './IntegrationsBlockchainPage';
+export { default as IntegrationsKYCPage } from './IntegrationsKYCPage';
+export { default as IntegrationsOnRampPage } from './IntegrationsOnRampPage';
+export { default as PlatformAnalyticsPage } from './PlatformAnalyticsPage';
+export { default as SmartContractsPage } from './SmartContractsPage';
+export { default as FeeStructurePage } from './FeeStructurePage';
+export { default as AuditLogsPage } from './AuditLogsPage';
+export { default as NotificationsCenterPage } from './NotificationsCenterPage';

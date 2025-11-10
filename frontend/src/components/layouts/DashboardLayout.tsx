@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Layout, Menu, Avatar, Dropdown, Badge, Space, Button } from 'antd';
 import {
   MenuFoldOutlined,
@@ -17,7 +18,6 @@ interface DashboardLayoutProps {
   menuItems: MenuProps['items'];
   userRole: string;
   userName: string;
-  onMenuClick?: (key: string) => void;
 }
 
 const DashboardLayout = ({
@@ -25,9 +25,15 @@ const DashboardLayout = ({
   menuItems,
   userRole,
   userName,
-  onMenuClick
 }: DashboardLayoutProps) => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
+
+  // Handle menu navigation
+  const handleMenuClick = ({ key }: { key: string }) => {
+    navigate(key);
+  };
 
   const userMenuItems: MenuProps['items'] = [
     {
@@ -82,9 +88,9 @@ const DashboardLayout = ({
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={['dashboard']}
+          selectedKeys={[location.pathname]}
           items={menuItems}
-          onClick={({ key }) => onMenuClick?.(key)}
+          onClick={handleMenuClick}
         />
       </Sider>
       <Layout style={{ marginLeft: collapsed ? 80 : 200, transition: 'all 0.2s' }}>

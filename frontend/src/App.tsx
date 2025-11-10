@@ -1,7 +1,7 @@
 import { Refine } from '@refinedev/core';
 import { RefineKbar, RefineKbarProvider } from '@refinedev/kbar';
 import routerProvider from '@refinedev/react-router';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { dataProvider, liveProvider } from '@refinedev/supabase';
 import { ConfigProvider } from 'antd';
 import { supabaseClient } from './services/supabaseClient';
@@ -10,6 +10,7 @@ import { supabaseClient } from './services/supabaseClient';
 import AdminOwnerPortal from './portals/admin-owner/AdminOwnerPortal';
 import AdminClientPortal from './portals/admin-client/AdminClientPortal';
 import InvestorPortal from './portals/investor/InvestorPortal';
+import LoginPage from './pages/LoginPage';
 
 function App() {
   return (
@@ -26,17 +27,11 @@ function App() {
             }}
           >
             <Routes>
+              <Route path="/" element={<LoginPage />} />
               <Route path="/admin-owner/*" element={<AdminOwnerPortal />} />
               <Route path="/admin-client/*" element={<AdminClientPortal />} />
               <Route path="/investor/*" element={<InvestorPortal />} />
-              <Route path="/" element={<div>
-                <h1>Naveo - Plataforma Institucional Cripto</h1>
-                <ul>
-                  <li><a href="/admin-owner">Portal Admin Owner</a></li>
-                  <li><a href="/admin-client">Portal Admin Client</a></li>
-                  <li><a href="/investor">Portal Investor</a></li>
-                </ul>
-              </div>} />
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
             <RefineKbar />
           </Refine>

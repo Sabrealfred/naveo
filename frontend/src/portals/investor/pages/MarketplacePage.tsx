@@ -233,12 +233,17 @@ const MarketplacePage = () => {
         visible={buyModalVisible}
         onClose={() => setBuyModalVisible(false)}
         onSubmit={handleBuySubmit}
-        mode="buy"
-        availableTokens={availableTokens.map((t) => ({
-          label: t.name,
-          value: t.key,
-          nav: t.nav,
-        }))}
+        type="buy"
+        asset={
+          selectedToken
+            ? {
+              name: selectedToken.name,
+              symbol: selectedToken.key,
+              currentNav: selectedToken.nav,
+            }
+            : undefined
+        }
+        availableBalance={75000}
       />
     </div>
   );

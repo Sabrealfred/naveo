@@ -1,0 +1,33 @@
+{
+  "login": {
+    "title": "Log in",
+    "subtitle": "Manage portals, funds, and portfolios from one place.",
+    "emailLabel": "Institutional Email",
+    "emailRequired": "Enter your email",
+    "emailInvalid": "Invalid email format",
+    "passwordLabel": "Password",
+    "passwordRequired": "Enter your password",
+    "roleLabel": "Select your portal",
+    "roleRequired": "Select a portal",
+    "loginButton": "Enter Naveo",
+    "demoLoginDivider": "or demo login",
+    "demoButton": "Demo {{role}}",
+    "needAccess": "Need access?",
+    "contactSupport": "Contact support team",
+    "platformInfo": "Multi-tenant · Compliance Ready · Polygon/Ethereum",
+    "welcomeMessage": "Welcome to Naveo ({{role}})",
+    "invalidRole": "Select a valid role",
+    "alphaAccess": "Alpha access",
+    "platformName": "Naveo Institutional Platform"
+  },
+  "roles": {
+    "admin-owner": "Admin Owner",
+    "admin-client": "Admin Client",
+    "investor": "Investor"
+  },
+  "roleDescriptions": {
+    "admin-owner": "Full platform control",
+    "admin-client": "Fund and trader management",
+    "investor": "Portfolio and marketplace"
+  }
+}
