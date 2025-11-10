@@ -65,6 +65,7 @@ const InvestorPortal = () => {
     >
       <Routes>
         <Route index element={<DashboardPage />} />
+        <Route path="onboarding" element={<OnboardingPage />} />
         <Route path="portfolio" element={<PortfolioPage />} />
         <Route path="performance" element={<PerformanceAnalyticsPage />} />
         <Route path="marketplace" element={<MarketplacePage />} />
