@@ -6,9 +6,11 @@ import {
   LockOutlined,
   UnlockOutlined,
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import { StatCard } from '../../../components/common';
 
 export default function SubAdminsManagementPage() {
+  const { t } = useTranslation();
   const metrics = {
     totalAdmins: 5,
     active: 4,
@@ -47,7 +49,7 @@ export default function SubAdminsManagementPage() {
 
   const columns = [
     {
-      title: 'Name',
+      title: t('admins.name'),
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: any) => (
@@ -58,13 +60,13 @@ export default function SubAdminsManagementPage() {
       ),
     },
     {
-      title: 'Role',
+      title: t('admins.role'),
       dataIndex: 'role',
       key: 'role',
       render: (role: string) => <Tag color="blue">{role}</Tag>,
     },
     {
-      title: 'Permissions',
+      title: t('admins.permissions'),
       dataIndex: 'permissions',
       key: 'permissions',
       render: (permissions: string[]) => (
@@ -75,43 +77,43 @@ export default function SubAdminsManagementPage() {
             </Tag>
           ))}
           {permissions.length > 2 && (
-            <Tag style={{ fontSize: '11px' }}>+{permissions.length - 2} more</Tag>
+            <Tag style={{ fontSize: '11px' }}>+{permissions.length - 2} {t('admins.more')}</Tag>
           )}
         </Space>
       ),
     },
     {
-      title: 'Status',
+      title: t('admins.status'),
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => (
         <Tag color={status === 'active' ? 'green' : 'red'}>
-          {status.toUpperCase()}
+          {status === 'active' ? t('admins.active').toUpperCase() : t('admins.suspended').toUpperCase()}
         </Tag>
       ),
     },
     {
-      title: 'Last Login',
+      title: t('admins.lastLogin'),
       dataIndex: 'lastLogin',
       key: 'lastLogin',
     },
     {
-      title: 'Active',
+      title: t('admins.active'),
       key: 'toggle',
       render: (_: any, record: any) => (
         <Switch checked={record.status === 'active'} />
       ),
     },
     {
-      title: 'Actions',
+      title: t('common.actions'),
       key: 'actions',
       render: () => (
         <Space>
           <Button type="link" size="small" icon={<SafetyOutlined />}>
-            Edit Permissions
+            {t('admins.editPermissions')}
           </Button>
           <Button type="link" size="small" danger>
-            Remove
+            {t('admins.remove')}
           </Button>
         </Space>
       ),
@@ -123,14 +125,14 @@ export default function SubAdminsManagementPage() {
       <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h1 style={{ marginBottom: '8px', fontFamily: 'var(--font-heading)' }}>
-            Sub-Admins Management
+            {t('admins.title')}
           </h1>
           <p style={{ color: 'var(--color-secondary)', fontSize: '14px' }}>
-            Manage sub-administrators and their permissions
+            {t('admins.subtitle')}
           </p>
         </div>
         <Button type="primary" icon={<UserAddOutlined />} size="large">
-          Add Sub-Admin
+          {t('admins.addAdmin')}
         </Button>
       </div>
 
@@ -138,7 +140,7 @@ export default function SubAdminsManagementPage() {
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} sm={8}>
           <StatCard
-            title="Total Admins"
+            title={t('admins.totalAdmins')}
             value={metrics.totalAdmins.toString()}
             icon={<TeamOutlined />}
             color="#2d2d2d"
@@ -146,7 +148,7 @@ export default function SubAdminsManagementPage() {
         </Col>
         <Col xs={24} sm={8}>
           <StatCard
-            title="Active"
+            title={t('admins.activeAdmins')}
             value={metrics.active.toString()}
             icon={<UnlockOutlined />}
             color="#52c41a"
@@ -154,7 +156,7 @@ export default function SubAdminsManagementPage() {
         </Col>
         <Col xs={24} sm={8}>
           <StatCard
-            title="Suspended"
+            title={t('admins.suspended')}
             value={metrics.suspended.toString()}
             icon={<LockOutlined />}
             color="#f5222d"
@@ -165,7 +167,7 @@ export default function SubAdminsManagementPage() {
       {/* Table */}
       <Row gutter={[16, 16]}>
         <Col span={24}>
-          <Card title="Sub-Administrators" bordered={false} className="professional-card">
+          <Card title={t('admins.subAdministrators')} bordered={false} className="professional-card">
             <Table
               dataSource={subAdmins}
               columns={columns}

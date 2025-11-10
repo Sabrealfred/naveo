@@ -8,11 +8,13 @@ import {
   TeamOutlined,
   DollarOutlined,
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import { StatCard } from '../../../components/common';
 
 const { Search } = Input;
 
 export default function InvestorsManagementPage() {
+  const { t } = useTranslation();
   // Mock data
   const investorMetrics = {
     totalInvestors: 245,
@@ -66,7 +68,7 @@ export default function InvestorsManagementPage() {
 
   const columns = [
     {
-      title: 'Investor',
+      title: t('investors.investor'),
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: any) => (
@@ -80,20 +82,20 @@ export default function InvestorsManagementPage() {
       ),
     },
     {
-      title: 'KYC Status',
+      title: t('investors.kycStatus'),
       dataIndex: 'kycStatus',
       key: 'kycStatus',
       filters: [
-        { text: 'Approved', value: 'approved' },
-        { text: 'Pending', value: 'pending' },
-        { text: 'Rejected', value: 'rejected' },
+        { text: t('investors.approved'), value: 'approved' },
+        { text: t('investors.pending'), value: 'pending' },
+        { text: t('investors.rejected'), value: 'rejected' },
       ],
       onFilter: (value: any, record: any) => record.kycStatus === value,
       render: (status: string) => {
         const config: Record<string, { color: string; icon: any; text: string }> = {
-          approved: { color: 'success', icon: <CheckCircleOutlined />, text: 'Approved' },
-          pending: { color: 'warning', icon: <ClockCircleOutlined />, text: 'Pending' },
-          rejected: { color: 'error', icon: <CloseCircleOutlined />, text: 'Rejected' },
+          approved: { color: 'success', icon: <CheckCircleOutlined />, text: t('investors.approved') },
+          pending: { color: 'warning', icon: <ClockCircleOutlined />, text: t('investors.pending') },
+          rejected: { color: 'error', icon: <CloseCircleOutlined />, text: t('investors.rejected') },
         };
         const { color, icon, text } = config[status] || config.pending;
         return (
@@ -107,7 +109,7 @@ export default function InvestorsManagementPage() {
       },
     },
     {
-      title: 'Tier',
+      title: t('investors.tier'),
       dataIndex: 'tier',
       key: 'tier',
       render: (tier: string) => {
@@ -117,37 +119,43 @@ export default function InvestorsManagementPage() {
           Silver: 'default',
           Bronze: 'orange',
         };
-        return <Tag color={colors[tier]}>{tier}</Tag>;
+        const tierTranslations: Record<string, string> = {
+          Platinum: t('investors.platinum'),
+          Gold: t('investors.gold'),
+          Silver: t('investors.silver'),
+          Bronze: t('investors.bronze'),
+        };
+        return <Tag color={colors[tier]}>{tierTranslations[tier] || tier}</Tag>;
       },
     },
     {
-      title: 'Invested',
+      title: t('investors.invested'),
       dataIndex: 'investedAmount',
       key: 'investedAmount',
       render: (amount: number) => `$${amount.toLocaleString()}`,
       sorter: (a: any, b: any) => a.investedAmount - b.investedAmount,
     },
     {
-      title: 'Shares',
+      title: t('investors.shares'),
       dataIndex: 'shares',
       key: 'shares',
       render: (shares: number) => shares.toLocaleString(),
     },
     {
-      title: 'Join Date',
+      title: t('investors.joinDate'),
       dataIndex: 'joinDate',
       key: 'joinDate',
     },
     {
-      title: 'Actions',
+      title: t('common.actions'),
       key: 'actions',
       render: (_: any, record: any) => (
         <Space>
-          <Button type="link" size="small">View</Button>
+          <Button type="link" size="small">{t('investors.view')}</Button>
           {record.kycStatus === 'pending' && (
             <>
-              <Button type="primary" size="small">Approve</Button>
-              <Button danger size="small">Reject</Button>
+              <Button type="primary" size="small">{t('investors.approve')}</Button>
+              <Button danger size="small">{t('investors.reject')}</Button>
             </>
           )}
         </Space>
@@ -159,10 +167,10 @@ export default function InvestorsManagementPage() {
     <div style={{ padding: '24px', background: 'var(--color-background)' }}>
       <div style={{ marginBottom: '24px' }}>
         <h1 style={{ marginBottom: '8px', fontFamily: 'var(--font-heading)' }}>
-          Investors Management
+          {t('investors.title')}
         </h1>
         <p style={{ color: 'var(--color-secondary)', fontSize: '14px' }}>
-          Manage and approve fund investors
+          {t('investors.subtitle')}
         </p>
       </div>
 
@@ -170,7 +178,7 @@ export default function InvestorsManagementPage() {
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Total Investors"
+            title={t('investors.totalInvestors')}
             value={investorMetrics.totalInvestors.toString()}
             icon={<TeamOutlined />}
             color="#2d2d2d"
@@ -178,7 +186,7 @@ export default function InvestorsManagementPage() {
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Pending KYC"
+            title={t('investors.pendingKYC')}
             value={investorMetrics.pendingKYC.toString()}
             icon={<ClockCircleOutlined />}
             color="#fa8c16"
@@ -186,7 +194,7 @@ export default function InvestorsManagementPage() {
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Approved"
+            title={t('investors.approved')}
             value={investorMetrics.approved.toString()}
             icon={<CheckCircleOutlined />}
             color="#52c41a"
@@ -194,7 +202,7 @@ export default function InvestorsManagementPage() {
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Total Invested"
+            title={t('investors.totalInvested')}
             value={`$${(investorMetrics.totalInvested / 1000000).toFixed(1)}M`}
             icon={<DollarOutlined />}
             color="#722ed1"
@@ -206,33 +214,33 @@ export default function InvestorsManagementPage() {
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} md={12} lg={8}>
           <Search
-            placeholder="Search by name or email"
+            placeholder={t('investors.searchPlaceholder')}
             prefix={<SearchOutlined />}
             allowClear
           />
         </Col>
         <Col xs={24} md={12} lg={8}>
           <Select
-            placeholder="Filter by KYC Status"
+            placeholder={t('investors.filterByKycStatus')}
             style={{ width: '100%' }}
             allowClear
             options={[
-              { label: 'Approved', value: 'approved' },
-              { label: 'Pending', value: 'pending' },
-              { label: 'Rejected', value: 'rejected' },
+              { label: t('investors.approved'), value: 'approved' },
+              { label: t('investors.pending'), value: 'pending' },
+              { label: t('investors.rejected'), value: 'rejected' },
             ]}
           />
         </Col>
         <Col xs={24} md={12} lg={8}>
           <Select
-            placeholder="Filter by Tier"
+            placeholder={t('investors.filterByTier')}
             style={{ width: '100%' }}
             allowClear
             options={[
-              { label: 'Platinum', value: 'platinum' },
-              { label: 'Gold', value: 'gold' },
-              { label: 'Silver', value: 'silver' },
-              { label: 'Bronze', value: 'bronze' },
+              { label: t('investors.platinum'), value: 'platinum' },
+              { label: t('investors.gold'), value: 'gold' },
+              { label: t('investors.silver'), value: 'silver' },
+              { label: t('investors.bronze'), value: 'bronze' },
             ]}
           />
         </Col>
@@ -241,7 +249,7 @@ export default function InvestorsManagementPage() {
       {/* Investors Table */}
       <Row gutter={[16, 16]}>
         <Col span={24}>
-          <Card title="Investors List" bordered={false} className="professional-card">
+          <Card title={t('investors.investorsList')} bordered={false} className="professional-card">
             <Table
               dataSource={investors}
               columns={columns}

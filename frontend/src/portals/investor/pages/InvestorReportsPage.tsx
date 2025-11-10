@@ -5,10 +5,12 @@ import {
   FilePdfOutlined,
   FileExcelOutlined,
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 const { RangePicker } = DatePicker;
 
 export default function InvestorReportsPage() {
+  const { t } = useTranslation();
   const reports = [
     {
       key: '1',
@@ -50,7 +52,7 @@ export default function InvestorReportsPage() {
 
   const columns = [
     {
-      title: 'Report Type',
+      title: t('reports.type'),
       dataIndex: 'type',
       key: 'type',
       render: (text: string) => (
@@ -61,17 +63,17 @@ export default function InvestorReportsPage() {
       ),
     },
     {
-      title: 'Period',
+      title: t('reports.period'),
       dataIndex: 'period',
       key: 'period',
     },
     {
-      title: 'Generated',
+      title: t('reports.generated'),
       dataIndex: 'dateGenerated',
       key: 'dateGenerated',
     },
     {
-      title: 'Format',
+      title: t('reports.format'),
       dataIndex: 'format',
       key: 'format',
       render: (format: string) => {
@@ -84,22 +86,22 @@ export default function InvestorReportsPage() {
       },
     },
     {
-      title: 'Size',
+      title: t('reports.size'),
       dataIndex: 'size',
       key: 'size',
     },
     {
-      title: 'Status',
+      title: t('common.status'),
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => (
         <Tag color={status === 'available' ? 'success' : 'processing'}>
-          {status.toUpperCase()}
+          {status === 'available' ? t('reports.available').toUpperCase() : t('reports.processing').toUpperCase()}
         </Tag>
       ),
     },
     {
-      title: 'Actions',
+      title: t('common.actions'),
       key: 'actions',
       render: (_: any, record: any) => (
         <Space>
@@ -110,12 +112,12 @@ export default function InvestorReportsPage() {
                 size="small"
                 icon={<DownloadOutlined />}
               >
-                Download
+                {t('reports.download')}
               </Button>
-              <Button size="small">View</Button>
+              <Button size="small">{t('reports.view')}</Button>
             </>
           ) : (
-            <Button size="small" disabled>Processing...</Button>
+            <Button size="small" disabled>{t('reports.processing')}</Button>
           )}
         </Space>
       ),
@@ -126,10 +128,10 @@ export default function InvestorReportsPage() {
     <div style={{ padding: '24px', background: 'var(--color-background)' }}>
       <div style={{ marginBottom: '24px' }}>
         <h1 style={{ marginBottom: '8px', fontFamily: 'var(--font-heading)' }}>
-          My Reports & Documents
+          {t('reports.myReports')}
         </h1>
         <p style={{ color: 'var(--color-secondary)', fontSize: '14px' }}>
-          Download statements, tax documents, and performance reports
+          {t('reports.myReportsSubtitle')}
         </p>
       </div>
 
@@ -139,8 +141,8 @@ export default function InvestorReportsPage() {
           <Card className="professional-card" hoverable>
             <Space direction="vertical" align="center" style={{ width: '100%' }}>
               <FilePdfOutlined style={{ fontSize: '32px', color: '#2d2d2d' }} />
-              <span style={{ fontWeight: 500 }}>Account Statement</span>
-              <Button type="link">Generate</Button>
+              <span style={{ fontWeight: 500 }}>{t('reports.accountStatement')}</span>
+              <Button type="link">{t('reports.generate')}</Button>
             </Space>
           </Card>
         </Col>
@@ -148,8 +150,8 @@ export default function InvestorReportsPage() {
           <Card className="professional-card" hoverable>
             <Space direction="vertical" align="center" style={{ width: '100%' }}>
               <FileExcelOutlined style={{ fontSize: '32px', color: '#52c41a' }} />
-              <span style={{ fontWeight: 500 }}>Transaction Export</span>
-              <Button type="link">Export</Button>
+              <span style={{ fontWeight: 500 }}>{t('reports.transactionExport')}</span>
+              <Button type="link">{t('common.export')}</Button>
             </Space>
           </Card>
         </Col>
@@ -157,8 +159,8 @@ export default function InvestorReportsPage() {
           <Card className="professional-card" hoverable>
             <Space direction="vertical" align="center" style={{ width: '100%' }}>
               <FileTextOutlined style={{ fontSize: '32px', color: '#722ed1' }} />
-              <span style={{ fontWeight: 500 }}>Tax Documents</span>
-              <Button type="link">View</Button>
+              <span style={{ fontWeight: 500 }}>{t('reports.taxDocument')}</span>
+              <Button type="link">{t('reports.view')}</Button>
             </Space>
           </Card>
         </Col>
@@ -166,8 +168,8 @@ export default function InvestorReportsPage() {
           <Card className="professional-card" hoverable>
             <Space direction="vertical" align="center" style={{ width: '100%' }}>
               <FilePdfOutlined style={{ fontSize: '32px', color: '#fa8c16' }} />
-              <span style={{ fontWeight: 500 }}>Performance Report</span>
-              <Button type="link">Download</Button>
+              <span style={{ fontWeight: 500 }}>{t('reports.performance')}</span>
+              <Button type="link">{t('reports.download')}</Button>
             </Space>
           </Card>
         </Col>
@@ -180,14 +182,14 @@ export default function InvestorReportsPage() {
         </Col>
         <Col xs={24} md={12}>
           <Select
-            placeholder="Filter by Report Type"
+            placeholder={t('reports.filterByReportType')}
             style={{ width: '100%' }}
             allowClear
             options={[
-              { label: 'Statement', value: 'statement' },
-              { label: 'Tax Document', value: 'tax' },
-              { label: 'Performance Report', value: 'performance' },
-              { label: 'Transaction History', value: 'transactions' },
+              { label: t('reports.statement'), value: 'statement' },
+              { label: t('reports.taxDocument'), value: 'tax' },
+              { label: t('reports.performance'), value: 'performance' },
+              { label: t('reports.transactionHistory'), value: 'transactions' },
             ]}
           />
         </Col>
@@ -196,7 +198,7 @@ export default function InvestorReportsPage() {
       {/* Reports Table */}
       <Row gutter={[16, 16]}>
         <Col span={24}>
-          <Card title="Available Reports" bordered={false} className="professional-card">
+          <Card title={t('reports.availableReports')} bordered={false} className="professional-card">
             <Table
               dataSource={reports}
               columns={columns}
