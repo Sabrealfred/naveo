@@ -16,6 +16,12 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { portfolioService, transactionsService } from '../../../services';
 import type { PortfolioHolding, Transaction, PortfolioValue } from '../../../services/types';
+import {
+  MOCK_PORTFOLIO_VALUE,
+  MOCK_PORTFOLIO_HOLDINGS,
+  MOCK_INVESTOR_TRANSACTIONS,
+  buildAllocationFromHoldings,
+} from '../mockData';
 
 export default function DashboardPage() {
   const { t } = useTranslation();
@@ -39,25 +45,33 @@ export default function DashboardPage() {
     try {
       setLoading(true);
 
-      // Load portfolio value
       const value = await portfolioService.calculatePortfolioValue(userId);
-      setPortfolioValue(value);
-
-      // Load holdings
       const portfolioHoldings = await portfolioService.getPortfolioHoldings(userId);
-      setHoldings(portfolioHoldings);
-
-      // Load portfolio allocation
       const allocation = await portfolioService.getPortfolioAllocation(userId);
-      setPortfolioAllocation(allocation);
-
-      // Load recent transactions (last 30 days)
       const transactions = await transactionsService.getRecentTransactions(30, userId);
-      setRecentTransactions(transactions.slice(0, 10)); // Show only 10 most recent
+
+      const effectiveHoldings =
+        portfolioHoldings && portfolioHoldings.length > 0 ? portfolioHoldings : MOCK_PORTFOLIO_HOLDINGS;
+      const effectiveValue = value ?? MOCK_PORTFOLIO_VALUE;
+      const effectiveAllocation =
+        allocation && allocation.length > 0
+          ? allocation
+          : buildAllocationFromHoldings(effectiveHoldings);
+      const effectiveTransactions =
+        transactions && transactions.length > 0 ? transactions : MOCK_INVESTOR_TRANSACTIONS;
+
+      setPortfolioValue(effectiveValue);
+      setHoldings(effectiveHoldings);
+      setPortfolioAllocation(effectiveAllocation);
+      setRecentTransactions(effectiveTransactions.slice(0, 10));
 
     } catch (error: any) {
       console.error('Error loading investor dashboard:', error);
       message.error('Failed to load dashboard data: ' + error.message);
+      setPortfolioValue(MOCK_PORTFOLIO_VALUE);
+      setHoldings(MOCK_PORTFOLIO_HOLDINGS);
+      setPortfolioAllocation(buildAllocationFromHoldings(MOCK_PORTFOLIO_HOLDINGS));
+      setRecentTransactions(MOCK_INVESTOR_TRANSACTIONS.slice(0, 10));
     } finally {
       setLoading(false);
     }

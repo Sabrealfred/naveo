@@ -34,9 +34,13 @@ import {
 import { Line, Pie, Column, Heatmap, DualAxes, Area } from '@ant-design/charts';
 import { StatCard } from '../../../components/common';
 import { useTranslation } from 'react-i18next';
-import { portfolioService, fundsService, transactionsService, reportsService } from '../../../services';
+import { portfolioService, reportsService } from '../../../services';
 import type { PortfolioHolding, NavHistory } from '../../../services/types';
 import dayjs from 'dayjs';
+import {
+  MOCK_PORTFOLIO_HOLDINGS,
+  generateMockNavHistory,
+} from '../mockData';
 
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
@@ -92,8 +96,10 @@ const PortfolioPage = () => {
     try {
       setLoading(true);
 
-      // Load portfolio holdings
-      const portfolioHoldings = await portfolioService.getPortfolioHoldings(userId);
+      let portfolioHoldings = await portfolioService.getPortfolioHoldings(userId);
+      if (!portfolioHoldings.length) {
+        portfolioHoldings = MOCK_PORTFOLIO_HOLDINGS;
+      }
       setHoldings(portfolioHoldings);
 
       // Load NAV history for each fund (last 24 months)
@@ -102,19 +108,29 @@ const PortfolioPage = () => {
       const endDate = dayjs().format('YYYY-MM-DD');
 
       await Promise.all(
-        portfolioHoldings.map(async (holding) => {
-          if (holding.fund_id) {
-            try {
-              const history = await reportsService.getNavHistory(
-                holding.fund_id,
-                startDate,
-                endDate
-              );
-              navHistoryMap[holding.fund_id] = history;
-            } catch (error) {
-              console.error(`Error loading NAV history for fund ${holding.fund_id}:`, error);
-              // Don't fail the whole load if one fund's history fails
-            }
+        portfolioHoldings.map(async (holding, index) => {
+          if (!holding.fund_id) return;
+          try {
+            const history = await reportsService.getNavHistory(
+              holding.fund_id,
+              startDate,
+              endDate
+            );
+            navHistoryMap[holding.fund_id] =
+              history && history.length
+                ? history
+                : generateMockNavHistory(
+                    holding.fund_id,
+                    holding.current_nav || 1_000,
+                    0.012 + index * 0.002
+                  );
+          } catch (error) {
+            console.error(`Error loading NAV history for fund ${holding.fund_id}:`, error);
+            navHistoryMap[holding.fund_id] = generateMockNavHistory(
+              holding.fund_id,
+              holding.current_nav || 1_000,
+              0.012 + index * 0.002
+            );
           }
         })
       );
@@ -124,6 +140,18 @@ const PortfolioPage = () => {
     } catch (error: any) {
       console.error('Error loading portfolio:', error);
       message.error('Failed to load portfolio data: ' + error.message);
+      setHoldings(MOCK_PORTFOLIO_HOLDINGS);
+      const fallbackHistory: Record<string, NavHistory[]> = {};
+      MOCK_PORTFOLIO_HOLDINGS.forEach((holding, index) => {
+        if (holding.fund_id) {
+          fallbackHistory[holding.fund_id] = generateMockNavHistory(
+            holding.fund_id,
+            holding.current_nav || 1_000,
+            0.012 + index * 0.002
+          );
+        }
+      });
+      setRawNavHistory(fallbackHistory);
     } finally {
       setLoading(false);
     }
