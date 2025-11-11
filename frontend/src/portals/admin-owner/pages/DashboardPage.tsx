@@ -1,4 +1,5 @@
-import { Card, Col, Row, Statistic, Table, Tag, Progress } from 'antd';
+import { useState, useEffect } from 'react';
+import { Card, Col, Row, Statistic, Table, Tag, Progress, Spin, message } from 'antd';
 import {
   DollarOutlined,
   UserOutlined,
@@ -10,83 +11,179 @@ import {
 import { Line, Column } from '@ant-design/charts';
 import { StatCard } from '../../../components/common';
 import { useTranslation } from 'react-i18next';
+import { fundsService, transactionsService, portfolioService, kycService, supabaseClient } from '../../../services';
+import type { Fund, FundPerformance, SystemEvent, KYCStatistics } from '../../../services/types';
+
+interface PlatformStats {
+  totalAUM: number;
+  totalUsers: number;
+  activeInvestors: number;
+  totalFunds: number;
+  monthlyVolume: number;
+  platformGrowth: number;
+}
 
 export default function DashboardPage() {
   const { t } = useTranslation();
-  // Mock data - Replace with real data from Supabase
-  const platformStats = {
-    totalAUM: 245680000, // $245.68M
-    totalUsers: 1247,
-    activeInvestors: 892,
-    totalFunds: 18,
-    monthlyVolume: 45320000, // $45.32M
-    platformGrowth: 23.5, // %
+
+  // State
+  const [loading, setLoading] = useState(true);
+  const [platformStats, setPlatformStats] = useState<PlatformStats>({
+    totalAUM: 0,
+    totalUsers: 0,
+    activeInvestors: 0,
+    totalFunds: 0,
+    monthlyVolume: 0,
+    platformGrowth: 0,
+  });
+  const [topFunds, setTopFunds] = useState<any[]>([]);
+  const [recentActivities, setRecentActivities] = useState<any[]>([]);
+  const [monthlyVolumeData, setMonthlyVolumeData] = useState<any[]>([]);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+
+      // Load all funds
+      const funds = await fundsService.getAllFunds();
+      const activeFunds = funds.filter(f => f.status === 'active');
+
+      // Calculate total AUM
+      const totalAUM = activeFunds.reduce((sum, fund) => sum + (fund.total_aum || 0), 0);
+
+      // Get KYC statistics for total users
+      const kycStats = await kycService.getKYCStatistics();
+
+      // Get active investors count (users with portfolios)
+      const { count: investorCount } = await supabaseClient
+        .from('user_portfolios')
+        .select('user_id', { count: 'exact', head: true });
+
+      // Get unique investors
+      const { data: uniqueInvestors } = await supabaseClient
+        .from('user_portfolios')
+        .select('user_id');
+      const activeInvestors = new Set(uniqueInvestors?.map(p => p.user_id)).size;
+
+      // Get monthly transaction volume (last 30 days)
+      const volume = await transactionsService.getTransactionVolume(undefined, 30);
+
+      // Calculate platform growth (mock for now - would need historical data)
+      const platformGrowth = 23.5;
+
+      setPlatformStats({
+        totalAUM,
+        totalUsers: kycStats.total_verifications,
+        activeInvestors,
+        totalFunds: activeFunds.length,
+        monthlyVolume: volume.total_inflows + volume.total_outflows,
+        platformGrowth,
+      });
+
+      // Load fund performance for top funds
+      const fundsWithPerformance = await Promise.all(
+        activeFunds.map(async (fund) => {
+          try {
+            const performance = await fundsService.getFundPerformance(fund.id) as FundPerformance;
+
+            // Calculate performance percentage from NAV history
+            const navChange = performance.latest_nav && performance.nav_30d_ago
+              ? ((performance.latest_nav - performance.nav_30d_ago) / performance.nav_30d_ago) * 100
+              : 0;
+
+            return {
+              key: fund.id,
+              name: fund.name,
+              aum: fund.total_aum || 0,
+              nav: fund.current_nav || 0,
+              performance: navChange,
+              investors: performance.total_investors || 0,
+              status: fund.status,
+            };
+          } catch (error) {
+            console.error(`Error loading performance for fund ${fund.id}:`, error);
+            return {
+              key: fund.id,
+              name: fund.name,
+              aum: fund.total_aum || 0,
+              nav: fund.current_nav || 0,
+              performance: 0,
+              investors: 0,
+              status: fund.status,
+            };
+          }
+        })
+      );
+
+      // Sort by AUM and take top 5
+      const topFundsList = fundsWithPerformance
+        .sort((a, b) => b.aum - a.aum)
+        .slice(0, 5);
+      setTopFunds(topFundsList);
+
+      // Load recent system events
+      const { data: events } = await supabaseClient
+        .from('system_events')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      const activities = events?.map(event => ({
+        key: event.id,
+        activity: event.description || `${event.event_type}: ${event.action}`,
+        time: formatTimeAgo(new Date(event.created_at)),
+        type: event.event_category || 'system',
+      })) || [];
+      setRecentActivities(activities);
+
+      // Generate monthly volume data (last 6 months)
+      const volumeByMonth = [];
+      for (let i = 5; i >= 0; i--) {
+        const date = new Date();
+        date.setMonth(date.getMonth() - i);
+        const monthName = date.toLocaleDateString('es-ES', { month: 'short' });
+
+        // Get transactions for this month
+        const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+        const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+        const { data: monthTransactions } = await supabaseClient
+          .from('transactions')
+          .select('amount')
+          .gte('created_at', startOfMonth.toISOString())
+          .lte('created_at', endOfMonth.toISOString())
+          .in('status', ['completed', 'settled']);
+
+        const totalVolume = monthTransactions?.reduce((sum, t) => sum + (t.amount || 0), 0) || 0;
+
+        volumeByMonth.push({
+          month: monthName.charAt(0).toUpperCase() + monthName.slice(1),
+          volume: totalVolume,
+        });
+      }
+      setMonthlyVolumeData(volumeByMonth);
+
+    } catch (error: any) {
+      console.error('Error loading admin dashboard:', error);
+      message.error('Failed to load dashboard data: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const monthlyVolumeData = [
-    { month: 'Ene', volume: 32000000 },
-    { month: 'Feb', volume: 38000000 },
-    { month: 'Mar', volume: 35000000 },
-    { month: 'Abr', volume: 41000000 },
-    { month: 'May', volume: 43000000 },
-    { month: 'Jun', volume: 45320000 },
-  ];
+  const formatTimeAgo = (date: Date) => {
+    const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
 
-  const topFunds = [
-    {
-      key: '1',
-      name: 'Alpha Growth Fund',
-      aum: 85000000,
-      nav: 125.43,
-      performance: '+18.2%',
-      investors: 245,
-      status: 'active',
-    },
-    {
-      key: '2',
-      name: 'Beta Stable Fund',
-      aum: 62000000,
-      nav: 108.76,
-      performance: '+12.5%',
-      investors: 189,
-      status: 'active',
-    },
-    {
-      key: '3',
-      name: 'Gamma Yield Fund',
-      aum: 48000000,
-      nav: 98.34,
-      performance: '+8.9%',
-      investors: 156,
-      status: 'active',
-    },
-    {
-      key: '4',
-      name: 'Delta Risk Fund',
-      aum: 35000000,
-      nav: 142.89,
-      performance: '+24.7%',
-      investors: 98,
-      status: 'active',
-    },
-    {
-      key: '5',
-      name: 'Epsilon Crypto Fund',
-      aum: 15680000,
-      nav: 78.12,
-      performance: '-5.3%',
-      investors: 67,
-      status: 'review',
-    },
-  ];
-
-  const recentActivities = [
-    { key: '1', activity: 'New fund created: Zeta DeFi Fund', time: '2 hours ago', type: 'fund' },
-    { key: '2', activity: 'KYC approved for 15 new investors', time: '4 hours ago', type: 'kyc' },
-    { key: '3', activity: 'Smart contract upgrade completed', time: '1 day ago', type: 'blockchain' },
-    { key: '4', activity: 'Compliance report generated', time: '2 days ago', type: 'compliance' },
-    { key: '5', activity: 'Integration: Stripe connected', time: '3 days ago', type: 'integration' },
-  ];
+    if (seconds < 60) return 'hace unos segundos';
+    if (seconds < 3600) return `hace ${Math.floor(seconds / 60)} minutos`;
+    if (seconds < 86400) return `hace ${Math.floor(seconds / 3600)} horas`;
+    if (seconds < 604800) return `hace ${Math.floor(seconds / 86400)} días`;
+    return date.toLocaleDateString();
+  };
 
   const volumeChartConfig = {
     data: monthlyVolumeData,
@@ -128,8 +225,10 @@ export default function DashboardPage() {
       title: t('adminOwner.funds.performance'),
       dataIndex: 'performance',
       key: 'performance',
-      render: (perf: string) => (
-        <Tag color={perf.startsWith('+') ? 'green' : 'red'}>{perf}</Tag>
+      render: (perf: number) => (
+        <Tag color={perf >= 0 ? 'green' : 'red'}>
+          {perf >= 0 ? '+' : ''}{perf.toFixed(1)}%
+        </Tag>
       ),
     },
     {
@@ -167,6 +266,14 @@ export default function DashboardPage() {
       render: (type: string) => <Tag>{type}</Tag>,
     },
   ];
+
+  if (loading) {
+    return (
+      <div style={{ padding: '24px', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+        <Spin size="large" tip="Loading platform overview..." />
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: '24px' }}>
@@ -242,7 +349,11 @@ export default function DashboardPage() {
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} lg={16}>
           <Card title={t('adminOwner.dashboard.monthlyVolumeTrend')} bordered={false}>
-            <Column {...volumeChartConfig} />
+            {monthlyVolumeData.length > 0 ? (
+              <Column {...volumeChartConfig} />
+            ) : (
+              <p>No volume data available</p>
+            )}
           </Card>
         </Col>
         <Col xs={24} lg={8}>
