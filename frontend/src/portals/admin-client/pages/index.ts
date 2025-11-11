@@ -12,6 +12,7 @@ export { default as GateManagementPage } from './GateManagementPage';
 export { default as PortfolioManagementPage } from './PortfolioManagementPage';
 export { default as InvestorsManagementPage } from './InvestorsManagementPage';
 export { default as SubAdminsManagementPage } from './SubAdminsManagementPage';
+export { default as BankingPaymentsPage } from './BankingPaymentsPage';
 export { default as TransactionsPage } from './TransactionsPage';
 export { default as CompliancePage } from './CompliancePage';
 export { default as FundReportsPage } from './FundReportsPage';

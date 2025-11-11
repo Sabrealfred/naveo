@@ -17,6 +17,7 @@ import {
   CalendarOutlined,
   DollarOutlined,
   SyncOutlined,
+  BankOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import {
@@ -42,6 +43,7 @@ import {
   GateManagementPage,
   AIStrategyManagementPage,
   AIAgentPage,
+  BankingPaymentsPage,
 } from './pages';
 
 const AdminClientPortal = () => {
@@ -127,6 +129,11 @@ const AdminClientPortal = () => {
       ],
     },
     {
+      key: '/admin-client/banking',
+      icon: <BankOutlined />,
+      label: 'Banking & Payments',
+    },
+    {
       key: '/admin-client/transactions',
       icon: <SwapOutlined />,
       label: 'Transacciones',
@@ -172,6 +179,7 @@ const AdminClientPortal = () => {
         <Route path="gate-management" element={<GateManagementPage />} />
         <Route path="officers" element={<OfficersManagementPage />} />
         <Route path="admins" element={<SubAdminsManagementPage />} />
+        <Route path="banking" element={<BankingPaymentsPage />} />
         <Route path="transactions" element={<TransactionsPage />} />
         <Route path="compliance" element={<CompliancePage />} />
         <Route path="reports" element={<ReportsPage />} />
