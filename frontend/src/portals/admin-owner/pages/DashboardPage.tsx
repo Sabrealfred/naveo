@@ -1,4 +1,4 @@
-import { Card, Col, Row, Statistic, Table, Tag, Progress } from 'antd';
+import { Card, Col, Row, Statistic, Table, Tag, Progress, Steps, Badge } from 'antd';
 import {
   DollarOutlined,
   UserOutlined,
@@ -6,6 +6,10 @@ import {
   TeamOutlined,
   TrophyOutlined,
   SwapOutlined,
+  RocketOutlined,
+  FileTextOutlined,
+  SafetyOutlined,
+  CheckCircleOutlined,
 } from '@ant-design/icons';
 import { Line, Column } from '@ant-design/charts';
 import { StatCard } from '../../../components/common';
@@ -84,6 +88,54 @@ export default function DashboardPage() {
     { key: '3', activity: 'Smart contract upgrade completed', time: '1 day ago', type: 'blockchain' },
     { key: '4', activity: 'Compliance report generated', time: '2 days ago', type: 'compliance' },
     { key: '5', activity: 'Integration: Stripe connected', time: '3 days ago', type: 'integration' },
+  ];
+
+  // Tokenization metrics
+  const tokenizationStats = {
+    activeTokenizations: 3,
+    completedTokenizations: 12,
+    documentsReady: 8,
+    complianceScore: 94,
+    avgTimeToComplete: 45, // days
+  };
+
+  const activeTokenizationProcesses = [
+    {
+      key: '1',
+      fundName: 'Turkish Real Estate Fund I',
+      stage: 'US Investor Onboarding',
+      progress: 71,
+      jurisdiction: 'Turkey → USA',
+      documentsReady: 8,
+      documentsTotal: 9,
+      daysInProgress: 38,
+      nextMilestone: 'Accreditation verification',
+      status: 'on-track',
+    },
+    {
+      key: '2',
+      fundName: 'Istanbul Commercial Properties',
+      stage: 'Smart Contract Development',
+      progress: 45,
+      jurisdiction: 'Turkey → USA',
+      documentsReady: 5,
+      documentsTotal: 9,
+      daysInProgress: 22,
+      nextMilestone: 'Security audit',
+      status: 'on-track',
+    },
+    {
+      key: '3',
+      fundName: 'Ankara Industrial Portfolio',
+      stage: 'Regulatory Structure',
+      progress: 28,
+      jurisdiction: 'Turkey → UAE',
+      documentsReady: 3,
+      documentsTotal: 9,
+      daysInProgress: 15,
+      nextMilestone: 'SPK approval pending',
+      status: 'delayed',
+    },
   ];
 
   const volumeChartConfig = {
@@ -166,6 +218,68 @@ export default function DashboardPage() {
     },
   ];
 
+  const tokenizationColumns = [
+    {
+      title: 'Fund Name',
+      dataIndex: 'fundName',
+      key: 'fundName',
+      render: (text: string) => <span style={{ fontWeight: 500 }}>{text}</span>,
+    },
+    {
+      title: 'Jurisdiction',
+      dataIndex: 'jurisdiction',
+      key: 'jurisdiction',
+      render: (text: string) => <Tag color="blue">{text}</Tag>,
+    },
+    {
+      title: 'Current Stage',
+      dataIndex: 'stage',
+      key: 'stage',
+    },
+    {
+      title: 'Progress',
+      dataIndex: 'progress',
+      key: 'progress',
+      render: (progress: number) => (
+        <Progress
+          percent={progress}
+          strokeColor={progress > 70 ? '#52c41a' : progress > 40 ? '#faad14' : '#1890ff'}
+          size="small"
+        />
+      ),
+    },
+    {
+      title: 'Documents',
+      key: 'documents',
+      render: (record: any) => (
+        <span>
+          {record.documentsReady}/{record.documentsTotal}
+        </span>
+      ),
+    },
+    {
+      title: 'Next Milestone',
+      dataIndex: 'nextMilestone',
+      key: 'nextMilestone',
+    },
+    {
+      title: 'Days',
+      dataIndex: 'daysInProgress',
+      key: 'daysInProgress',
+      render: (days: number) => `${days}d`,
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status: string) => (
+        <Tag color={status === 'on-track' ? 'green' : status === 'delayed' ? 'orange' : 'red'}>
+          {status.toUpperCase()}
+        </Tag>
+      ),
+    },
+  ];
+
   return (
     <div style={{ padding: '24px' }}>
       <h1 style={{ marginBottom: '24px', fontFamily: 'var(--font-heading)' }}>
@@ -233,6 +347,82 @@ export default function DashboardPage() {
               strokeColor="#52c41a"
               showInfo={false}
               style={{ marginTop: 8 }}
+            />
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Tokenization Metrics */}
+      <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
+        <Col span={24}>
+          <Card
+            title={
+              <span>
+                <RocketOutlined style={{ marginRight: 8 }} />
+                Cross-Border Tokenization Pipeline
+              </span>
+            }
+            bordered={false}
+            extra={<Tag color="blue">Live Data</Tag>}
+          >
+            <Row gutter={[16, 16]} style={{ marginBottom: '16px' }}>
+              <Col xs={12} sm={8} lg={4}>
+                <Card size="small">
+                  <Statistic
+                    title="Active Processes"
+                    value={tokenizationStats.activeTokenizations}
+                    valueStyle={{ color: '#1890ff' }}
+                    prefix={<RocketOutlined />}
+                  />
+                </Card>
+              </Col>
+              <Col xs={12} sm={8} lg={4}>
+                <Card size="small">
+                  <Statistic
+                    title="Completed"
+                    value={tokenizationStats.completedTokenizations}
+                    valueStyle={{ color: '#52c41a' }}
+                    prefix={<CheckCircleOutlined />}
+                  />
+                </Card>
+              </Col>
+              <Col xs={12} sm={8} lg={4}>
+                <Card size="small">
+                  <Statistic
+                    title="Documents Ready"
+                    value={tokenizationStats.documentsReady}
+                    valueStyle={{ color: '#722ed1' }}
+                    prefix={<FileTextOutlined />}
+                  />
+                </Card>
+              </Col>
+              <Col xs={12} sm={8} lg={4}>
+                <Card size="small">
+                  <Statistic
+                    title="Compliance Score"
+                    value={tokenizationStats.complianceScore}
+                    suffix="%"
+                    valueStyle={{ color: '#52c41a' }}
+                    prefix={<SafetyOutlined />}
+                  />
+                </Card>
+              </Col>
+              <Col xs={12} sm={8} lg={4}>
+                <Card size="small">
+                  <Statistic
+                    title="Avg Time"
+                    value={tokenizationStats.avgTimeToComplete}
+                    suffix="days"
+                    valueStyle={{ color: '#13c2c2' }}
+                  />
+                </Card>
+              </Col>
+            </Row>
+            <Table
+              dataSource={activeTokenizationProcesses}
+              columns={tokenizationColumns}
+              pagination={false}
+              size="small"
             />
           </Card>
         </Col>

@@ -1,4 +1,4 @@
-import { Card, Col, Row, Statistic, Table, Tag, Button, Space, Avatar } from 'antd';
+import { Card, Col, Row, Statistic, Table, Tag, Button, Space, Avatar, Steps, Alert } from 'antd';
 import {
   DollarOutlined,
   RiseOutlined,
@@ -8,6 +8,10 @@ import {
   TrophyOutlined,
   ArrowUpOutlined,
   ArrowDownOutlined,
+  RocketOutlined,
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  FileProtectOutlined,
 } from '@ant-design/icons';
 import { Line, Pie } from '@ant-design/charts';
 import { StatCard } from '../../../components/common';
@@ -114,6 +118,46 @@ export default function DashboardPage() {
       status: 'completed',
     },
   ];
+
+  // Tokenization onboarding status for investor
+  const tokenizationOnboarding = {
+    fundName: 'Turkish Real Estate Fund I',
+    currentStep: 2, // 0-indexed: step 3 is active
+    totalSteps: 5,
+    jurisdiction: 'Turkey → USA',
+    estimatedCompletion: '3-5 business days',
+    nextAction: 'Complete suitability assessment questionnaire',
+    steps: [
+      {
+        title: 'Accreditation Verified',
+        description: 'Income and net worth documentation reviewed',
+        status: 'finish' as const,
+        icon: <CheckCircleOutlined />,
+      },
+      {
+        title: 'KYC/AML Completed',
+        description: 'Identity verification and sanctions screening passed',
+        status: 'finish' as const,
+        icon: <CheckCircleOutlined />,
+      },
+      {
+        title: 'Suitability Assessment',
+        description: 'Investment objectives and risk tolerance evaluation',
+        status: 'process' as const,
+        icon: <ClockCircleOutlined />,
+      },
+      {
+        title: 'Document Review',
+        description: 'PPM, subscription agreement, and disclosures',
+        status: 'wait' as const,
+      },
+      {
+        title: 'Token Purchase',
+        description: 'Payment and token issuance',
+        status: 'wait' as const,
+      },
+    ],
+  };
 
   const portfolioChartConfig = {
     data: portfolioHistoryData,
@@ -340,6 +384,68 @@ export default function DashboardPage() {
                 View Reports
               </Button>
             </Space>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Tokenization Onboarding Status */}
+      <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
+        <Col span={24}>
+          <Card
+            title={
+              <Space>
+                <RocketOutlined />
+                <span>Token Purchase Onboarding</span>
+                <Tag color="blue">{tokenizationOnboarding.jurisdiction}</Tag>
+              </Space>
+            }
+            bordered={false}
+            extra={
+              <Button type="primary" icon={<FileProtectOutlined />}>
+                Continue Onboarding
+              </Button>
+            }
+          >
+            <Alert
+              message={`Next Action Required: ${tokenizationOnboarding.nextAction}`}
+              description={`Estimated completion time: ${tokenizationOnboarding.estimatedCompletion}`}
+              type="info"
+              showIcon
+              style={{ marginBottom: 24 }}
+            />
+            <Row gutter={[16, 16]}>
+              <Col xs={24} lg={18}>
+                <Steps
+                  current={tokenizationOnboarding.currentStep}
+                  items={tokenizationOnboarding.steps}
+                  direction="vertical"
+                />
+              </Col>
+              <Col xs={24} lg={6}>
+                <Card size="small" style={{ marginBottom: 16 }}>
+                  <Statistic
+                    title="Fund Name"
+                    value={tokenizationOnboarding.fundName}
+                    valueStyle={{ fontSize: '14px', fontWeight: 500 }}
+                  />
+                </Card>
+                <Card size="small" style={{ marginBottom: 16 }}>
+                  <Statistic
+                    title="Progress"
+                    value={((tokenizationOnboarding.currentStep + 1) / tokenizationOnboarding.totalSteps * 100).toFixed(0)}
+                    suffix="%"
+                    valueStyle={{ color: '#1890ff' }}
+                  />
+                </Card>
+                <Card size="small">
+                  <Statistic
+                    title="Steps Completed"
+                    value={`${tokenizationOnboarding.currentStep + 1}/${tokenizationOnboarding.totalSteps}`}
+                    valueStyle={{ color: '#52c41a' }}
+                  />
+                </Card>
+              </Col>
+            </Row>
           </Card>
         </Col>
       </Row>

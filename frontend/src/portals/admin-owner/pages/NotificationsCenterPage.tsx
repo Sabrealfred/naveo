@@ -51,7 +51,7 @@ interface Notification {
   title: string;
   message: string;
   type: 'info' | 'warning' | 'error' | 'success';
-  category: 'system' | 'compliance' | 'funds' | 'users' | 'transactions';
+  category: 'system' | 'compliance' | 'funds' | 'users' | 'transactions' | 'tokenization';
   priority: 'low' | 'medium' | 'high' | 'critical';
   read: boolean;
   timestamp: string;
@@ -71,6 +71,78 @@ export default function NotificationsCenterPage() {
 
   // Mock notifications - replace with API call
   const notifications: Notification[] = [
+    {
+      id: 'NOT-TOK-001',
+      title: 'Investor Suitability Assessment Pending',
+      message: 'Turkish Real Estate Fund I: 5 US investors need to complete suitability assessment questionnaire',
+      type: 'warning',
+      category: 'tokenization',
+      priority: 'high',
+      read: false,
+      timestamp: '2024-11-12T15:45:00Z',
+      actionRequired: true,
+      recipient: 'Tokenization Team',
+    },
+    {
+      id: 'NOT-TOK-002',
+      title: 'SPK Approval Received',
+      message: 'Ankara Industrial Portfolio: Turkish SPK approval received for cross-border tokenization',
+      type: 'success',
+      category: 'tokenization',
+      priority: 'high',
+      read: false,
+      timestamp: '2024-11-12T14:20:00Z',
+      actionRequired: false,
+      recipient: 'Admin Owner',
+    },
+    {
+      id: 'NOT-TOK-003',
+      title: 'Smart Contract Audit Completed',
+      message: 'Istanbul Commercial Properties: ERC-3643 security audit completed by CertiK with 0 critical issues',
+      type: 'success',
+      category: 'tokenization',
+      priority: 'medium',
+      read: false,
+      timestamp: '2024-11-12T11:30:00Z',
+      actionRequired: false,
+      recipient: 'Technical Team',
+    },
+    {
+      id: 'NOT-TOK-004',
+      title: 'PPM Documents Updated',
+      message: 'Turkish Real Estate Fund I: PPM v2.1 approved and ready for investor distribution',
+      type: 'info',
+      category: 'tokenization',
+      priority: 'medium',
+      read: false,
+      timestamp: '2024-11-12T09:15:00Z',
+      actionRequired: false,
+      recipient: 'Legal Team',
+    },
+    {
+      id: 'NOT-TOK-005',
+      title: 'Accreditation Verification Completed',
+      message: '15 new US accredited investors verified and approved for token purchase',
+      type: 'success',
+      category: 'tokenization',
+      priority: 'medium',
+      read: true,
+      timestamp: '2024-11-10T16:00:00Z',
+      actionRequired: false,
+      recipient: 'Compliance Team',
+    },
+    {
+      id: 'NOT-TOK-006',
+      title: 'SEC Form D Filing Due',
+      message: 'Turkish Real Estate Fund I: SEC Form D amendment due within 5 business days',
+      type: 'warning',
+      category: 'tokenization',
+      priority: 'critical',
+      read: false,
+      timestamp: '2024-11-11T08:00:00Z',
+      actionRequired: true,
+      recipient: 'Compliance Team',
+    },
     {
       id: 'NOT-001',
       title: 'KYC Approval Required',

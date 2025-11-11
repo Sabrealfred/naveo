@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { Table, Tag, Button, Space, Card, Row, Col, Statistic, Modal, Form, Input, Select } from 'antd';
-import { PlusOutlined, EditOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Table, Tag, Button, Space, Card, Row, Col, Statistic, Modal, Form, Input, Select, Timeline, Progress, Badge, Drawer } from 'antd';
+import { PlusOutlined, EditOutlined, EyeOutlined, DeleteOutlined, RocketOutlined, CheckCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { AdvancedFilter } from '../../../components/filters';
 import { ComparisonChart } from '../../../components/common';
 
 const FundsManagementPage = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingFund, setEditingFund] = useState<any>(null);
+  const [tokenizationDrawerVisible, setTokenizationDrawerVisible] = useState(false);
+  const [selectedFundTokenization, setSelectedFundTokenization] = useState<any>(null);
   const [form] = Form.useForm();
 
   const columns = [
@@ -96,10 +98,39 @@ const FundsManagementPage = () => {
       key: 'createdAt',
     },
     {
+      title: 'Tokenización',
+      key: 'tokenization',
+      render: (_: any, record: any) => {
+        if (!record.tokenizationStatus) {
+          return <Tag color="default">No iniciado</Tag>;
+        }
+        const statusConfig: Record<string, { color: string; text: string }> = {
+          'in-progress': { color: 'blue', text: 'En Progreso' },
+          'completed': { color: 'green', text: 'Completado' },
+          'on-hold': { color: 'orange', text: 'En Pausa' },
+        };
+        const config = statusConfig[record.tokenizationStatus.status];
+        return (
+          <Space direction="vertical" size={0}>
+            <Tag color={config.color}>{config.text}</Tag>
+            {record.tokenizationStatus.progress !== undefined && (
+              <div style={{ width: 80 }}>
+                <Progress
+                  percent={record.tokenizationStatus.progress}
+                  size="small"
+                  showInfo={false}
+                />
+              </div>
+            )}
+          </Space>
+        );
+      },
+    },
+    {
       title: 'Acciones',
       key: 'actions',
       fixed: 'right' as const,
-      width: 200,
+      width: 240,
       render: (_: any, record: any) => (
         <Space>
           <Button
@@ -117,6 +148,16 @@ const FundsManagementPage = () => {
           >
             Editar
           </Button>
+          {record.tokenizationStatus && (
+            <Button
+              type="link"
+              size="small"
+              icon={<RocketOutlined />}
+              onClick={() => handleViewTokenization(record)}
+            >
+              Timeline
+            </Button>
+          )}
           <Button
             type="link"
             size="small"
@@ -144,6 +185,17 @@ const FundsManagementPage = () => {
       performanceYTD: 45.2,
       status: 'active',
       createdAt: '2023-01-15',
+      tokenizationStatus: {
+        status: 'completed',
+        progress: 100,
+        timeline: [
+          { date: '2023-01-20', stage: 'Asset Origination', status: 'completed', details: 'Turkish SPV formation completed' },
+          { date: '2023-02-10', stage: 'Regulatory Structure', status: 'completed', details: 'SEC Reg D 506(c) approved' },
+          { date: '2023-02-25', stage: 'Smart Contract Development', status: 'completed', details: 'ERC-3643 deployed and audited' },
+          { date: '2023-03-05', stage: 'Legal Documentation', status: 'completed', details: 'PPM and subscription agreements finalized' },
+          { date: '2023-03-15', stage: 'Token Issuance', status: 'completed', details: 'Initial token issuance to 247 investors' },
+        ],
+      },
     },
     {
       key: '2',
@@ -172,6 +224,18 @@ const FundsManagementPage = () => {
       performanceYTD: 28.9,
       status: 'active',
       createdAt: '2023-03-10',
+      tokenizationStatus: {
+        status: 'in-progress',
+        progress: 68,
+        timeline: [
+          { date: '2024-09-01', stage: 'Asset Origination', status: 'completed', details: 'Turkish real estate portfolio identified and valued' },
+          { date: '2024-09-15', stage: 'Regulatory Structure', status: 'completed', details: 'SPK approval obtained' },
+          { date: '2024-10-05', stage: 'Smart Contract Development', status: 'completed', details: 'ERC-3643 deployed, security audit in progress' },
+          { date: '2024-10-20', stage: 'Legal Documentation', status: 'in-progress', details: 'PPM v2.1 approved, subscription agreements being finalized' },
+          { date: '2024-11-15', stage: 'US Investor Onboarding', status: 'pending', details: 'Accreditation verification and KYC pending' },
+          { date: '2024-12-01', stage: 'Token Issuance', status: 'pending', details: 'Estimated token issuance date' },
+        ],
+      },
     },
     {
       key: '4',
@@ -246,6 +310,11 @@ const FundsManagementPage = () => {
       setIsModalVisible(false);
       form.resetFields();
     });
+  };
+
+  const handleViewTokenization = (fund: any) => {
+    setSelectedFundTokenization(fund);
+    setTokenizationDrawerVisible(true);
   };
 
   return (
@@ -406,6 +475,117 @@ const FundsManagementPage = () => {
           </Row>
         </Form>
       </Modal>
+
+      {/* Tokenization Timeline Drawer */}
+      <Drawer
+        title={
+          <Space>
+            <RocketOutlined />
+            <span>Tokenization Timeline</span>
+            {selectedFundTokenization && (
+              <Tag color="blue">{selectedFundTokenization.name}</Tag>
+            )}
+          </Space>
+        }
+        placement="right"
+        width={600}
+        onClose={() => setTokenizationDrawerVisible(false)}
+        open={tokenizationDrawerVisible}
+      >
+        {selectedFundTokenization && selectedFundTokenization.tokenizationStatus && (
+          <div>
+            <Card size="small" style={{ marginBottom: 24 }}>
+              <Row gutter={[16, 16]}>
+                <Col span={12}>
+                  <Statistic
+                    title="Status"
+                    value={
+                      selectedFundTokenization.tokenizationStatus.status === 'completed'
+                        ? 'Completado'
+                        : selectedFundTokenization.tokenizationStatus.status === 'in-progress'
+                        ? 'En Progreso'
+                        : 'En Pausa'
+                    }
+                    valueStyle={{
+                      color:
+                        selectedFundTokenization.tokenizationStatus.status === 'completed'
+                          ? '#52c41a'
+                          : selectedFundTokenization.tokenizationStatus.status === 'in-progress'
+                          ? '#1890ff'
+                          : '#faad14',
+                    }}
+                  />
+                </Col>
+                <Col span={12}>
+                  <Statistic
+                    title="Progreso"
+                    value={selectedFundTokenization.tokenizationStatus.progress}
+                    suffix="%"
+                    valueStyle={{ color: '#1890ff' }}
+                  />
+                  <Progress
+                    percent={selectedFundTokenization.tokenizationStatus.progress}
+                    strokeColor="#1890ff"
+                    showInfo={false}
+                    style={{ marginTop: 8 }}
+                  />
+                </Col>
+              </Row>
+            </Card>
+
+            <h3 style={{ marginBottom: 16 }}>Etapas de Tokenización</h3>
+            <Timeline
+              items={selectedFundTokenization.tokenizationStatus.timeline.map((item: any) => {
+                const statusConfig: Record<string, { color: string; icon: JSX.Element }> = {
+                  completed: {
+                    color: 'green',
+                    icon: <CheckCircleOutlined style={{ fontSize: 16 }} />,
+                  },
+                  'in-progress': {
+                    color: 'blue',
+                    icon: <ClockCircleOutlined style={{ fontSize: 16 }} />,
+                  },
+                  pending: {
+                    color: 'gray',
+                    icon: <ClockCircleOutlined style={{ fontSize: 16 }} />,
+                  },
+                };
+                const config = statusConfig[item.status];
+                return {
+                  color: config.color,
+                  dot: config.icon,
+                  children: (
+                    <div>
+                      <div style={{ fontWeight: 500, marginBottom: 4 }}>{item.stage}</div>
+                      <div style={{ fontSize: 12, color: '#8c8c8c', marginBottom: 4 }}>
+                        {item.date}
+                      </div>
+                      <div style={{ fontSize: 13 }}>{item.details}</div>
+                      <Badge
+                        status={
+                          item.status === 'completed'
+                            ? 'success'
+                            : item.status === 'in-progress'
+                            ? 'processing'
+                            : 'default'
+                        }
+                        text={
+                          item.status === 'completed'
+                            ? 'Completado'
+                            : item.status === 'in-progress'
+                            ? 'En Progreso'
+                            : 'Pendiente'
+                        }
+                        style={{ marginTop: 8 }}
+                      />
+                    </div>
+                  ),
+                };
+              })}
+            />
+          </div>
+        )}
+      </Drawer>
     </div>
   );
 };

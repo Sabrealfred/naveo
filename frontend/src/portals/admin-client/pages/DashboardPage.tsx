@@ -1,4 +1,4 @@
-import { Card, Col, Row, Statistic, Table, Tag, Progress, Button, Space } from 'antd';
+import { Card, Col, Row, Statistic, Table, Tag, Progress, Button, Space, Timeline, Badge } from 'antd';
 import {
   DollarOutlined,
   RiseOutlined,
@@ -7,6 +7,10 @@ import {
   SwapOutlined,
   TrophyOutlined,
   BankOutlined,
+  RocketOutlined,
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  FileTextOutlined,
 } from '@ant-design/icons';
 import { Line, Column, Pie } from '@ant-design/charts';
 import { StatCard, PerformanceChart } from '../../../components/common';
@@ -122,6 +126,40 @@ export default function DashboardPage() {
       time: '6 hours ago',
     },
   ];
+
+  // Tokenization status for this fund
+  const fundTokenizationStatus = {
+    isTokenized: true,
+    tokenSymbol: 'AGROWTH',
+    contractAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb',
+    blockchain: 'Ethereum',
+    totalTokensIssued: 850000,
+    tokenHolders: 245,
+    complianceStandard: 'ERC-3643',
+    nextComplianceAudit: '2024-12-15',
+    recentMilestones: [
+      {
+        date: '2024-11-10',
+        event: '15 new investors onboarded (US)',
+        status: 'completed',
+      },
+      {
+        date: '2024-11-08',
+        event: 'SEC Form D amendment filed',
+        status: 'completed',
+      },
+      {
+        date: '2024-11-05',
+        event: 'Q3 investor reporting completed',
+        status: 'completed',
+      },
+      {
+        date: '2024-11-12',
+        event: 'Compliance audit scheduled',
+        status: 'pending',
+      },
+    ],
+  };
 
   const navChartConfig = {
     data: navHistoryData,
@@ -359,6 +397,117 @@ export default function DashboardPage() {
             <Button type="primary" block>
               View Full NAV Report
             </Button>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Tokenization Status */}
+      <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
+        <Col span={24}>
+          <Card
+            title={
+              <Space>
+                <RocketOutlined />
+                <span>Fund Tokenization Status</span>
+                <Tag color="green">ACTIVE</Tag>
+              </Space>
+            }
+            bordered={false}
+            extra={
+              <Button type="primary" icon={<FileTextOutlined />}>
+                View Full Details
+              </Button>
+            }
+          >
+            <Row gutter={[16, 16]}>
+              <Col xs={24} md={12} lg={6}>
+                <Card size="small" style={{ marginBottom: 8 }}>
+                  <Statistic
+                    title="Token Symbol"
+                    value={fundTokenizationStatus.tokenSymbol}
+                    valueStyle={{ fontSize: '18px', color: '#1890ff', fontWeight: 'bold' }}
+                  />
+                  <div style={{ fontSize: '12px', color: '#8c8c8c', marginTop: 4 }}>
+                    {fundTokenizationStatus.complianceStandard}
+                  </div>
+                </Card>
+              </Col>
+              <Col xs={24} md={12} lg={6}>
+                <Card size="small" style={{ marginBottom: 8 }}>
+                  <Statistic
+                    title="Tokens Issued"
+                    value={fundTokenizationStatus.totalTokensIssued.toLocaleString()}
+                    valueStyle={{ fontSize: '18px', color: '#52c41a' }}
+                  />
+                  <div style={{ fontSize: '12px', color: '#8c8c8c', marginTop: 4 }}>
+                    {fundTokenizationStatus.blockchain}
+                  </div>
+                </Card>
+              </Col>
+              <Col xs={24} md={12} lg={6}>
+                <Card size="small" style={{ marginBottom: 8 }}>
+                  <Statistic
+                    title="Token Holders"
+                    value={fundTokenizationStatus.tokenHolders}
+                    valueStyle={{ fontSize: '18px', color: '#722ed1' }}
+                    prefix={<TeamOutlined />}
+                  />
+                </Card>
+              </Col>
+              <Col xs={24} md={12} lg={6}>
+                <Card size="small" style={{ marginBottom: 8 }}>
+                  <Statistic
+                    title="Next Audit"
+                    value={fundTokenizationStatus.nextComplianceAudit}
+                    valueStyle={{ fontSize: '14px', color: '#fa8c16' }}
+                  />
+                </Card>
+              </Col>
+            </Row>
+            <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+              <Col xs={24} lg={12}>
+                <Card size="small" title="Smart Contract" style={{ height: '100%' }}>
+                  <Space direction="vertical" style={{ width: '100%' }}>
+                    <div>
+                      <div style={{ fontSize: '12px', color: '#8c8c8c', marginBottom: 4 }}>
+                        Contract Address
+                      </div>
+                      <div style={{ fontFamily: 'monospace', fontSize: '13px', wordBreak: 'break-all' }}>
+                        {fundTokenizationStatus.contractAddress}
+                      </div>
+                    </div>
+                    <Button type="link" size="small" style={{ padding: 0 }}>
+                      View on Etherscan →
+                    </Button>
+                  </Space>
+                </Card>
+              </Col>
+              <Col xs={24} lg={12}>
+                <Card size="small" title="Recent Milestones" style={{ height: '100%' }}>
+                  <Timeline
+                    items={fundTokenizationStatus.recentMilestones.map((milestone) => ({
+                      color: milestone.status === 'completed' ? 'green' : 'blue',
+                      dot:
+                        milestone.status === 'completed' ? (
+                          <CheckCircleOutlined style={{ fontSize: '14px' }} />
+                        ) : (
+                          <ClockCircleOutlined style={{ fontSize: '14px' }} />
+                        ),
+                      children: (
+                        <div>
+                          <div style={{ fontSize: '12px', fontWeight: 500 }}>
+                            {milestone.event}
+                          </div>
+                          <div style={{ fontSize: '11px', color: '#8c8c8c' }}>
+                            {milestone.date}
+                          </div>
+                        </div>
+                      ),
+                    }))}
+                  />
+                </Card>
+              </Col>
+            </Row>
           </Card>
         </Col>
       </Row>
