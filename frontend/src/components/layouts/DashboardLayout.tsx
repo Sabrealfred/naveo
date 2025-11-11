@@ -13,7 +13,6 @@ import {
   BulbFilled,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import { MiraLogo } from '../common';
 import LanguageSwitcher from '../common/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -210,28 +209,27 @@ const DashboardLayout = ({
     <div
       style={{
         height: 60,
-        padding: collapsed ? '16px 6px' : '16px 14px',
+        padding: collapsed ? '16px 6px' : '16px 18px',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: collapsed ? 'center' : 'flex-start',
         transition: 'all 0.2s ease',
         borderBottom: `1px solid ${palette.sidebarBorder}`,
       }}
     >
-      {collapsed && !isMobile ? (
-        <div
-          style={{
-            color: palette.menuActiveColor,
-            fontSize: 18,
-            fontWeight: 700,
-            letterSpacing: '0.08em',
-          }}
-        >
-          M
-        </div>
-      ) : (
-        <MiraLogo variant="light" tone="gradient" size="xs" />
-      )}
+      <div
+        style={{
+          fontWeight: 700,
+          letterSpacing: '0.15em',
+          fontSize: collapsed ? 18 : 20,
+          textTransform: 'uppercase',
+          background: 'linear-gradient(120deg, #5F9BFF 0%, #7BD8FF 60%, #FFFFFF 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+        }}
+      >
+        {collapsed && !isMobile ? 'M' : 'MIRA'}
+      </div>
     </div>
   );
 
