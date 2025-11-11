@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Layout, Menu, Avatar, Dropdown, Badge, Space, Button, Drawer, Grid, Modal, Input, List, Tag } from 'antd';
+import { Layout, Menu, Avatar, Dropdown, Badge, Space, Button, Drawer, Grid, Modal, Input, List, Tag, Tooltip } from 'antd';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -9,11 +9,14 @@ import {
   LogoutOutlined,
   SettingOutlined,
   SearchOutlined,
+  BulbOutlined,
+  BulbFilled,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { MiraLogo } from '../common';
 import LanguageSwitcher from '../common/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../contexts/ThemeContext';
 import { SEARCH_INDEX } from '../../mocks/searchIndex';
 import type { SearchItem } from '../../mocks/searchIndex';
 
@@ -41,6 +44,7 @@ const DashboardLayout = ({
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { t } = useTranslation();
+  const { theme, toggleTheme, isDark } = useTheme();
 
   // Check if we're on mobile (xs or sm breakpoints)
   const isMobile = !screens.md;
@@ -304,6 +308,16 @@ const DashboardLayout = ({
                 </span>
               )}
             </Button>
+
+            <Tooltip title={isDark ? t('layout.lightMode', 'Light Mode') : t('layout.darkMode', 'Dark Mode')}>
+              <Button
+                icon={isDark ? <BulbFilled /> : <BulbOutlined />}
+                type="text"
+                onClick={toggleTheme}
+                style={{ fontSize: '16px' }}
+              />
+            </Tooltip>
+
             {!isMobile && <LanguageSwitcher />}
 
             <Dropdown
