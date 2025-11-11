@@ -30,6 +30,21 @@ interface DashboardLayoutProps {
   userName: string;
 }
 
+const palette = {
+  sidebarStart: '#050C18',
+  sidebarEnd: '#0B1F33',
+  sidebarBorder: '#142036',
+  menuText: '#A5B4CF',
+  menuActiveBg: 'rgba(76, 130, 251, 0.18)',
+  menuActiveColor: '#F8FBFF',
+  headerBg: '#FFFFFF',
+  headerBorder: '#E4E7EC',
+  layoutBg: '#F6F7FB',
+  accent: '#4C82FB',
+  accentSoft: '#1C2B44',
+  mutedText: '#94A3B8',
+};
+
 const DashboardLayout = ({
   children,
   menuItems,
@@ -163,24 +178,30 @@ const DashboardLayout = ({
 
   // Logo component for sidebar
   const logoContent = (
-    <div style={{
-      height: '64px',
-      padding: collapsed ? '16px 8px' : '16px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      transition: 'all 0.2s'
-    }}>
+    <div
+      style={{
+        height: 72,
+        padding: collapsed ? '18px 8px' : '18px 16px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        transition: 'all 0.2s ease',
+        borderBottom: `1px solid ${palette.sidebarBorder}`,
+      }}
+    >
       {collapsed && !isMobile ? (
-        <div style={{
-          color: '#fff',
-          fontSize: '18px',
-          fontWeight: 'bold',
-          fontFamily: 'Sansation, sans-serif',
-          letterSpacing: '0.05em'
-        }}>M</div>
+        <div
+          style={{
+            color: palette.menuActiveColor,
+            fontSize: 18,
+            fontWeight: 700,
+            letterSpacing: '0.08em',
+          }}
+        >
+          M
+        </div>
       ) : (
-        <MiraLogo variant="dark" size="xs" />
+        <MiraLogo variant="light" size="sm" />
       )}
     </div>
   );
@@ -220,14 +241,52 @@ const DashboardLayout = ({
   };
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <>
+      <style>{`
+        .mira-dashboard-menu.ant-menu {
+          background: transparent !important;
+          border-inline-end: none !important;
+        }
+        .mira-dashboard-menu .ant-menu-item {
+          color: ${palette.menuText};
+          margin: 4px 12px;
+          border-radius: 10px;
+          height: 44px;
+          display: flex;
+          align-items: center;
+        }
+        .mira-dashboard-menu .ant-menu-item:hover {
+          color: #ffffff;
+          background: rgba(255,255,255,0.06);
+        }
+        .mira-dashboard-menu .ant-menu-item-selected {
+          color: ${palette.menuActiveColor} !important;
+          background: ${palette.menuActiveBg} !important;
+          box-shadow: 0 10px 24px rgba(5,12,24,0.45);
+        }
+        .mira-dashboard-menu .ant-menu-item::after {
+          display: none;
+        }
+        .mira-dashboard-menu .ant-menu-submenu-title {
+          color: ${palette.menuText};
+        }
+        .mira-dashboard-menu .ant-menu-submenu-title:hover {
+          color: #ffffff;
+        }
+      `}</style>
+      <Layout style={{ minHeight: '100vh', background: palette.layoutBg }}>
       {/* Mobile: Drawer menu */}
       {isMobile && (
         <Drawer
           placement="left"
           onClose={() => setMobileMenuOpen(false)}
           open={mobileMenuOpen}
-          bodyStyle={{ padding: 0, background: '#001529' }}
+          styles={{
+            body: {
+              padding: 0,
+              background: `linear-gradient(180deg, ${palette.sidebarStart} 0%, ${palette.sidebarEnd} 100%)`,
+            },
+          }}
           width={200}
         >
           {logoContent}
@@ -237,6 +296,7 @@ const DashboardLayout = ({
             selectedKeys={[location.pathname]}
             items={menuItems}
             onClick={handleMenuClick}
+            className="mira-dashboard-menu"
           />
         </Drawer>
       )}
@@ -254,6 +314,9 @@ const DashboardLayout = ({
             left: 0,
             top: 0,
             bottom: 0,
+            background: `linear-gradient(180deg, ${palette.sidebarStart} 0%, ${palette.sidebarEnd} 100%)`,
+            borderRight: `1px solid ${palette.sidebarBorder}`,
+            boxShadow: '0 20px 50px rgba(3,7,18,0.6)',
           }}
         >
           {logoContent}
@@ -263,18 +326,26 @@ const DashboardLayout = ({
             selectedKeys={[location.pathname]}
             items={menuItems}
             onClick={handleMenuClick}
+            className="mira-dashboard-menu"
           />
         </Sider>
       )}
 
-      <Layout style={{ marginLeft: isMobile ? 0 : (collapsed ? 80 : 200), transition: 'all 0.2s' }}>
+      <Layout
+        style={{
+          marginLeft: isMobile ? 0 : collapsed ? 80 : 200,
+          transition: 'all 0.2s ease',
+          background: palette.layoutBg,
+        }}
+      >
         <Header style={{
           padding: isMobile ? '0 12px' : '0 24px',
-          background: '#fff',
+          background: palette.headerBg,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          boxShadow: '0 1px 4px rgba(0,21,41,.08)',
+          borderBottom: `1px solid ${palette.headerBorder}`,
+          boxShadow: '0 12px 24px rgba(15,23,42,0.08)',
           position: 'sticky',
           top: 0,
           zIndex: 999,
@@ -283,7 +354,7 @@ const DashboardLayout = ({
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={() => isMobile ? setMobileMenuOpen(!mobileMenuOpen) : setCollapsed(!collapsed)}
-            style={{ fontSize: '16px', width: 64, height: 64 }}
+            style={{ fontSize: 16, width: 54, height: 54, color: palette.accentSoft }}
           />
 
           <Space size={isMobile ? 'middle' : 'large'}>
@@ -291,6 +362,7 @@ const DashboardLayout = ({
               icon={<SearchOutlined />}
               type="text"
               onClick={() => setSearchOpen(true)}
+              style={{ color: palette.accentSoft }}
             >
               {!isMobile && (
                 <span>
@@ -325,8 +397,11 @@ const DashboardLayout = ({
               placement="bottomRight"
               trigger={['click']}
             >
-              <Badge count={5} style={{ cursor: 'pointer' }}>
-                <BellOutlined style={{ fontSize: '18px', cursor: 'pointer' }} />
+              <Badge
+                count={5}
+                style={{ cursor: 'pointer', backgroundColor: palette.accent, color: '#fff' }}
+              >
+                <BellOutlined style={{ fontSize: 18, cursor: 'pointer', color: palette.accentSoft }} />
               </Badge>
             </Dropdown>
 
@@ -336,13 +411,18 @@ const DashboardLayout = ({
               trigger={['click']}
             >
               <Space style={{ cursor: 'pointer' }}>
-                <Avatar style={{ backgroundColor: '#1890ff' }}>
+                <Avatar
+                  style={{
+                    background: 'linear-gradient(135deg, #4C82FB 0%, #7BD8FF 100%)',
+                    color: '#fff',
+                  }}
+                >
                   {userName.charAt(0).toUpperCase()}
                 </Avatar>
                 {!isMobile && (
                   <div style={{ lineHeight: 1.2 }}>
                     <div style={{ fontWeight: 500 }}>{userName}</div>
-                    <div style={{ fontSize: '12px', color: '#999' }}>{userRole}</div>
+                    <div style={{ fontSize: 12, color: palette.mutedText }}>{userRole}</div>
                   </div>
                 )}
               </Space>
@@ -353,6 +433,9 @@ const DashboardLayout = ({
           margin: isMobile ? '12px 8px' : '24px 16px',
           padding: isMobile ? 12 : 24,
           minHeight: 280,
+          background: '#FFFFFF',
+          borderRadius: 16,
+          boxShadow: '0 20px 45px rgba(15,23,42,0.06)',
         }}>
           {children}
         </Content>
@@ -396,7 +479,8 @@ const DashboardLayout = ({
           />
         </Modal>
       </Layout>
-    </Layout>
+      </Layout>
+    </>
   );
 };
 
