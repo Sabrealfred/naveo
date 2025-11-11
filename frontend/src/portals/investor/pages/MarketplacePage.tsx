@@ -109,8 +109,8 @@ const MarketplacePage = () => {
   return (
     <div style={{ padding: '24px' }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ margin: 0, fontFamily: 'var(--font-heading)' }}>{t('marketplace.title')}</h1>
-        <p style={{ color: '#8c8c8c', fontSize: '14px', marginTop: 8 }}>{t('marketplace.subtitle')}</p>
+        <h1 style={{ margin: 0, fontFamily: 'var(--font-heading)' }}>{t('marketplace.title', 'Asset Marketplace')}</h1>
+        <p style={{ color: '#8c8c8c', fontSize: '14px', marginTop: 8 }}>{t('marketplace.subtitle', 'Explore and invest in tokenized funds and assets')}</p>
       </div>
 
       {/* Filtros */}
@@ -119,7 +119,7 @@ const MarketplacePage = () => {
           <Col xs={24} md={8}>
             <Input
               size="large"
-              placeholder={t('marketplace.searchPlaceholder')}
+              placeholder={t('marketplace.searchPlaceholder', 'Search funds and assets...')}
               prefix={<SearchOutlined />}
               allowClear
             />
@@ -127,29 +127,29 @@ const MarketplacePage = () => {
           <Col xs={24} md={8}>
             <Select
               size="large"
-              placeholder={t('marketplace.category')}
+              placeholder={t('marketplace.category', 'Category')}
               style={{ width: '100%' }}
               allowClear
             >
-              <Select.Option value="all">{t('marketplace.allCategories')}</Select.Option>
-              <Select.Option value="crypto">{t('marketplace.cryptoFund')}</Select.Option>
-              <Select.Option value="realestate">{t('marketplace.realEstate')}</Select.Option>
-              <Select.Option value="defi">{t('marketplace.defi')}</Select.Option>
-              <Select.Option value="nft">{t('marketplace.nft')}</Select.Option>
-              <Select.Option value="yield">{t('marketplace.yield')}</Select.Option>
+              <Select.Option value="all">{t('marketplace.allCategories', 'All Categories')}</Select.Option>
+              <Select.Option value="crypto">{t('marketplace.cryptoFund', 'Crypto Fund')}</Select.Option>
+              <Select.Option value="realestate">{t('marketplace.realEstate', 'Real Estate')}</Select.Option>
+              <Select.Option value="defi">{t('marketplace.defi', 'DeFi')}</Select.Option>
+              <Select.Option value="nft">{t('marketplace.nft', 'NFT')}</Select.Option>
+              <Select.Option value="yield">{t('marketplace.yield', 'Yield')}</Select.Option>
             </Select>
           </Col>
           <Col xs={24} md={8}>
             <Select
               size="large"
-              placeholder={t('marketplace.riskLevel')}
+              placeholder={t('marketplace.riskLevel', 'Risk Level')}
               style={{ width: '100%' }}
               allowClear
             >
-              <Select.Option value="low">{t('marketplace.low')}</Select.Option>
-              <Select.Option value="medium">{t('marketplace.medium')}</Select.Option>
-              <Select.Option value="high">{t('marketplace.high')}</Select.Option>
-              <Select.Option value="very-high">{t('marketplace.veryHigh')}</Select.Option>
+              <Select.Option value="low">{t('marketplace.low', 'Low')}</Select.Option>
+              <Select.Option value="medium">{t('marketplace.medium', 'Medium')}</Select.Option>
+              <Select.Option value="high">{t('marketplace.high', 'High')}</Select.Option>
+              <Select.Option value="very-high">{t('marketplace.veryHigh', 'Very High')}</Select.Option>
             </Select>
           </Col>
         </Row>
@@ -187,11 +187,11 @@ const MarketplacePage = () => {
                           : 'red'
                       }
                     >
-                      {t('marketplace.riskLevel')}: {
-                        token.risk === 'Bajo' ? t('marketplace.low') :
-                        token.risk === 'Medio' ? t('marketplace.medium') :
-                        token.risk === 'Alto' ? t('marketplace.high') :
-                        t('marketplace.veryHigh')
+                      {t('marketplace.riskLevel', 'Risk Level')}: {
+                        token.risk === 'Bajo' ? t('marketplace.low', 'Low') :
+                        token.risk === 'Medio' ? t('marketplace.medium', 'Medium') :
+                        token.risk === 'Alto' ? t('marketplace.high', 'High') :
+                        t('marketplace.veryHigh', 'Very High')
                       }
                     </Tag>
                   </Space>
@@ -200,27 +200,27 @@ const MarketplacePage = () => {
 
               <Row gutter={16} style={{ marginBottom: 16 }}>
                 <Col span={12}>
-                  <div style={{ color: '#666', fontSize: 12 }}>{t('marketplace.currentNav')}</div>
+                  <div style={{ color: '#666', fontSize: 12 }}>{t('marketplace.currentNav', 'Current NAV')}</div>
                   <div style={{ fontSize: 18, fontWeight: 600 }}>${token.navValue}</div>
                 </Col>
                 <Col span={12}>
-                  <div style={{ color: '#666', fontSize: 12 }}>{t('marketplace.totalAum')}</div>
+                  <div style={{ color: '#666', fontSize: 12 }}>{t('marketplace.totalAum', 'Total AUM')}</div>
                   <div style={{ fontSize: 18, fontWeight: 600 }}>{token.aum}</div>
                 </Col>
                 <Col span={12}>
-                  <div style={{ color: '#666', fontSize: 12 }}>{t('marketplace.performance30d')}</div>
+                  <div style={{ color: '#666', fontSize: 12 }}>{t('marketplace.performance30d', '30d Performance')}</div>
                   <div style={{ fontSize: 16, fontWeight: 600, color: '#52c41a' }}>
                     {token.performance30d}
                   </div>
                 </Col>
                 <Col span={12}>
-                  <div style={{ color: '#666', fontSize: 12 }}>{t('marketplace.minInv')}</div>
+                  <div style={{ color: '#666', fontSize: 12 }}>{t('marketplace.minInv', 'Min. Investment')}</div>
                   <div style={{ fontSize: 16, fontWeight: 600 }}>${token.minInvestment}</div>
                 </Col>
               </Row>
 
               <div style={{ color: '#999', fontSize: 12, marginBottom: 12 }}>
-                {t('marketplace.fundManager')}: {token.manager}
+                {t('marketplace.fundManager', 'Fund Manager')}: {token.manager}
               </div>
 
               <Space style={{ width: '100%' }}>
@@ -230,9 +230,9 @@ const MarketplacePage = () => {
                   onClick={() => handleBuy(token)}
                   style={{ flex: 1 }}
                 >
-                  {t('marketplace.invest')}
+                  {t('marketplace.invest', 'Invest')}
                 </Button>
-                <Button size="large">{t('marketplace.viewDetails')}</Button>
+                <Button size="large">{t('marketplace.viewDetails', 'View Details')}</Button>
               </Space>
             </Card>
           </Col>

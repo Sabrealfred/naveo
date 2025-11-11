@@ -33,6 +33,7 @@ import {
   UploadOutlined,
   WalletOutlined,
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 const { Title, Text } = Typography;
 
@@ -108,6 +109,7 @@ const mockFunds: Fund[] = [
 ];
 
 const SubscriptionWorkflowPage = () => {
+  const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(0);
   const [form] = Form.useForm();
   const [data, setData] = useState<SubscriptionData>({});
@@ -115,11 +117,11 @@ const SubscriptionWorkflowPage = () => {
   const [fundModalOpen, setFundModalOpen] = useState(false);
 
   const steps = [
-    { title: 'Select Fund' },
-    { title: 'Investment Details' },
-    { title: 'Payment Method' },
-    { title: 'Payment' },
-    { title: 'Confirmation' },
+    { title: t('subscription.steps.selectFund', 'Select Fund') },
+    { title: t('subscription.steps.investmentDetails', 'Investment Details') },
+    { title: t('subscription.steps.paymentMethod', 'Payment Method') },
+    { title: t('subscription.steps.payment', 'Payment') },
+    { title: t('subscription.steps.confirmation', 'Confirmation') },
   ];
 
   const shareClasses = [
@@ -162,12 +164,16 @@ const SubscriptionWorkflowPage = () => {
 
   const handleNext = async () => {
     try {
+      if (currentStep === 0 && !selectedFund) {
+        message.warning(t('subscription.errors.selectFundFirst', 'Please select a fund first'));
+        return;
+      }
       await form.validateFields();
       const values = form.getFieldsValue();
       setData({ ...data, ...values });
       setCurrentStep(currentStep + 1);
     } catch (error) {
-      message.error('Please complete all required fields');
+      message.error(t('subscription.errors.completeFields', 'Please complete all required fields'));
     }
   };
 
@@ -185,7 +191,7 @@ const SubscriptionWorkflowPage = () => {
 
   const handleCopyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    message.success('Copied to clipboard!');
+    message.success(t('subscription.messages.copied', 'Copied to clipboard!'));
   };
 
   const handleSubmitSubscription = () => {
@@ -193,7 +199,7 @@ const SubscriptionWorkflowPage = () => {
     const subscriptionId = `SUB-${timestamp}`;
     setData({ ...data, subscriptionId, status: 'payment-pending' });
     setCurrentStep(currentStep + 1);
-    message.success('Subscription initiated successfully!');
+    message.success(t('subscription.messages.initiated', 'Subscription initiated successfully!'));
   };
 
   const fundColumns: ColumnsType<Fund> = [
@@ -286,7 +292,12 @@ const SubscriptionWorkflowPage = () => {
 
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
-      <Title level={3}>Fund Subscription</Title>
+      <div>
+        <Title level={3}>{t('subscription.title', 'Fund Subscription')}</Title>
+        <Text type="secondary">
+          {t('subscription.subtitle', 'Complete the subscription process to invest in your selected fund')}
+        </Text>
+      </div>
 
       <Card>
         <Steps current={currentStep} items={steps} />
@@ -295,32 +306,47 @@ const SubscriptionWorkflowPage = () => {
       <Form form={form} layout="vertical" initialValues={data}>
         {/* Step 0: Fund Selection */}
         {currentStep === 0 && (
-          <Card title="Select Fund">
+          <Card title={t('subscription.selectFund.title', 'Select Fund')}>
             {selectedFund ? (
-              <Card size="small">
+              <Card size="small" style={{ backgroundColor: '#f5f5f5' }}>
                 <Descriptions column={2} bordered>
-                  <Descriptions.Item label="Fund Name" span={2}>
+                  <Descriptions.Item label={t('subscription.selectFund.fundName', 'Fund Name')} span={2}>
                     <Text strong>{selectedFund.name}</Text>
                   </Descriptions.Item>
-                  <Descriptions.Item label="Strategy">{selectedFund.strategy}</Descriptions.Item>
-                  <Descriptions.Item label="AUM">${(selectedFund.aum / 1000000).toFixed(1)}M</Descriptions.Item>
-                  <Descriptions.Item label="Management Fee">{selectedFund.managementFee}%</Descriptions.Item>
-                  <Descriptions.Item label="Performance Fee">{selectedFund.performanceFee}%</Descriptions.Item>
-                  <Descriptions.Item label="NAV">${selectedFund.nav}</Descriptions.Item>
-                  <Descriptions.Item label="12M Returns">
+                  <Descriptions.Item label={t('subscription.selectFund.strategy', 'Strategy')}>
+                    {selectedFund.strategy}
+                  </Descriptions.Item>
+                  <Descriptions.Item label={t('subscription.selectFund.aum', 'AUM')}>
+                    ${(selectedFund.aum / 1000000).toFixed(1)}M
+                  </Descriptions.Item>
+                  <Descriptions.Item label={t('subscription.selectFund.managementFee', 'Management Fee')}>
+                    {selectedFund.managementFee}%
+                  </Descriptions.Item>
+                  <Descriptions.Item label={t('subscription.selectFund.performanceFee', 'Performance Fee')}>
+                    {selectedFund.performanceFee}%
+                  </Descriptions.Item>
+                  <Descriptions.Item label={t('subscription.selectFund.nav', 'NAV')}>
+                    ${selectedFund.nav.toFixed(2)}
+                  </Descriptions.Item>
+                  <Descriptions.Item label={t('subscription.selectFund.returns', '12M Returns')}>
                     <Tag color={selectedFund.returns12m >= 0 ? 'green' : 'red'}>
                       {selectedFund.returns12m > 0 ? '+' : ''}{selectedFund.returns12m}%
                     </Tag>
                   </Descriptions.Item>
                 </Descriptions>
                 <Button type="link" onClick={() => setFundModalOpen(true)} style={{ marginTop: 16 }}>
-                  Change Fund
+                  {t('subscription.selectFund.changeFund', 'Change Fund')}
                 </Button>
               </Card>
             ) : (
-              <Button type="primary" size="large" onClick={() => setFundModalOpen(true)}>
-                Browse Funds
-              </Button>
+              <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                <Text type="secondary" style={{ display: 'block', marginBottom: 20 }}>
+                  {t('subscription.selectFund.description', 'Browse our available funds and select one to begin your investment journey')}
+                </Text>
+                <Button type="primary" size="large" onClick={() => setFundModalOpen(true)}>
+                  {t('subscription.selectFund.browseFunds', 'Browse Funds')}
+                </Button>
+              </div>
             )}
           </Card>
         )}

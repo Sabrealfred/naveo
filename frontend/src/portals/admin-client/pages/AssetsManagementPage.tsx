@@ -76,9 +76,9 @@ const AssetFormModal = ({
   const { t } = useTranslation();
 
   const assetTypeOptions = [
-    { label: t('adminClient.assets.crypto'), value: 'crypto' },
-    { label: t('adminClient.assets.token'), value: 'token' },
-    { label: t('adminClient.assets.stablecoin'), value: 'stablecoin' },
+    { label: t('adminClient.assets.crypto', 'Crypto'), value: 'crypto' },
+    { label: t('adminClient.assets.token', 'Token'), value: 'token' },
+    { label: t('adminClient.assets.stablecoin', 'Stablecoin'), value: 'stablecoin' },
   ];
 
   const handleOk = async () => {
@@ -90,8 +90,8 @@ const AssetFormModal = ({
     <Modal
       open={open}
       title={title}
-      okText={t('adminClient.assets.save')}
-      cancelText={t('common.cancel')}
+      okText={t('adminClient.assets.save', 'Save')}
+      cancelText={t('common.cancel', 'Cancel')}
       onOk={handleOk}
       onCancel={() => {
         form.resetFields();
@@ -110,41 +110,41 @@ const AssetFormModal = ({
           }
         }
       >
-        <Form.Item name="symbol" label={t('adminClient.assets.symbol')} rules={[{ required: true, message: t('adminClient.assets.enterSymbol') }]}>
+        <Form.Item name="symbol" label={t('adminClient.assets.symbol', 'Symbol')} rules={[{ required: true, message: t('adminClient.assets.enterSymbol', 'Please enter symbol') }]}>
           <Input placeholder="BTC" />
         </Form.Item>
-        <Form.Item name="name" label={t('adminClient.assets.name')} rules={[{ required: true, message: t('adminClient.assets.enterName') }]}>
+        <Form.Item name="name" label={t('adminClient.assets.name', 'Name')} rules={[{ required: true, message: t('adminClient.assets.enterName', 'Please enter name') }]}>
           <Input placeholder="Bitcoin" />
         </Form.Item>
-        <Form.Item name="type" label={t('adminClient.assets.type')} rules={[{ required: true }]}>
+        <Form.Item name="type" label={t('adminClient.assets.type', 'Type')} rules={[{ required: true }]}>
           <Select options={assetTypeOptions} />
         </Form.Item>
         <Form.Item
           name="quantity"
-          label={t('adminClient.assets.quantity')}
-          rules={[{ required: true, message: t('adminClient.assets.enterQuantity') }]}
+          label={t('adminClient.assets.quantity', 'Quantity')}
+          rules={[{ required: true, message: t('adminClient.assets.enterQuantity', 'Please enter quantity') }]}
         >
           <InputNumber min={0} precision={8} style={{ width: '100%' }} />
         </Form.Item>
         <Form.Item
           name="purchase_price"
-          label={t('adminClient.assets.purchasePrice')}
-          rules={[{ required: true, message: t('adminClient.assets.enterPurchasePrice') }]}
+          label={t('adminClient.assets.purchasePrice', 'Purchase Price')}
+          rules={[{ required: true, message: t('adminClient.assets.enterPurchasePrice', 'Please enter purchase price') }]}
         >
           <InputNumber min={0} prefix="$" style={{ width: '100%' }} />
         </Form.Item>
         <Form.Item
           name="current_price"
-          label={t('adminClient.assets.currentPrice')}
-          tooltip={t('adminClient.assets.marketReference')}
-          rules={[{ required: true, message: t('adminClient.assets.enterCurrentPrice') }]}
+          label={t('adminClient.assets.currentPrice', 'Current Price')}
+          tooltip={t('adminClient.assets.marketReference', 'Market reference price')}
+          rules={[{ required: true, message: t('adminClient.assets.enterCurrentPrice', 'Please enter current price') }]}
         >
           <InputNumber min={0} prefix="$" style={{ width: '100%' }} />
         </Form.Item>
         <Form.Item
           name="purchase_date"
-          label={t('adminClient.assets.purchaseDate')}
-          rules={[{ required: true, message: t('adminClient.assets.selectDate') }]}
+          label={t('adminClient.assets.purchaseDate', 'Purchase Date')}
+          rules={[{ required: true, message: t('adminClient.assets.selectDate', 'Please select date') }]}
         >
           <DatePicker style={{ width: '100%' }} format="YYYY-MM-DD" />
         </Form.Item>
@@ -180,7 +180,7 @@ const AssetDetailsModal = ({
   return (
     <Modal
       open={open}
-      title={t('adminClient.assets.detailOf', { name: asset?.name ?? '' })}
+      title={t('adminClient.assets.detailOf', 'Asset Detail: {{name}}', { name: asset?.name ?? '' })}
       width={720}
       footer={null}
       onCancel={onClose}
@@ -190,26 +190,26 @@ const AssetDetailsModal = ({
           <Row gutter={16}>
             <Col span={8}>
               <StatCard
-                title={t('adminClient.assets.currentPrice')}
+                title={t('adminClient.assets.currentPrice', 'Current Price')}
                 value={`$${(asset.current_price || 0).toLocaleString()}`}
                 trend={{ value: performance, isPositive: performance >= 0 }}
               />
             </Col>
             <Col span={8}>
               <StatCard
-                title={t('adminClient.assets.quantity')}
+                title={t('adminClient.assets.quantity', 'Quantity')}
                 value={(asset.quantity || 0).toLocaleString()}
               />
             </Col>
             <Col span={8}>
               <StatCard
-                title={t('adminClient.assets.totalValue')}
+                title={t('adminClient.assets.totalValue', 'Total Value')}
                 value={`$${((asset.quantity || 0) * (asset.current_price || 0)).toLocaleString()}`}
               />
             </Col>
           </Row>
 
-          <Card title={t('adminClient.assets.priceHistory')}>
+          <Card title={t('adminClient.assets.priceHistory', 'Price History')}>
             <Line
               height={240}
               data={priceHistory}
@@ -249,10 +249,10 @@ const AssetsManagementPage = () => {
   const [currentFundId, setCurrentFundId] = useState<string | null>(null);
 
   const assetTypeOptions = [
-    { label: t('adminClient.assets.allTypes'), value: 'all' },
-    { label: t('adminClient.assets.crypto'), value: 'crypto' },
-    { label: t('adminClient.assets.token'), value: 'token' },
-    { label: t('adminClient.assets.stablecoin'), value: 'stablecoin' },
+    { label: t('adminClient.assets.allTypes', 'All Types'), value: 'all' },
+    { label: t('adminClient.assets.crypto', 'Crypto'), value: 'crypto' },
+    { label: t('adminClient.assets.token', 'Token'), value: 'token' },
+    { label: t('adminClient.assets.stablecoin', 'Stablecoin'), value: 'stablecoin' },
   ];
 
   useEffect(() => {
@@ -302,7 +302,7 @@ const AssetsManagementPage = () => {
 
   const columns: ColumnsType<Asset> = [
     {
-      title: t('adminClient.assets.name'),
+      title: t('adminClient.assets.name', 'Name'),
       dataIndex: 'name',
       render: (value, record) => (
         <Space direction="vertical" size={0}>
@@ -312,7 +312,7 @@ const AssetsManagementPage = () => {
       ),
     },
     {
-      title: t('adminClient.assets.type'),
+      title: t('adminClient.assets.type', 'Type'),
       dataIndex: 'type',
       filters: assetTypeOptions
         .filter((option) => option.value !== 'all')
@@ -325,25 +325,25 @@ const AssetsManagementPage = () => {
       ),
     },
     {
-      title: t('adminClient.assets.quantity'),
+      title: t('adminClient.assets.quantity', 'Quantity'),
       dataIndex: 'quantity',
       sorter: (a, b) => (a.quantity || 0) - (b.quantity || 0),
       render: (value) => (value || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 8 }),
     },
     {
-      title: t('adminClient.assets.currentPrice'),
+      title: t('adminClient.assets.currentPrice', 'Current Price'),
       dataIndex: 'current_price',
       sorter: (a, b) => (a.current_price || 0) - (b.current_price || 0),
       render: (value) => `$${(value || 0).toLocaleString()}`,
     },
     {
-      title: t('adminClient.assets.totalValue'),
+      title: t('adminClient.assets.totalValue', 'Total Value'),
       dataIndex: 'totalValue',
       sorter: (a, b) => ((a.quantity || 0) * (a.current_price || 0)) - ((b.quantity || 0) * (b.current_price || 0)),
       render: (_, record) => `$${((record.quantity || 0) * (record.current_price || 0)).toLocaleString()}`,
     },
     {
-      title: t('adminClient.assets.portfolio'),
+      title: t('adminClient.assets.portfolio', '% Portfolio'),
       render: (_, record) => {
         const percentage = ((record.quantity || 0) * (record.current_price || 0) * 100) / totalPortfolioValue;
         return `${percentage.toFixed(2)}%`;
@@ -367,7 +367,7 @@ const AssetsManagementPage = () => {
       },
     },
     {
-      title: t('adminClient.assets.actions'),
+      title: t('adminClient.assets.actions', 'Actions'),
       key: 'actions',
       render: (_, record) => (
         <Space>
@@ -406,11 +406,11 @@ const AssetsManagementPage = () => {
 
   const handleRemoveAsset = (assetId: string) => {
     Modal.confirm({
-      title: t('adminClient.assets.removeAsset'),
+      title: t('adminClient.assets.removeAsset', 'Remove Asset'),
       content: 'Are you sure you want to delete this asset?',
-      okText: t('common.delete'),
+      okText: t('common.delete', 'Delete'),
       okType: 'danger',
-      cancelText: t('common.cancel'),
+      cancelText: t('common.cancel', 'Cancel'),
       centered: true,
       onOk: async () => {
         try {
@@ -472,21 +472,21 @@ const AssetsManagementPage = () => {
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       <Row gutter={[16, 16]}>
         <Col xs={24} md={6}>
-          <StatCard title={t('adminClient.assets.totalAssets')} value={metrics.totalAssets.toString()} />
+          <StatCard title={t('adminClient.assets.totalAssets', 'Total Assets')} value={metrics.totalAssets.toString()} />
         </Col>
         <Col xs={24} md={6}>
-          <StatCard title={t('adminClient.assets.portfolioValue')} value={`$${metrics.totalValue.toLocaleString()}`} />
+          <StatCard title={t('adminClient.assets.portfolioValue', 'Portfolio Value')} value={`$${metrics.totalValue.toLocaleString()}`} />
         </Col>
         <Col xs={24} md={6}>
           <StatCard
-            title={t('adminClient.assets.bestPerformer')}
+            title={t('adminClient.assets.bestPerformer', 'Best Performer')}
             value={metrics.bestPerformer ? metrics.bestPerformer.symbol : '—'}
             trend={metrics.bestPerformer ? { value: ((metrics.bestPerformer.current_price || 0) - (metrics.bestPerformer.purchase_price || 0)) / (metrics.bestPerformer.purchase_price || 1) * 100, isPositive: true } : undefined}
           />
         </Col>
         <Col xs={24} md={6}>
           <StatCard
-            title={t('adminClient.assets.worstPerformer')}
+            title={t('adminClient.assets.worstPerformer', 'Worst Performer')}
             value={metrics.worstPerformer ? metrics.worstPerformer.symbol : '—'}
             trend={metrics.worstPerformer ? { value: ((metrics.worstPerformer.current_price || 0) - (metrics.worstPerformer.purchase_price || 0)) / (metrics.worstPerformer.purchase_price || 1) * 100, isPositive: false } : undefined}
           />
@@ -494,24 +494,24 @@ const AssetsManagementPage = () => {
       </Row>
 
       <Card
-        title={t('adminClient.assets.title')}
+        title={t('adminClient.assets.title', 'Assets Management')}
         extra={
           <Button type="primary" icon={<PlusOutlined />} onClick={() => setAddModalOpen(true)}>
-            {t('adminClient.assets.addAsset')}
+            {t('adminClient.assets.addAsset', 'Add Asset')}
           </Button>
         }
       >
         <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
           <Col xs={24} md={12}>
             <Input.Search
-              placeholder={t('adminClient.assets.search')}
+              placeholder={t('adminClient.assets.search', 'Search assets...')}
               allowClear
               onChange={(event) => setSearchTerm(event.target.value)}
             />
           </Col>
           <Col xs={24} md={12}>
             <Select
-              placeholder={t('adminClient.assets.filterByType')}
+              placeholder={t('adminClient.assets.filterByType', 'Filter by type')}
               options={assetTypeOptions}
               value={filterType}
               onChange={setFilterType}
@@ -530,14 +530,14 @@ const AssetsManagementPage = () => {
 
       <AssetFormModal
         open={isAddModalOpen}
-        title={t('adminClient.assets.addAsset')}
+        title={t('adminClient.assets.addAsset', 'Add Asset')}
         onSubmit={(values) => handleModalSubmit(values)}
         onCancel={() => setAddModalOpen(false)}
       />
 
       <AssetFormModal
         open={isEditModalOpen}
-        title={t('adminClient.assets.editAsset')}
+        title={t('adminClient.assets.editAsset', 'Edit Asset')}
         initialValues={
           selectedAsset
             ? {

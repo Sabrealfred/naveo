@@ -43,6 +43,7 @@ import {
   BusinessRulesPage,
   ApprovalWorkflowsPage,
   ProductStructuringPage,
+  FundRolesManagementPage,
 } from './pages';
 
 const AdminOwnerPortal = () => {
@@ -81,9 +82,13 @@ const AdminOwnerPortal = () => {
       label: 'Gestión de Clientes',
     },
     {
-      key: '/admin-owner/users',
+      key: 'users-and-roles',
       icon: <UserOutlined />,
-      label: 'Usuarios y Permisos',
+      label: 'Users & Roles',
+      children: [
+        { key: '/admin-owner/users', label: 'Platform Users', icon: <UserOutlined /> },
+        { key: '/admin-owner/fund-roles', label: 'Fund Roles', icon: <SafetyOutlined /> },
+      ],
     },
     {
       key: 'integrations',
@@ -145,6 +150,7 @@ const AdminOwnerPortal = () => {
 
         <Route path="clients" element={<ClientsManagementPage />} />
         <Route path="users" element={<UsersPermissionsPage />} />
+        <Route path="fund-roles" element={<FundRolesManagementPage />} />
 
         {/* Integrations Routes */}
         <Route path="integrations/wallets" element={<WalletManagementPage />} />

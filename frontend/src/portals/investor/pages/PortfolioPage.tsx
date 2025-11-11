@@ -175,40 +175,40 @@ const PortfolioPage = () => {
 
   const holdingsColumns = [
     {
-      title: t('investor.holdings.fund'),
+      title: t('investor.holdings.fund', 'Fund'),
       dataIndex: 'fund',
       key: 'fund',
       sorter: (a: Holding, b: Holding) => a.fund.localeCompare(b.fund),
     },
     {
-      title: t('investor.holdings.shares'),
+      title: t('investor.holdings.shares', 'Shares'),
       dataIndex: 'shares',
       key: 'shares',
       sorter: (a: Holding, b: Holding) => a.shares - b.shares,
     },
     {
-      title: t('investor.holdings.invested'),
+      title: t('investor.holdings.invested', 'Avg Price'),
       dataIndex: 'avgPrice',
       key: 'avgPrice',
       render: (value: number) => `$${value.toFixed(2)}`,
       sorter: (a: Holding, b: Holding) => a.avgPrice - b.avgPrice,
     },
     {
-      title: t('investor.holdings.currentNav'),
+      title: t('investor.holdings.currentNav', 'Current NAV'),
       dataIndex: 'currentNav',
       key: 'currentNav',
       render: (value: number) => `$${value.toFixed(2)}`,
       sorter: (a: Holding, b: Holding) => a.currentNav - b.currentNav,
     },
     {
-      title: t('investor.holdings.currentValue'),
+      title: t('investor.holdings.currentValue', 'Current Value'),
       dataIndex: 'value',
       key: 'value',
       render: (value: number) => `$${value.toLocaleString()}`,
       sorter: (a: Holding, b: Holding) => a.value - b.value,
     },
     {
-      title: t('adminClient.traders.profitLoss'),
+      title: t('adminClient.traders.profitLoss', 'Profit/Loss'),
       dataIndex: 'pnl',
       key: 'pnl',
       render: (value: number) => (
@@ -219,7 +219,7 @@ const PortfolioPage = () => {
       sorter: (a: Holding, b: Holding) => a.pnl - b.pnl,
     },
     {
-      title: t('investor.holdings.return'),
+      title: t('investor.holdings.return', 'Return %'),
       dataIndex: 'pnlPercent',
       key: 'pnlPercent',
       render: (value: number) => (
@@ -231,15 +231,15 @@ const PortfolioPage = () => {
       sorter: (a: Holding, b: Holding) => a.pnlPercent - b.pnlPercent,
     },
     {
-      title: t('common.actions'),
+      title: t('common.actions', 'Actions'),
       key: 'actions',
       render: (_, record: Holding) => (
         <Space>
           <Button type="primary" icon={<ShoppingCartOutlined />}>
-            {t('investor.portfolio.buyMore')}
+            {t('investor.portfolio.buyMore', 'Buy More')}
           </Button>
-          <Button icon={<DollarOutlined />}>{t('investor.holdings.sell')}</Button>
-          <Button type="link">{t('investor.portfolio.viewHistory')}</Button>
+          <Button icon={<DollarOutlined />}>{t('investor.holdings.sell', 'Sell')}</Button>
+          <Button type="link">{t('investor.portfolio.viewHistory', 'View History')}</Button>
         </Space>
       ),
     },
@@ -250,7 +250,7 @@ const PortfolioPage = () => {
       <Row gutter={[16, 16]}>
         <Col xs={24} md={8}>
           <StatCard
-            title={t('investor.portfolio.totalValue')}
+            title={t('investor.portfolio.totalValue', 'Total Portfolio Value')}
             value={`$${metrics.totalValue.toLocaleString()}`}
             icon={<WalletOutlined />}
             color="#4f6bed"
@@ -260,7 +260,7 @@ const PortfolioPage = () => {
         </Col>
         <Col xs={24} md={8}>
           <StatCard
-            title={t('investor.portfolio.totalReturn')}
+            title={t('investor.portfolio.totalReturn', 'Total Return')}
             value={`$${metrics.totalReturn.toLocaleString()}`}
             icon={<RiseOutlined />}
             color="#52c41a"
@@ -270,7 +270,7 @@ const PortfolioPage = () => {
         </Col>
         <Col xs={24} md={8}>
           <StatCard
-            title={t('investor.portfolio.availableBalance')}
+            title={t('investor.portfolio.availableBalance', 'Available Balance')}
             value={`$${metrics.availableBalance.toLocaleString()}`}
             icon={<DollarOutlined />}
             color="#faad14"
@@ -281,7 +281,7 @@ const PortfolioPage = () => {
       <Row gutter={[16, 16]}>
         <Col xs={24} xl={16}>
           <Card
-            title={t('investor.portfolio.performanceChart')}
+            title={t('investor.portfolio.performanceChart', 'Portfolio Performance')}
             extra={
               <Tabs
                 activeKey={period}
@@ -301,7 +301,7 @@ const PortfolioPage = () => {
               smooth
               tooltip={{
                 formatter: (datum) => ({
-                  name: t('investor.dashboard.totalValue'),
+                  name: t('investor.dashboard.totalValue', 'Total Value'),
                   value: `$${datum.value.toLocaleString()}`,
                 }),
               }}
@@ -309,7 +309,7 @@ const PortfolioPage = () => {
           </Card>
         </Col>
         <Col xs={24} xl={8}>
-          <Card title={t('investor.portfolio.assetAllocation')}>
+          <Card title={t('investor.portfolio.assetAllocation', 'Asset Allocation')}>
             <Pie
               height={220}
               data={allocationData}
@@ -339,7 +339,7 @@ const PortfolioPage = () => {
         </Col>
       </Row>
 
-      <Card title={t('investor.portfolio.myHoldings')}>
+      <Card title={t('investor.portfolio.myHoldings', 'My Holdings')}>
         <Table
           rowKey="key"
           dataSource={holdings}
@@ -350,7 +350,7 @@ const PortfolioPage = () => {
 
       <Row gutter={[16, 16]}>
         <Col xs={24} md={12}>
-          <Card title={t('investor.portfolio.recentActivity')} extra={<Button type="link">{t('dashboard.viewAll')}</Button>}>
+          <Card title={t('investor.portfolio.recentActivity', 'Recent Activity')} extra={<Button type="link">{t('dashboard.viewAll', 'View All')}</Button>}>
             <List
               dataSource={activity}
               renderItem={(item) => (

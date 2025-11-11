@@ -298,11 +298,11 @@ const TransactionsPage = () => {
     <div style={{ padding: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div>
-          <h1 style={{ margin: 0, fontFamily: 'var(--font-heading)' }}>{t('transactionsPage.title')}</h1>
-          <p style={{ color: '#8c8c8c', fontSize: '14px', marginTop: 8 }}>{t('transactionsPage.subtitle')}</p>
+          <h1 style={{ margin: 0, fontFamily: 'var(--font-heading)' }}>{t('transactionsPage.title', 'Transaction History')}</h1>
+          <p style={{ color: '#8c8c8c', fontSize: '14px', marginTop: 8 }}>{t('transactionsPage.subtitle', 'View and manage all your investment transactions')}</p>
         </div>
         <Button type="primary" icon={<DownloadOutlined />}>
-          {t('transactionsPage.exportAll')}
+          {t('transactionsPage.exportAll', 'Export All')}
         </Button>
       </div>
 

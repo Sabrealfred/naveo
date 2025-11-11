@@ -52,7 +52,7 @@ export default function InvestorReportsPage() {
 
   const columns = [
     {
-      title: t('reports.type'),
+      title: t('reports.type', 'Report Type'),
       dataIndex: 'type',
       key: 'type',
       render: (text: string) => (
@@ -63,17 +63,17 @@ export default function InvestorReportsPage() {
       ),
     },
     {
-      title: t('reports.period'),
+      title: t('reports.period', 'Period'),
       dataIndex: 'period',
       key: 'period',
     },
     {
-      title: t('reports.generated'),
+      title: t('reports.generated', 'Date Generated'),
       dataIndex: 'dateGenerated',
       key: 'dateGenerated',
     },
     {
-      title: t('reports.format'),
+      title: t('reports.format', 'Format'),
       dataIndex: 'format',
       key: 'format',
       render: (format: string) => {
@@ -86,22 +86,22 @@ export default function InvestorReportsPage() {
       },
     },
     {
-      title: t('reports.size'),
+      title: t('reports.size', 'Size'),
       dataIndex: 'size',
       key: 'size',
     },
     {
-      title: t('common.status'),
+      title: t('common.status', 'Status'),
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => (
         <Tag color={status === 'available' ? 'success' : 'processing'}>
-          {status === 'available' ? t('reports.available').toUpperCase() : t('reports.processing').toUpperCase()}
+          {status === 'available' ? t('reports.available', 'Available').toUpperCase() : t('reports.processing', 'Processing').toUpperCase()}
         </Tag>
       ),
     },
     {
-      title: t('common.actions'),
+      title: t('common.actions', 'Actions'),
       key: 'actions',
       render: (_: any, record: any) => (
         <Space>
@@ -112,12 +112,12 @@ export default function InvestorReportsPage() {
                 size="small"
                 icon={<DownloadOutlined />}
               >
-                {t('reports.download')}
+                {t('reports.download', 'Download')}
               </Button>
-              <Button size="small">{t('reports.view')}</Button>
+              <Button size="small">{t('reports.view', 'View')}</Button>
             </>
           ) : (
-            <Button size="small" disabled>{t('reports.processing')}</Button>
+            <Button size="small" disabled>{t('reports.processing', 'Processing')}</Button>
           )}
         </Space>
       ),
@@ -128,10 +128,10 @@ export default function InvestorReportsPage() {
     <div style={{ padding: '24px', background: 'var(--color-background)' }}>
       <div style={{ marginBottom: '24px' }}>
         <h1 style={{ marginBottom: '8px', fontFamily: 'var(--font-heading)' }}>
-          {t('reports.myReports')}
+          {t('reports.myReports', 'My Reports')}
         </h1>
         <p style={{ color: 'var(--color-secondary)', fontSize: '14px' }}>
-          {t('reports.myReportsSubtitle')}
+          {t('reports.myReportsSubtitle', 'Download and view your investment reports and documents')}
         </p>
       </div>
 
@@ -141,8 +141,8 @@ export default function InvestorReportsPage() {
           <Card className="professional-card" hoverable>
             <Space direction="vertical" align="center" style={{ width: '100%' }}>
               <FilePdfOutlined style={{ fontSize: '32px', color: '#2d2d2d' }} />
-              <span style={{ fontWeight: 500 }}>{t('reports.accountStatement')}</span>
-              <Button type="link">{t('reports.generate')}</Button>
+              <span style={{ fontWeight: 500 }}>{t('reports.accountStatement', 'Account Statement')}</span>
+              <Button type="link">{t('reports.generate', 'Generate')}</Button>
             </Space>
           </Card>
         </Col>
@@ -150,8 +150,8 @@ export default function InvestorReportsPage() {
           <Card className="professional-card" hoverable>
             <Space direction="vertical" align="center" style={{ width: '100%' }}>
               <FileExcelOutlined style={{ fontSize: '32px', color: '#52c41a' }} />
-              <span style={{ fontWeight: 500 }}>{t('reports.transactionExport')}</span>
-              <Button type="link">{t('common.export')}</Button>
+              <span style={{ fontWeight: 500 }}>{t('reports.transactionExport', 'Transaction Export')}</span>
+              <Button type="link">{t('common.export', 'Export')}</Button>
             </Space>
           </Card>
         </Col>
@@ -159,8 +159,8 @@ export default function InvestorReportsPage() {
           <Card className="professional-card" hoverable>
             <Space direction="vertical" align="center" style={{ width: '100%' }}>
               <FileTextOutlined style={{ fontSize: '32px', color: '#722ed1' }} />
-              <span style={{ fontWeight: 500 }}>{t('reports.taxDocument')}</span>
-              <Button type="link">{t('reports.view')}</Button>
+              <span style={{ fontWeight: 500 }}>{t('reports.taxDocument', 'Tax Document')}</span>
+              <Button type="link">{t('reports.view', 'View')}</Button>
             </Space>
           </Card>
         </Col>
@@ -168,8 +168,8 @@ export default function InvestorReportsPage() {
           <Card className="professional-card" hoverable>
             <Space direction="vertical" align="center" style={{ width: '100%' }}>
               <FilePdfOutlined style={{ fontSize: '32px', color: '#fa8c16' }} />
-              <span style={{ fontWeight: 500 }}>{t('reports.performance')}</span>
-              <Button type="link">{t('reports.download')}</Button>
+              <span style={{ fontWeight: 500 }}>{t('reports.performance', 'Performance Report')}</span>
+              <Button type="link">{t('reports.download', 'Download')}</Button>
             </Space>
           </Card>
         </Col>
@@ -182,14 +182,14 @@ export default function InvestorReportsPage() {
         </Col>
         <Col xs={24} md={12}>
           <Select
-            placeholder={t('reports.filterByReportType')}
+            placeholder={t('reports.filterByReportType', 'Filter by report type')}
             style={{ width: '100%' }}
             allowClear
             options={[
-              { label: t('reports.statement'), value: 'statement' },
-              { label: t('reports.taxDocument'), value: 'tax' },
-              { label: t('reports.performance'), value: 'performance' },
-              { label: t('reports.transactionHistory'), value: 'transactions' },
+              { label: t('reports.statement', 'Statement'), value: 'statement' },
+              { label: t('reports.taxDocument', 'Tax Document'), value: 'tax' },
+              { label: t('reports.performance', 'Performance Report'), value: 'performance' },
+              { label: t('reports.transactionHistory', 'Transaction History'), value: 'transactions' },
             ]}
           />
         </Col>
@@ -198,7 +198,7 @@ export default function InvestorReportsPage() {
       {/* Reports Table */}
       <Row gutter={[16, 16]}>
         <Col span={24}>
-          <Card title={t('reports.availableReports')} bordered={false} className="professional-card">
+          <Card title={t('reports.availableReports', 'Available Reports')} bordered={false} className="professional-card">
             <Table
               dataSource={reports}
               columns={columns}

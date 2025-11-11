@@ -23,6 +23,11 @@ import {
   AnalyticsPage,
   ReportsPage,
   NotificationsCenterPage,
+  InvestorsManagementPage,
+  TransactionsPage,
+  CompliancePage,
+  PortfolioManagementPage,
+  SubAdminsManagementPage,
 } from './pages';
 
 const AdminClientPortal = () => {
@@ -101,13 +106,12 @@ const AdminClientPortal = () => {
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="assets" element={<AssetsManagementPage />} />
         <Route path="traders" element={<TradersManagementPage />} />
-        {/* Temporary placeholder for missing pages */}
-        <Route path="portfolio" element={<div style={{ padding: 24 }}><h2>Portfolio - Coming Soon</h2></div>} />
-        <Route path="investors" element={<div style={{ padding: 24 }}><h2>Investors Management - Coming Soon</h2></div>} />
+        <Route path="portfolio" element={<PortfolioManagementPage />} />
+        <Route path="investors" element={<InvestorsManagementPage />} />
         <Route path="officers" element={<OfficersManagementPage />} />
-        <Route path="admins" element={<div style={{ padding: 24 }}><h2>Sub-Admins - Coming Soon</h2></div>} />
-        <Route path="transactions" element={<div style={{ padding: 24 }}><h2>Transactions - Coming Soon</h2></div>} />
-        <Route path="compliance" element={<KYCManagementPage />} />
+        <Route path="admins" element={<SubAdminsManagementPage />} />
+        <Route path="transactions" element={<TransactionsPage />} />
+        <Route path="compliance" element={<CompliancePage />} />
         <Route path="reports" element={<ReportsPage />} />
         <Route path="notifications" element={<NotificationsCenterPage />} />
       </Routes>

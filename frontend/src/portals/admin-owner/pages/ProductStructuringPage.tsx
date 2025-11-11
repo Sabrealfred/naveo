@@ -403,7 +403,7 @@ const ProductStructuringPage = () => {
                   <p style={{ fontSize: 11, color: '#8c8c8c', marginTop: -16 }}>
                     Enable token transfers across multiple blockchains (Securitize uses Wormhole for multi-class tokens)
                   </p>
-                </Form.Item>
+                </Form>
               </Col>
               <Col span={12}>
                 <Form layout="vertical">

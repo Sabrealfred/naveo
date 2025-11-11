@@ -26,3 +26,4 @@ export { default as DistributionChannelsPage } from './DistributionChannelsPage'
 export { default as TokenLifecyclePage } from './TokenLifecyclePage';
 export { default as BusinessRulesPage } from './BusinessRulesPage';
 export { default as ApprovalWorkflowsPage } from './ApprovalWorkflowsPage';
+export { default as FundRolesManagementPage } from './FundRolesManagementPage';

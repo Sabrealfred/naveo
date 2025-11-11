@@ -203,26 +203,26 @@ export default function DashboardPage() {
 
   const fundColumns = [
     {
-      title: t('adminOwner.funds.fundName'),
+      title: t('adminOwner.funds.fundName', 'Fund Name'),
       dataIndex: 'name',
       key: 'name',
       render: (text: string) => <span style={{ fontWeight: 500 }}>{text}</span>,
     },
     {
-      title: t('adminOwner.funds.aum'),
+      title: t('adminOwner.funds.aum', 'AUM'),
       dataIndex: 'aum',
       key: 'aum',
       render: (aum: number) => `$${(aum / 1000000).toFixed(2)}M`,
       sorter: (a: any, b: any) => a.aum - b.aum,
     },
     {
-      title: t('adminOwner.funds.nav'),
+      title: t('adminOwner.funds.nav', 'NAV'),
       dataIndex: 'nav',
       key: 'nav',
       render: (nav: number) => `$${nav.toFixed(2)}`,
     },
     {
-      title: t('adminOwner.funds.performance'),
+      title: t('adminOwner.funds.performance', 'Performance'),
       dataIndex: 'performance',
       key: 'performance',
       render: (perf: number) => (
@@ -232,17 +232,17 @@ export default function DashboardPage() {
       ),
     },
     {
-      title: t('adminOwner.funds.investors'),
+      title: t('adminOwner.funds.investors', 'Investors'),
       dataIndex: 'investors',
       key: 'investors',
     },
     {
-      title: t('adminOwner.funds.status'),
+      title: t('adminOwner.funds.status', 'Status'),
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => (
         <Tag color={status === 'active' ? 'green' : 'orange'}>
-          {status === 'active' ? t('adminOwner.funds.active').toUpperCase() : t('adminOwner.funds.review').toUpperCase()}
+          {status === 'active' ? t('adminOwner.funds.active', 'Active').toUpperCase() : t('adminOwner.funds.review', 'In Review').toUpperCase()}
         </Tag>
       ),
     },
@@ -250,17 +250,17 @@ export default function DashboardPage() {
 
   const activityColumns = [
     {
-      title: t('adminOwner.activity.activity'),
+      title: t('adminOwner.activity.activity', 'Activity'),
       dataIndex: 'activity',
       key: 'activity',
     },
     {
-      title: t('adminOwner.activity.time'),
+      title: t('adminOwner.activity.time', 'Time'),
       dataIndex: 'time',
       key: 'time',
     },
     {
-      title: t('adminOwner.activity.type'),
+      title: t('adminOwner.activity.type', 'Type'),
       dataIndex: 'type',
       key: 'type',
       render: (type: string) => <Tag>{type}</Tag>,
@@ -278,14 +278,14 @@ export default function DashboardPage() {
   return (
     <div style={{ padding: '24px' }}>
       <h1 style={{ marginBottom: '24px', fontFamily: 'var(--font-heading)' }}>
-        {t('adminOwner.dashboard.title')}
+        {t('adminOwner.dashboard.title', 'Platform Overview')}
       </h1>
 
       {/* Key Metrics */}
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} sm={12} lg={8}>
           <StatCard
-            title={t('adminOwner.dashboard.totalAUM')}
+            title={t('adminOwner.dashboard.totalAUM', 'Total AUM')}
             value={`$${(platformStats.totalAUM / 1000000).toFixed(2)}M`}
             icon={<DollarOutlined />}
             trend={{ value: platformStats.platformGrowth, isPositive: true }}
@@ -294,7 +294,7 @@ export default function DashboardPage() {
         </Col>
         <Col xs={24} sm={12} lg={8}>
           <StatCard
-            title={t('adminOwner.dashboard.totalUsers')}
+            title={t('adminOwner.dashboard.totalUsers', 'Total Users')}
             value={platformStats.totalUsers.toLocaleString()}
             icon={<UserOutlined />}
             color="#52c41a"
@@ -302,7 +302,7 @@ export default function DashboardPage() {
         </Col>
         <Col xs={24} sm={12} lg={8}>
           <StatCard
-            title={t('adminOwner.dashboard.activeInvestors')}
+            title={t('adminOwner.dashboard.activeInvestors', 'Active Investors')}
             value={platformStats.activeInvestors.toLocaleString()}
             icon={<TeamOutlined />}
             color="#722ed1"
@@ -310,7 +310,7 @@ export default function DashboardPage() {
         </Col>
         <Col xs={24} sm={12} lg={8}>
           <StatCard
-            title={t('adminOwner.dashboard.totalFunds')}
+            title={t('adminOwner.dashboard.totalFunds', 'Total Funds')}
             value={platformStats.totalFunds.toString()}
             icon={<TrophyOutlined />}
             color="#fa8c16"
@@ -318,7 +318,7 @@ export default function DashboardPage() {
         </Col>
         <Col xs={24} sm={12} lg={8}>
           <StatCard
-            title={t('adminOwner.dashboard.monthlyVolume')}
+            title={t('adminOwner.dashboard.monthlyVolume', 'Monthly Volume')}
             value={`$${(platformStats.monthlyVolume / 1000000).toFixed(2)}M`}
             icon={<SwapOutlined />}
             trend={{ value: 15.3, isPositive: true }}
@@ -328,7 +328,7 @@ export default function DashboardPage() {
         <Col xs={24} sm={12} lg={8}>
           <Card>
             <Statistic
-              title={t('adminOwner.dashboard.platformGrowth')}
+              title={t('adminOwner.dashboard.platformGrowth', 'Platform Growth')}
               value={platformStats.platformGrowth}
               precision={1}
               valueStyle={{ color: '#3f8600' }}
@@ -348,7 +348,7 @@ export default function DashboardPage() {
       {/* Charts */}
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} lg={16}>
-          <Card title={t('adminOwner.dashboard.monthlyVolumeTrend')} bordered={false}>
+          <Card title={t('adminOwner.dashboard.monthlyVolumeTrend', 'Monthly Volume Trend')} bordered={false}>
             {monthlyVolumeData.length > 0 ? (
               <Column {...volumeChartConfig} />
             ) : (
@@ -357,7 +357,7 @@ export default function DashboardPage() {
           </Card>
         </Col>
         <Col xs={24} lg={8}>
-          <Card title={t('adminOwner.dashboard.recentActivity')} bordered={false}>
+          <Card title={t('adminOwner.dashboard.recentActivity', 'Recent Activity')} bordered={false}>
             <Table
               dataSource={recentActivities}
               columns={activityColumns}
@@ -371,7 +371,7 @@ export default function DashboardPage() {
       {/* Top Funds Table */}
       <Row gutter={[16, 16]}>
         <Col span={24}>
-          <Card title={t('adminOwner.dashboard.topFunds')} bordered={false}>
+          <Card title={t('adminOwner.dashboard.topFunds', 'Top Performing Funds')} bordered={false}>
             <Table
               dataSource={topFunds}
               columns={fundColumns}
