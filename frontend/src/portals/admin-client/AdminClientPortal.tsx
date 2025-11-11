@@ -19,6 +19,7 @@ import {
   DollarOutlined,
   SyncOutlined,
   LinkOutlined,
+  BankOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import { useTranslation } from 'react-i18next';
@@ -46,6 +47,7 @@ import {
   AIStrategyManagementPage,
   AIAgentPage,
   IntegrationsPage,
+  BankingPaymentsPage,
 } from './pages';
 
 const AdminClientPortal = () => {
@@ -133,6 +135,11 @@ const AdminClientPortal = () => {
       ],
     },
     {
+      key: '/admin-client/banking',
+      icon: <BankOutlined />,
+      label: t('menu.adminClient.banking', 'Banking & Payments'),
+    },
+    {
       key: '/admin-client/transactions',
       icon: <SwapOutlined />,
       label: t('menu.adminClient.transactions'),
@@ -183,6 +190,7 @@ const AdminClientPortal = () => {
         <Route path="gate-management" element={<GateManagementPage />} />
         <Route path="officers" element={<OfficersManagementPage />} />
         <Route path="admins" element={<SubAdminsManagementPage />} />
+        <Route path="banking" element={<BankingPaymentsPage />} />
         <Route path="transactions" element={<TransactionsPage />} />
         <Route path="compliance" element={<CompliancePage />} />
         <Route path="integrations" element={<IntegrationsPage />} />
