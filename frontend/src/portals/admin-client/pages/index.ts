@@ -23,3 +23,4 @@ export { default as AnalyticsPage } from './AnalyticsPage';
 export { default as ReportsPage } from './ReportsPage';
 export { default as NotificationsCenterPage } from './NotificationsCenterPage';
 export { default as IntegrationsPage } from './IntegrationsPage';
+export { default as ClientOrderManagementPage } from './ClientOrderManagementPage';

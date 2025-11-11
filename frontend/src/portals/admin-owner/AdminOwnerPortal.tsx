@@ -39,6 +39,7 @@ import {
   AuditLogsPage,
   NotificationsCenterPage,
   AssetPipelinePage,
+  AssetApprovalPage,
   CapitalPartnersPage,
   WalletManagementPage,
   BankingIntegrationsPage,
@@ -68,6 +69,11 @@ const AdminOwnerPortal = () => {
       key: '/admin-owner/asset-pipeline',
       icon: <ProjectOutlined />,
       label: t('menu.adminOwner.assetPipeline'),
+    },
+    {
+      key: '/admin-owner/asset-approval',
+      icon: <CheckCircleOutlined />,
+      label: 'Asset Approval',
     },
     {
       key: '/admin-owner/capital-partners',
@@ -150,6 +156,7 @@ const AdminOwnerPortal = () => {
         <Route index element={<DashboardPage />} />
         <Route path="funds" element={<FundsManagementPage />} />
         <Route path="asset-pipeline" element={<AssetPipelinePage />} />
+        <Route path="asset-approval" element={<AssetApprovalPage />} />
         <Route path="capital-partners" element={<CapitalPartnersPage />} />
 
         {/* Tokenization Routes */}
