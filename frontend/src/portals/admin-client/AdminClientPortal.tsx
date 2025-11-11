@@ -15,6 +15,7 @@ import {
   BarChartOutlined,
   LockOutlined,
   RobotOutlined,
+  CommentOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import {
@@ -30,6 +31,7 @@ import {
   RiskDashboardPage,
   GateManagementPage,
   AIStrategyManagementPage,
+  AIAgentPage,
 } from './pages';
 
 const AdminClientPortal = () => {
@@ -53,6 +55,11 @@ const AdminClientPortal = () => {
       key: '/admin-client/ai-strategy',
       icon: <RobotOutlined />,
       label: 'Estrategias AI',
+    },
+    {
+      key: '/admin-client/ai-agent',
+      icon: <CommentOutlined />,
+      label: 'AI Agent Asistente',
     },
     {
       key: '/admin-client/nav',
@@ -138,6 +145,7 @@ const AdminClientPortal = () => {
         {/* Temporary placeholder for missing pages */}
         <Route path="portfolio" element={<div style={{ padding: 24 }}><h2>Portfolio - Coming Soon</h2></div>} />
         <Route path="ai-strategy" element={<AIStrategyManagementPage />} />
+        <Route path="ai-agent" element={<AIAgentPage />} />
         <Route path="investors" element={<div style={{ padding: 24 }}><h2>Investors Management - Coming Soon</h2></div>} />
         <Route path="subscription-calendar" element={<SubscriptionCalendarPage />} />
         <Route path="capital-calls" element={<CapitalCallPage />} />
