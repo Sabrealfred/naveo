@@ -352,7 +352,8 @@
   "layout": {
     "myProfile": "My Profile",
     "settings": "Settings",
-    "logout": "Log Out"
+    "logout": "Log Out",
+    "search": "Search"
   },
   "traders": {
     "manageTrader": "Manage Trader",
