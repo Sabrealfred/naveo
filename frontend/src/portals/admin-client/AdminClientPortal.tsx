@@ -18,6 +18,7 @@ import {
   DollarOutlined,
   SyncOutlined,
   BankOutlined,
+  ShoppingCartOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import {
@@ -44,6 +45,7 @@ import {
   AIStrategyManagementPage,
   AIAgentPage,
   BankingPaymentsPage,
+  ClientOrderManagementPage,
 } from './pages';
 
 const AdminClientPortal = () => {
@@ -102,6 +104,11 @@ const AdminClientPortal = () => {
       key: '/admin-client/investors',
       icon: <TeamOutlined />,
       label: 'Mis Inversionistas',
+    },
+    {
+      key: '/admin-client/client-orders',
+      icon: <ShoppingCartOutlined />,
+      label: 'Client Orders',
     },
     {
       key: '/admin-client/subscription-calendar',
@@ -174,6 +181,7 @@ const AdminClientPortal = () => {
         <Route path="ai-strategy" element={<AIStrategyManagementPage />} />
         <Route path="ai-agent" element={<AIAgentPage />} />
         <Route path="investors" element={<InvestorsManagementPage />} />
+        <Route path="client-orders" element={<ClientOrderManagementPage />} />
         <Route path="subscription-calendar" element={<SubscriptionCalendarPage />} />
         <Route path="capital-calls" element={<CapitalCallPage />} />
         <Route path="gate-management" element={<GateManagementPage />} />
