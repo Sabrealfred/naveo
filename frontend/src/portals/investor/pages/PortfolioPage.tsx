@@ -719,7 +719,7 @@ const PortfolioPage = () => {
 
               <Card type="inner" title="💡 Optimization Opportunity" size="small">
                 <Text type="secondary">
-                  Based on your risk profile, we suggest increasing allocation to funds with Sharpe Ratio > 1.5.
+                  Based on your risk profile, we suggest increasing allocation to funds with Sharpe Ratio {'>'}  1.5.
                 </Text>
                 <br />
                 <Button type="link" style={{ padding: 0, marginTop: 8 }}>See Recommendations →</Button>

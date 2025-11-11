@@ -1,4 +1,4 @@
-import React, { Component, ReactNode } from 'react';
+import React, { Component, type ReactNode } from 'react';
 import { Result, Button, Typography, Card, Space } from 'antd';
 import { BugOutlined, ReloadOutlined, HomeOutlined } from '@ant-design/icons';
 
@@ -77,7 +77,7 @@ class ErrorBoundary extends Component<Props, State> {
       }
 
       // Default error UI
-      const isDevelopment = process.env.NODE_ENV === 'development';
+      const isDevelopment = import.meta.env.DEV;
 
       return (
         <div
