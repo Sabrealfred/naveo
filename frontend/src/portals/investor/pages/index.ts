@@ -6,3 +6,7 @@ export { default as PortfolioPage } from './PortfolioPage';
 export { default as PerformanceAnalyticsPage } from './PerformanceAnalyticsPage';
 export { default as InvestorReportsPage } from './InvestorReportsPage';
 export { default as ProfilePage } from './ProfilePage';
+export { default as OnboardingFlowPage } from './OnboardingFlowPage';
+export { default as StatementsPage } from './StatementsPage';
+export { default as TaxDocumentsPage } from './TaxDocumentsPage';
+export { default as NotificationsCenterPage } from './NotificationsCenterPage';

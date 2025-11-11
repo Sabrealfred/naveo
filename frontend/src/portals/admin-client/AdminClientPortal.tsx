@@ -10,6 +10,7 @@ import {
   SwapOutlined,
   UserSwitchOutlined,
   RobotOutlined,
+  SyncOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import {
@@ -19,6 +20,7 @@ import {
   OfficersManagementPage,
   TradersManagementPage,
   PortfolioManagementPage,
+  RebalancingPage,
   InvestorsManagementPage,
   SubAdminsManagementPage,
   TransactionsPage,
@@ -44,6 +46,11 @@ const AdminClientPortal = () => {
       key: '/admin-client/portfolio',
       icon: <FundProjectionScreenOutlined />,
       label: 'Mi Portafolio',
+    },
+    {
+      key: '/admin-client/rebalancing',
+      icon: <SyncOutlined />,
+      label: 'Rebalancing',
     },
     {
       key: '/admin-client/ai-strategy',
@@ -98,6 +105,7 @@ const AdminClientPortal = () => {
         <Route path="nav" element={<NAVSystemPage />} />
         <Route path="assets" element={<AssetsManagementPage />} />
         <Route path="portfolio" element={<PortfolioManagementPage />} />
+        <Route path="rebalancing" element={<RebalancingPage />} />
         <Route path="ai-strategy" element={<AIStrategyManagementPage />} />
         <Route path="investors" element={<InvestorsManagementPage />} />
         <Route path="traders" element={<TradersManagementPage />} />

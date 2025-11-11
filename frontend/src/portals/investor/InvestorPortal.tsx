@@ -7,6 +7,10 @@ import {
   FileTextOutlined,
   UserOutlined,
   LineChartOutlined,
+  BellOutlined,
+  FilePdfOutlined,
+  AuditOutlined,
+  UserAddOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import {
@@ -18,6 +22,10 @@ import {
   PerformanceAnalyticsPage,
   InvestorReportsPage,
   ProfilePage,
+  OnboardingFlowPage,
+  StatementsPage,
+  TaxDocumentsPage,
+  NotificationsCenterPage,
 } from './pages';
 
 const InvestorPortal = () => {
@@ -53,6 +61,21 @@ const InvestorPortal = () => {
       label: 'Reportes',
     },
     {
+      key: '/investor/statements',
+      icon: <FilePdfOutlined />,
+      label: 'Statements',
+    },
+    {
+      key: '/investor/tax-documents',
+      icon: <AuditOutlined />,
+      label: 'Tax Documents',
+    },
+    {
+      key: '/investor/notifications',
+      icon: <BellOutlined />,
+      label: 'Notifications',
+    },
+    {
       key: '/investor/profile',
       icon: <UserOutlined />,
       label: 'Mi Perfil',
@@ -72,6 +95,10 @@ const InvestorPortal = () => {
         <Route path="marketplace" element={<MarketplacePage />} />
         <Route path="transactions" element={<TransactionsPage />} />
         <Route path="reports" element={<InvestorReportsPage />} />
+        <Route path="statements" element={<StatementsPage />} />
+        <Route path="tax-documents" element={<TaxDocumentsPage />} />
+        <Route path="notifications" element={<NotificationsCenterPage />} />
+        <Route path="onboarding" element={<OnboardingFlowPage />} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="kyc-status" element={<KYCStatusPage />} />
       </Routes>
