@@ -1,30 +1,39 @@
 # 🎉 NAVEO - ACTUALIZACIÓN DE PROGRESO
 
-**Fecha:** 2025-11-10 22:00 UTC
-**Sprint:** Sprint 2 - Gestión de Activos
-**Estado:** 🟢 Desarrollo Activo – 55% del MVP
+**Fecha:** 2025-11-11
+**Sprint:** Sprint 2 - Gestión de Activos & Admin Client Enhancement
+**Estado:** 🟢 Desarrollo Activo – 60% del MVP
 
 ---
 
-## ✅ COMPLETADO HOY (SPRINT 2)
+## ✅ COMPLETADO RECIENTEMENTE (SPRINT 2)
 
-1.  **Internacionalización (i18n)**
+1. **Admin Client – BI-Style Enhancement (NUEVO)**
+   - **TradersManagementPage:** 20 traders con métricas de performance (7d/30d), 8 stat cards, 2 charts (Top Performers Column, Role Distribution Pie), filtros avanzados
+   - **OfficersManagementPage:** 18 compliance officers con tracking completo, 8 stat cards, 2 charts, detailed activity monitoring
+   - **SubAdminsManagementPage:** 16 sub-admins con role management, approval authority tracking, 8 stat cards, 2 charts
+   - **InvestorsManagementPage:** 22 investors con KYC workflow completo, 8 stat cards, 3 charts (KYC Status, Tier Distribution, Top Investors)
+   - **AnalyticsDashboardPage:** Nuevo dashboard BI-style con 12 KPIs, 6 interactive charts, time period selector, export functionality
+
+2. **Internacionalización (i18n)**
     - Se ha configurado `i18next` para soportar múltiples idiomas.
     - La página de Login (`LoginPage.tsx`) ha sido completamente traducida a Inglés y Español.
     - Se ha añadido un componente (`LanguageSwitcher`) para cambiar de idioma en tiempo real.
     - Se han creado los archivos de traducción (`en.json`, `es.json`) con las cadenas de la página de login.
 
-2. **Portal de Login + Demo Access**
-   - Nueva pantalla `/` con formulario validado y botones “Demo Login” por rol.
+3. **Portal de Login + Demo Access**
+   - Nueva pantalla `/` con formulario validado y botones "Demo Login" por rol.
    - Redirecciones automáticas a cada portal y mensajes de feedback.
-3. **Admin Client – Assets Management**
+
+4. **Admin Client – Assets Management**
    - KPI cards, tabla con filtros/sort, CRUD mock y modales (add/edit/detail).
-4. **Investor – Portfolio Page**
+
+5. **Investor – Portfolio Page**
    - KPI cards, performance chart con tabs, holdings table, asset allocation, activity feed.
-5. **BuySellModal v2**
+
+6. **BuySellModal v2**
    - Flujo de 3 pasos (formulario → review → success), validaciones de balance/shares, cálculo de fees.
-6. **Admin Client – Traders Management**
-   - KPI cards, tabla con filtros/búsqueda, invitación, performance dashboard y permisos.
+
 7. **Supabase**
    - Migración `001_initial_schema.sql` con tablas (funds, assets, transactions, user_portfolios, traders) y políticas RLS.
    - `npx supabase db reset --yes` aplicado correctamente.
@@ -36,9 +45,9 @@
 | Portal | Features Completados | Progreso | Notas |
 |--------|----------------------|----------|-------|
 | **Admin Owner** | 10 / 15 | 67% | Dashboards + configuraciones listos. |
-| **Admin Client** | 6 / 13 | 46% | Dashboard, NAV, Assets y Traders operativos. |
+| **Admin Client** | 9 / 13 | 69% | Dashboard, NAV, Assets, Traders, Officers, SubAdmins, Investors, Analytics operativos con BI-style. |
 | **Investor** | 5 / 12 | 42% | Dashboard, Marketplace, Transactions, Portfolio y Buy/Sell listos. |
-| **TOTAL** | **21 / 40** | **52.5%** | Sprint 2 empuja foco en gestión de activos. |
+| **TOTAL** | **24 / 40** | **60%** | Admin Client portal significativamente mejorado con BI analytics. |
 
 ---
 
@@ -63,18 +72,24 @@
 
 ## 🧱 NUEVAS PANTALLAS Y COMPONENTES
 
-| Archivo | Descripción |
-|---------|-------------|
-| `src/i18n.ts` | Configuración de i18next para internacionalización. |
-| `src/locales/en.json` | Archivo de traducción para Inglés. |
-| `src/locales/es.json` | Archivo de traducción para Español. |
-| `src/components/common/LanguageSwitcher.tsx` | Componente para cambiar de idioma. |
-| `src/pages/LoginPage.tsx` | Landing/login con formulario validado y demo buttons. |
-| `src/portals/admin-client/pages/AssetsManagementPage.tsx` | CRUD + métricas de activos del fondo. |
-| `src/portals/investor/pages/PortfolioPage.tsx` | Portfolio completo con charts/tablas. |
-| `src/components/modals/BuySellModal.tsx` | Modal multi-step con cálculos y confirmación. |
-| `src/portals/admin-client/pages/TradersManagementPage.tsx` | Gestión de traders, invitaciones y performance. |
-| `supabase/migrations/001_initial_schema.sql` | Esquema inicial + RLS. |
+| Archivo | Descripción | LOC |
+|---------|-------------|-----|
+| `src/portals/admin-client/pages/TradersManagementPage.tsx` | Gestión completa de traders con BI analytics: 20 traders, 8 stat cards, 2 charts, filtros avanzados | 997 |
+| `src/portals/admin-client/pages/OfficersManagementPage.tsx` | Compliance officers management con tracking: 18 officers, 8 metrics, 2 charts | ~1445 |
+| `src/portals/admin-client/pages/SubAdminsManagementPage.tsx` | Sub-admins con role management: 16 admins, approval authority, 8 metrics, 2 charts | ~1414 |
+| `src/portals/admin-client/pages/InvestorsManagementPage.tsx` | Investor KYC workflow: 22 investors, portfolio tracking, 8 metrics, 3 charts | ~1590 |
+| `src/portals/admin-client/pages/AnalyticsDashboardPage.tsx` | BI-style dashboard: 12 KPIs, 6 interactive charts, time selector, export | ~1200 |
+| `src/i18n.ts` | Configuración de i18next para internacionalización. | - |
+| `src/locales/en.json` | Archivo de traducción para Inglés. | - |
+| `src/locales/es.json` | Archivo de traducción para Español. | - |
+| `src/components/common/LanguageSwitcher.tsx` | Componente para cambiar de idioma. | - |
+| `src/pages/LoginPage.tsx` | Landing/login con formulario validado y demo buttons. | - |
+| `src/portals/admin-client/pages/AssetsManagementPage.tsx` | CRUD + métricas de activos del fondo. | 587 |
+| `src/portals/investor/pages/PortfolioPage.tsx` | Portfolio completo con charts/tablas. | - |
+| `src/components/modals/BuySellModal.tsx` | Modal multi-step con cálculos y confirmación. | - |
+| `supabase/migrations/001_initial_schema.sql` | Esquema inicial + RLS. | ~430 |
+
+**Total nuevo código:** ~6,646 líneas agregadas en este sprint
 
 ---
 
