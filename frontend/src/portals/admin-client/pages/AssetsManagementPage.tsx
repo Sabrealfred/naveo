@@ -270,7 +270,7 @@ const AssetDetailsModal = ({
               <StatCard
                 title="Precio actual"
                 value={`$${asset.currentPrice.toLocaleString()}`}
-                trend={asset.change24h}
+                trend={{ value: Math.abs(asset.change24h), isPositive: asset.change24h >= 0 }}
               />
             </Col>
             <Col span={8}>
@@ -531,14 +531,14 @@ const AssetsManagementPage = () => {
               <StatCard
                 title="Best Performer (24h)"
                 value={metrics.bestPerformer ? metrics.bestPerformer.symbol : '—'}
-                trend={metrics.bestPerformer?.change24h}
+                trend={metrics.bestPerformer ? { value: Math.abs(metrics.bestPerformer.change24h), isPositive: metrics.bestPerformer.change24h >= 0 } : undefined}
               />
             </Col>
             <Col xs={24} md={6}>
               <StatCard
                 title="Worst Performer (24h)"
                 value={metrics.worstPerformer ? metrics.worstPerformer.symbol : '—'}
-                trend={metrics.worstPerformer?.change24h}
+                trend={metrics.worstPerformer ? { value: Math.abs(metrics.worstPerformer.change24h), isPositive: metrics.worstPerformer.change24h >= 0 } : undefined}
               />
             </Col>
           </>

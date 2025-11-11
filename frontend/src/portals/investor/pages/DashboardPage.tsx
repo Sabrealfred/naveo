@@ -183,7 +183,6 @@ export default function DashboardPage() {
         content: 'Assets',
       },
     },
-    colorField: 'asset',
     theme: {
       colors10: ['#2d2d2d', '#52c41a', '#722ed1', '#fa8c16', '#13c2c2'],
     },

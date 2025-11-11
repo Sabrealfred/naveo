@@ -156,8 +156,7 @@ export default function PortfolioManagementPage() {
             title={t('portfolio.bestPerformer')}
             value={portfolioMetrics.bestPerformer}
             icon={<RiseOutlined />}
-            trend="up"
-            trendValue={portfolioMetrics.bestPerformance}
+            trend={{ value: portfolioMetrics.bestPerformance, isPositive: true }}
             color="#722ed1"
           />
         </Col>

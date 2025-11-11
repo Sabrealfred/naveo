@@ -2,14 +2,12 @@ import { Card, Col, Row, Statistic, Table, Tag, Progress, Button, Space } from '
 import {
   DollarOutlined,
   RiseOutlined,
-  FallOutlined,
   TeamOutlined,
   SwapOutlined,
   TrophyOutlined,
-  BankOutlined,
 } from '@ant-design/icons';
 import { Line, Column, Pie } from '@ant-design/charts';
-import { StatCard, PerformanceChart } from '../../../components/common';
+import { StatCard } from '../../../components/common';
 import { useNavigate } from 'react-router-dom';
 
 export default function DashboardPage() {

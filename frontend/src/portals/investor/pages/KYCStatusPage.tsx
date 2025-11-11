@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, Steps, Tag, Button, Alert, Descriptions, Timeline, Upload, message } from 'antd';
+import { Card, Steps, Tag, Button, Alert, Descriptions, Timeline, message } from 'antd';
 import { CheckCircleOutlined, ClockCircleOutlined, WarningOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons';
 import { KYCFormModal } from '../../../components/modals';
 
