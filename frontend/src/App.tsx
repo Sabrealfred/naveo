@@ -9,6 +9,7 @@ import esES from 'antd/locale/es_ES';
 import { useTranslation } from 'react-i18next';
 import { supabaseClient } from './services/supabaseClient';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
+import { ErrorBoundary } from './components';
 import './i18n'; // Initialize i18n
 
 // Import portal components (will create these next)
@@ -117,9 +118,17 @@ function AppContent() {
 
 function App() {
   return (
-    <ThemeProvider>
-      <AppContent />
-    </ThemeProvider>
+    <ErrorBoundary
+      onError={(error, errorInfo) => {
+        // In production, you might want to log to an error reporting service
+        console.error('Application Error:', error);
+        console.error('Error Info:', errorInfo);
+      }}
+    >
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 
