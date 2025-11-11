@@ -20,7 +20,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { SEARCH_INDEX } from '../../mocks/searchIndex';
 import type { SearchItem } from '../../mocks/searchIndex';
 
-const { Header, Sider, Content } = Layout;
+const { Header, Sider, Content, Footer } = Layout;
 const { useBreakpoint } = Grid;
 
 interface DashboardLayoutProps {
@@ -43,7 +43,36 @@ const palette = {
   accent: '#4C82FB',
   accentSoft: '#1C2B44',
   mutedText: '#94A3B8',
+  footerBg: '#050C18',
+  footerBorder: '#101F32',
 };
+
+const footerLinks = [
+  {
+    title: 'Platform',
+    links: [
+      { label: 'Overview', path: '/investor' },
+      { label: 'AI Agent', path: '/admin-client/ai-agent' },
+      { label: 'Tokenization', path: '/admin-owner/token-lifecycle' },
+    ],
+  },
+  {
+    title: 'Resources',
+    links: [
+      { label: 'Insights', path: '/reports' },
+      { label: 'Compliance', path: '/admin-owner/compliance' },
+      { label: 'Support', path: '/notifications' },
+    ],
+  },
+  {
+    title: 'Company',
+    links: [
+      { label: 'Team', path: '/team' },
+      { label: 'Partners', path: '/admin-owner/capital-partners' },
+      { label: 'Contact', path: '/contact' },
+    ],
+  },
+];
 
 const DashboardLayout = ({
   children,
@@ -439,6 +468,83 @@ const DashboardLayout = ({
         }}>
           {children}
         </Content>
+        <Footer
+          style={{
+            background: palette.footerBg,
+            borderTop: `1px solid ${palette.footerBorder}`,
+            padding: isMobile ? '32px 16px' : '40px 48px',
+            color: '#F8FBFF',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: isMobile ? 'column' : 'row',
+              justifyContent: 'space-between',
+              gap: 24,
+            }}
+          >
+            <div style={{ maxWidth: 320 }}>
+              <MiraLogo variant="light" size="sm" className="animate-float" />
+              <p style={{ color: palette.mutedText, marginTop: 12, lineHeight: 1.5 }}>
+                Secure infrastructure for tokenized assets, institutional workflows, and AI-native automation.
+              </p>
+            </div>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, minmax(140px, 1fr))',
+                gap: 24,
+                flex: 1,
+              }}
+            >
+              {footerLinks.map((section) => (
+                <div key={section.title}>
+                  <div style={{ fontWeight: 600, marginBottom: 12 }}>{section.title}</div>
+                  <Space direction="vertical">
+                    {section.links.map((link) => (
+                      <Button
+                        key={link.label}
+                        type="link"
+                        onClick={() => navigate(link.path)}
+                        style={{ padding: 0, color: palette.mutedText }}
+                      >
+                        {link.label}
+                      </Button>
+                    ))}
+                  </Space>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div
+            style={{
+              marginTop: 32,
+              paddingTop: 16,
+              borderTop: `1px solid ${palette.footerBorder}`,
+              display: 'flex',
+              flexDirection: isMobile ? 'column' : 'row',
+              alignItems: isMobile ? 'flex-start' : 'center',
+              justifyContent: 'space-between',
+              gap: 12,
+              color: palette.mutedText,
+              fontSize: 12,
+            }}
+          >
+            <span>© {new Date().getFullYear()} Mira Labs. All rights reserved.</span>
+            <Space size="middle">
+              <Button type="link" style={{ padding: 0, color: palette.mutedText }} onClick={() => navigate('/legal/privacy')}>
+                Privacy
+              </Button>
+              <Button type="link" style={{ padding: 0, color: palette.mutedText }} onClick={() => navigate('/legal/terms')}>
+                Terms
+              </Button>
+              <Button type="link" style={{ padding: 0, color: palette.mutedText }} onClick={() => navigate('/contact')}>
+                Contact
+              </Button>
+            </Space>
+          </div>
+        </Footer>
         <Modal
           open={searchOpen}
           onCancel={() => setSearchOpen(false)}
