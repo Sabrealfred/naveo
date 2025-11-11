@@ -459,7 +459,8 @@ export default function AIStrategyManagementPage() {
             value={`${aiInsights.confidenceScore}%`}
             icon={<CheckCircleOutlined />}
             color="#52c41a"
-            trend={{ value: 5, isPositive: true }}
+            trend="up"
+            trendValue={5}
           />
         </Col>
         <Col xs={24} sm={12} lg={8}>
@@ -468,7 +469,8 @@ export default function AIStrategyManagementPage() {
             value={aiInsights.riskScore}
             icon={<SafetyOutlined />}
             color="#faad14"
-            trend={{ value: 3, isPositive: false }}
+            trend="down"
+            trendValue={3}
           />
         </Col>
         <Col xs={24} sm={12} lg={8}>
@@ -477,7 +479,8 @@ export default function AIStrategyManagementPage() {
             value={`${aiInsights.expectedReturn}%`}
             icon={<LineChartOutlined />}
             color="#722ed1"
-            trend={{ value: 2.3, isPositive: true }}
+            trend="up"
+            trendValue={2.3}
           />
         </Col>
         <Col xs={24} sm={12} lg={8}>
