@@ -1,4 +1,5 @@
-import { Card, Col, Row, Statistic, Table, Tag, Button, Space, Avatar, Steps, Alert } from 'antd';
+import { useState } from 'react';
+import { Card, Col, Row, Statistic, Table, Tag, Button, Space, Avatar, Steps, Alert, message } from 'antd';
 import {
   DollarOutlined,
   RiseOutlined,
@@ -17,6 +18,16 @@ import { Line, Pie } from '@ant-design/charts';
 import { StatCard } from '../../../components/common';
 
 export default function DashboardPage() {
+  const [loadingOnboarding, setLoadingOnboarding] = useState(false);
+
+  const handleContinueOnboarding = () => {
+    setLoadingOnboarding(true);
+    message.info('Loading suitability assessment questionnaire...');
+    setTimeout(() => {
+      setLoadingOnboarding(false);
+      message.success('Questionnaire loaded! Please complete all questions.');
+    }, 1500);
+  };
   // Mock data for Investor Dashboard - Replace with real Supabase data
   const portfolioMetrics = {
     totalValue: 125000, // $125K
@@ -401,7 +412,12 @@ export default function DashboardPage() {
             }
             bordered={false}
             extra={
-              <Button type="primary" icon={<FileProtectOutlined />}>
+              <Button
+                type="primary"
+                icon={<FileProtectOutlined />}
+                onClick={handleContinueOnboarding}
+                loading={loadingOnboarding}
+              >
                 Continue Onboarding
               </Button>
             }

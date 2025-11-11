@@ -1,4 +1,5 @@
-import { Card, Col, Row, Statistic, Table, Tag, Progress, Button, Space, Timeline, Badge } from 'antd';
+import { useState } from 'react';
+import { Card, Col, Row, Statistic, Table, Tag, Progress, Button, Space, Timeline, Badge, message, Modal } from 'antd';
 import {
   DollarOutlined,
   RiseOutlined,
@@ -11,11 +12,46 @@ import {
   CheckCircleOutlined,
   ClockCircleOutlined,
   FileTextOutlined,
+  LinkOutlined,
 } from '@ant-design/icons';
 import { Line, Column, Pie } from '@ant-design/charts';
 import { StatCard, PerformanceChart } from '../../../components/common';
 
 export default function DashboardPage() {
+  const [loadingDetails, setLoadingDetails] = useState(false);
+
+  const handleViewFullDetails = () => {
+    setLoadingDetails(true);
+    message.info('Loading full tokenization details...');
+    setTimeout(() => {
+      setLoadingDetails(false);
+      Modal.info({
+        title: 'Fund Tokenization Details',
+        width: 600,
+        content: (
+          <div>
+            <p><strong>Contract Address:</strong> 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb</p>
+            <p><strong>Token Standard:</strong> ERC-3643 (T-REX Protocol)</p>
+            <p><strong>Blockchain:</strong> Ethereum Mainnet</p>
+            <p><strong>Total Supply:</strong> 850,000 AGROWTH</p>
+            <p><strong>Circulating Supply:</strong> 850,000 AGROWTH (100%)</p>
+            <p><strong>Token Holders:</strong> 245</p>
+            <p><strong>Transfer Restrictions:</strong> Accredited Investors Only, 12-month lock-up</p>
+            <p><strong>Next Compliance Audit:</strong> December 15, 2024</p>
+            <p><strong>Audit Firm:</strong> CertiK</p>
+            <p><strong>Last Audit Score:</strong> 95/100 (Excellent)</p>
+          </div>
+        ),
+      });
+    }, 1000);
+  };
+
+  const handleViewOnEtherscan = () => {
+    message.success('Opening Etherscan in new tab...');
+    setTimeout(() => {
+      window.open('https://etherscan.io/address/0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb', '_blank');
+    }, 300);
+  };
   // Mock data for Fund Manager Dashboard - Replace with real Supabase data
   const fundMetrics = {
     fundName: 'Alpha Growth Fund',
@@ -414,7 +450,12 @@ export default function DashboardPage() {
             }
             bordered={false}
             extra={
-              <Button type="primary" icon={<FileTextOutlined />}>
+              <Button
+                type="primary"
+                icon={<FileTextOutlined />}
+                onClick={handleViewFullDetails}
+                loading={loadingDetails}
+              >
                 View Full Details
               </Button>
             }
@@ -476,7 +517,13 @@ export default function DashboardPage() {
                         {fundTokenizationStatus.contractAddress}
                       </div>
                     </div>
-                    <Button type="link" size="small" style={{ padding: 0 }}>
+                    <Button
+                      type="link"
+                      size="small"
+                      icon={<LinkOutlined />}
+                      style={{ padding: 0 }}
+                      onClick={handleViewOnEtherscan}
+                    >
                       View on Etherscan →
                     </Button>
                   </Space>

@@ -1,4 +1,5 @@
-import { Card, Col, Row, Statistic, Table, Tag, Progress, Steps, Badge } from 'antd';
+import { useState } from 'react';
+import { Card, Col, Row, Statistic, Table, Tag, Progress, Steps, Badge, Button, Space, message } from 'antd';
 import {
   DollarOutlined,
   UserOutlined,
@@ -10,11 +11,16 @@ import {
   FileTextOutlined,
   SafetyOutlined,
   CheckCircleOutlined,
+  EyeOutlined,
+  PlusOutlined,
 } from '@ant-design/icons';
 import { Line, Column } from '@ant-design/charts';
 import { StatCard } from '../../../components/common';
+import { useNavigate } from 'react-router-dom';
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
+  const [loadingRow, setLoadingRow] = useState<string | null>(null);
   // Mock data - Replace with real data from Supabase
   const platformStats = {
     totalAUM: 245680000, // $245.68M
@@ -218,6 +224,22 @@ export default function DashboardPage() {
     },
   ];
 
+  const handleViewDetails = (fundName: string) => {
+    setLoadingRow(fundName);
+    message.info(`Loading ${fundName} details...`);
+    setTimeout(() => {
+      setLoadingRow(null);
+      navigate('/admin-owner/tokenization-flow');
+    }, 800);
+  };
+
+  const handleStartNewTokenization = () => {
+    message.success('Navigating to Tokenization Wizard...');
+    setTimeout(() => {
+      navigate('/admin-owner/tokenization-wizard');
+    }, 500);
+  };
+
   const tokenizationColumns = [
     {
       title: 'Fund Name',
@@ -235,6 +257,7 @@ export default function DashboardPage() {
       title: 'Current Stage',
       dataIndex: 'stage',
       key: 'stage',
+      responsive: ['md'] as any,
     },
     {
       title: 'Progress',
@@ -251,6 +274,7 @@ export default function DashboardPage() {
     {
       title: 'Documents',
       key: 'documents',
+      responsive: ['lg'] as any,
       render: (record: any) => (
         <span>
           {record.documentsReady}/{record.documentsTotal}
@@ -261,11 +285,13 @@ export default function DashboardPage() {
       title: 'Next Milestone',
       dataIndex: 'nextMilestone',
       key: 'nextMilestone',
+      responsive: ['xl'] as any,
     },
     {
       title: 'Days',
       dataIndex: 'daysInProgress',
       key: 'daysInProgress',
+      responsive: ['lg'] as any,
       render: (days: number) => `${days}d`,
     },
     {
@@ -276,6 +302,23 @@ export default function DashboardPage() {
         <Tag color={status === 'on-track' ? 'green' : status === 'delayed' ? 'orange' : 'red'}>
           {status.toUpperCase()}
         </Tag>
+      ),
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      fixed: 'right' as const,
+      width: 120,
+      render: (_: any, record: any) => (
+        <Button
+          type="link"
+          size="small"
+          icon={<EyeOutlined />}
+          loading={loadingRow === record.fundName}
+          onClick={() => handleViewDetails(record.fundName)}
+        >
+          View
+        </Button>
       ),
     },
   ];
@@ -363,7 +406,19 @@ export default function DashboardPage() {
               </span>
             }
             bordered={false}
-            extra={<Tag color="blue">Live Data</Tag>}
+            extra={
+              <Space>
+                <Tag color="blue">Live Data</Tag>
+                <Button
+                  type="primary"
+                  size="small"
+                  icon={<PlusOutlined />}
+                  onClick={handleStartNewTokenization}
+                >
+                  Start New
+                </Button>
+              </Space>
+            }
           >
             <Row gutter={[16, 16]} style={{ marginBottom: '16px' }}>
               <Col xs={12} sm={8} lg={4}>
@@ -423,6 +478,7 @@ export default function DashboardPage() {
               columns={tokenizationColumns}
               pagination={false}
               size="small"
+              scroll={{ x: 1000 }}
             />
           </Card>
         </Col>
