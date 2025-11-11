@@ -11,6 +11,7 @@ import {
   BellOutlined,
   AuditOutlined,
   ProjectOutlined,
+  RocketOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import {
@@ -33,6 +34,7 @@ import {
   DueDiligencePage,
   ProductStructuringPage,
   KYCAMLManagementPage,
+  TokenizationFlowPage,
 } from './pages';
 
 const AdminOwnerPortal = () => {
@@ -62,6 +64,11 @@ const AdminOwnerPortal = () => {
       key: '/admin-owner/product-structuring',
       icon: <ProjectOutlined />,
       label: 'Product Structuring',
+    },
+    {
+      key: '/admin-owner/tokenization-flow',
+      icon: <RocketOutlined />,
+      label: 'Tokenization Flow',
     },
     {
       key: '/admin-owner/kyc-aml',
@@ -127,6 +134,7 @@ const AdminOwnerPortal = () => {
         <Route path="asset-pipeline" element={<AssetPipelinePage />} />
         <Route path="due-diligence" element={<DueDiligencePage />} />
         <Route path="product-structuring" element={<ProductStructuringPage />} />
+        <Route path="tokenization-flow" element={<TokenizationFlowPage />} />
         <Route path="kyc-aml" element={<KYCAMLManagementPage />} />
         <Route path="clients" element={<ClientsManagementPage />} />
         <Route path="users" element={<UsersPermissionsPage />} />

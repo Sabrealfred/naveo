@@ -18,3 +18,4 @@ export { default as SmartContractsPage } from './SmartContractsPage';
 export { default as FeeStructurePage } from './FeeStructurePage';
 export { default as AuditLogsPage } from './AuditLogsPage';
 export { default as NotificationsCenterPage } from './NotificationsCenterPage';
+export { default as TokenizationFlowPage } from './TokenizationFlowPage';
