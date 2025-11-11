@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { ReactNode } from 'react';
 import {
   Card,
   Tabs,
@@ -35,6 +36,7 @@ import {
   SendOutlined,
   ReloadOutlined,
   PercentageOutlined,
+  CloseCircleOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
@@ -328,6 +330,25 @@ const ClientOrderManagementPage = () => {
     });
   };
 
+  const riskColorMap: Record<Client['riskProfile'], string> = {
+    conservative: 'blue',
+    moderate: 'orange',
+    aggressive: 'red',
+  };
+
+  const orderTypeConfig: Record<OrderType, { color: string; icon: ReactNode }> = {
+    buy: { color: 'green', icon: <ShoppingCartOutlined /> },
+    sell: { color: 'red', icon: <DollarOutlined /> },
+    rebalance: { color: 'blue', icon: <ReloadOutlined /> },
+  };
+
+  const orderStatusConfig: Record<OrderStatus, { color: string; icon: ReactNode }> = {
+    pending: { color: 'warning', icon: <ClockCircleOutlined /> },
+    executed: { color: 'success', icon: <CheckCircleOutlined /> },
+    failed: { color: 'error', icon: <CloseCircleOutlined /> },
+    cancelled: { color: 'default', icon: <CloseCircleOutlined /> },
+  };
+
   const clientColumns: ColumnsType<Client> = [
     {
       title: 'Client Name',
@@ -360,14 +381,9 @@ const ClientOrderManagementPage = () => {
       title: 'Risk Profile',
       dataIndex: 'riskProfile',
       key: 'riskProfile',
-      render: (profile) => {
-        const colors = {
-          conservative: 'blue',
-          moderate: 'orange',
-          aggressive: 'red',
-        };
-        return <Tag color={colors[profile]}>{profile.toUpperCase()}</Tag>;
-      },
+      render: (profile: Client['riskProfile']) => (
+        <Tag color={riskColorMap[profile]}>{profile.toUpperCase()}</Tag>
+      ),
       filters: [
         { text: 'Conservative', value: 'conservative' },
         { text: 'Moderate', value: 'moderate' },
@@ -425,13 +441,8 @@ const ClientOrderManagementPage = () => {
       title: 'Type',
       dataIndex: 'type',
       key: 'type',
-      render: (type) => {
-        const config = {
-          buy: { color: 'green', icon: <ShoppingCartOutlined /> },
-          sell: { color: 'red', icon: <DollarOutlined /> },
-          rebalance: { color: 'blue', icon: <ReloadOutlined /> },
-        };
-        const cfg = config[type];
+      render: (type: OrderType) => {
+        const cfg = orderTypeConfig[type];
         return (
           <Tag icon={cfg.icon} color={cfg.color}>
             {type.toUpperCase()}
@@ -465,14 +476,8 @@ const ClientOrderManagementPage = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status) => {
-        const config = {
-          pending: { color: 'warning', icon: <ClockCircleOutlined /> },
-          executed: { color: 'success', icon: <CheckCircleOutlined /> },
-          failed: { color: 'error', icon: <CloseCircleOutlined /> },
-          cancelled: { color: 'default', icon: <CloseCircleOutlined /> },
-        };
-        const cfg = config[status];
+      render: (status: OrderStatus) => {
+        const cfg = orderStatusConfig[status];
         return (
           <Tag icon={cfg.icon} color={cfg.color}>
             {status.toUpperCase()}

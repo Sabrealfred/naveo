@@ -124,18 +124,17 @@ export async function deleteFund(fundId: string) {
  * Get fund performance metrics
  */
 export async function getFundPerformance(fundId?: string) {
-  let query = supabaseClient
-    .from('fund_performance_view')
-    .select('*');
+  const baseQuery = supabaseClient.from('fund_performance_view').select('*');
 
   if (fundId) {
-    query = query.eq('fund_id', fundId).single();
+    const { data, error } = await baseQuery.eq('fund_id', fundId).single();
+    if (error) throw error;
+    return data as FundPerformance;
   }
 
-  const { data, error } = await query;
-
+  const { data, error } = await baseQuery;
   if (error) throw error;
-  return fundId ? (data as FundPerformance) : (data as FundPerformance[]);
+  return data as FundPerformance[];
 }
 
 /**

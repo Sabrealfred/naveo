@@ -52,6 +52,7 @@ interface Asset extends AssetType {
   approval_date?: string;
   rejection_reason?: string;
   submitted_date?: string;
+  description?: string;
 }
 
 interface AssetFormValues {

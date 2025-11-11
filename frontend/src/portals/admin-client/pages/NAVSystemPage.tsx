@@ -1,4 +1,4 @@
-import { Row, Col, Card, Table, Button, Space, Statistic, Tag, Tabs, Progress, Alert, Badge, Timeline, Divider, Modal, Form, InputNumber, Select, DatePicker, message } from 'antd';
+import { Row, Col, Card, Table, Button, Space, Statistic, Tag, Tabs, Progress, Alert, Badge, Timeline, Divider, Modal, Form, InputNumber, Select, DatePicker, message, Input } from 'antd';
 import { DownloadOutlined, CalculatorOutlined, HistoryOutlined, CheckCircleOutlined, SyncOutlined, WarningOutlined, EyeOutlined, FileTextOutlined, SafetyOutlined, ClockCircleOutlined, DollarOutlined, AuditOutlined, ApiOutlined, LineChartOutlined } from '@ant-design/icons';
 import { PerformanceChart, PerformanceGauge, ComparisonChart } from '../../../components/common';
 import { useState } from 'react';
@@ -795,7 +795,7 @@ const NAVSystemPage = () => {
             label="Razón del Ajuste"
             rules={[{ required: true, message: 'Describe la razón' }]}
           >
-            <Select.TextArea
+            <Input.TextArea
               rows={4}
               placeholder="Describe detalladamente la razón del ajuste..."
             />

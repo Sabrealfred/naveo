@@ -392,7 +392,7 @@ const TradersManagementPage = () => {
               yField="pnl"
               point={{ size: 4 }}
               smooth
-              yAxis={{ label: { formatter: (val) => `$${Number(val) / 1_000}K` } }}
+              yAxis={{ label: { formatter: (val: string) => `$${Number(val) / 1_000}K` } }}
             />
           </Card>
         </Col>
@@ -405,7 +405,10 @@ const TradersManagementPage = () => {
               }))}
               xField="trader"
               yField="volume"
-              label={{ position: 'top', formatter: (val) => `${val.value.toFixed(1)}M` }}
+              label={{
+                position: 'top',
+                formatter: (data: { value: number }) => `${data.value.toFixed(1)}M`,
+              }}
             />
           </Card>
         </Col>

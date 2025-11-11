@@ -25,7 +25,7 @@ const mockStrategicPartners: StrategicPartner[] = mockCapitalPartners.map((partn
   api_endpoint: null,
   api_key_encrypted: null,
   webhook_url: null,
-  integration_status: partner.status === 'Active' ? 'Live' : partner.status === 'Negotiation' ? 'Testing' : 'Planned',
+  integration_status: partner.status === 'Active' ? 'Live' : partner.status === 'Negotiation' ? 'Testing' : 'Pending',
   last_sync_at: null,
   hubspot_deal_id: null,
   notion_page_id: null,

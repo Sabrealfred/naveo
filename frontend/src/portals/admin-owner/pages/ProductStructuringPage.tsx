@@ -286,7 +286,11 @@ const ProductStructuringPage = () => {
                       <div style={{ fontSize: 12 }}>
                         <strong>Recommended For:</strong>
                         <div style={{ marginTop: 4 }}>
-                          {l1.recommended.map(r => <Tag key={r} size="small" style={{ marginBottom: 4 }}>{r}</Tag>)}
+                          {l1.recommended.map((r) => (
+                            <Tag key={r} style={{ marginBottom: 4 }}>
+                              {r}
+                            </Tag>
+                          ))}
                         </div>
                       </div>
                     </Space>

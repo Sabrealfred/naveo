@@ -117,6 +117,13 @@ const WalletManagementPage = () => {
     { id: '8', name: 'Trezor', type: 'hardware', logo: '🔐', status: 'disconnected', users: 0 },
   ];
 
+  const walletTypeColors: Record<Wallet['type'], string> = {
+    custodial: 'blue',
+    'non-custodial': 'purple',
+    hardware: 'orange',
+    multisig: 'green',
+  };
+
   const columns: ColumnsType<Wallet> = [
     {
       title: 'Wallet Name',
@@ -136,15 +143,7 @@ const WalletManagementPage = () => {
       title: 'Type',
       dataIndex: 'type',
       key: 'type',
-      render: (type) => {
-        const colors = {
-          custodial: 'blue',
-          'non-custodial': 'purple',
-          hardware: 'orange',
-          multisig: 'green',
-        };
-        return <Tag color={colors[type]}>{type.toUpperCase()}</Tag>;
-      },
+      render: (type: Wallet['type']) => <Tag color={walletTypeColors[type]}>{type.toUpperCase()}</Tag>,
     },
     {
       title: 'Provider',

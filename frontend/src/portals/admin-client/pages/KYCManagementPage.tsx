@@ -15,7 +15,8 @@ import {
   ReloadOutlined,
   ExclamationCircleOutlined,
 } from '@ant-design/icons';
-import { ActivityTimeline, ProgressRing } from '../../../components/common';
+import { ActivityTimeline } from '../../../components/common';
+import type { TimelineEvent } from '../../../components/common/ActivityTimeline';
 import type { TabsProps } from 'antd';
 
 const { TextArea } = Input;
@@ -361,36 +362,41 @@ const KYCManagementPage = () => {
   };
 
   // Compliance timeline events
-  const timelineEvents = [
+  const timelineEvents: TimelineEvent[] = [
     {
+      id: 'event-001',
       timestamp: '2024-11-09 14:30',
       title: 'KYC Submitted',
       description: 'Michael Chen submitted KYC documents',
-      type: 'info' as const,
+      status: 'pending',
     },
     {
+      id: 'event-002',
       timestamp: '2024-11-09 11:15',
       title: 'AML Alert',
       description: 'PEP match detected for Venture Capital Partners LLC',
-      type: 'warning' as const,
+      status: 'processing',
     },
     {
+      id: 'event-003',
       timestamp: '2024-11-08 16:45',
       title: 'KYC Approved',
       description: 'Sarah Williams KYC verification approved',
-      type: 'success' as const,
+      status: 'success',
     },
     {
+      id: 'event-004',
       timestamp: '2024-11-07 10:20',
       title: 'Document Requested',
       description: 'Additional documents requested from Robert Thompson',
-      type: 'info' as const,
+      status: 'pending',
     },
     {
+      id: 'event-005',
       timestamp: '2024-11-06 09:00',
       title: 'KYC Rejected',
       description: 'Alexandra Petrov KYC rejected due to sanctions match',
-      type: 'error' as const,
+      status: 'error',
     },
   ];
 
@@ -451,8 +457,9 @@ const KYCManagementPage = () => {
             <Row gutter={16}>
               <Col xs={24} md={12}>
                 <div style={{ textAlign: 'center' }}>
-                  <ProgressRing
-                    percent={(stats.approved / stats.total) * 100}
+                  <Progress
+                    type="circle"
+                    percent={Number(((stats.approved / stats.total) * 100).toFixed(1))}
                     strokeColor="#52c41a"
                   />
                   <div style={{ marginTop: 16 }}>

@@ -247,7 +247,7 @@ const IntegrationsPage = () => {
           <ApiOutlined style={{ fontSize: 20 }} />
           <div>
             <div style={{ fontWeight: 500 }}>{name}</div>
-            <Tag size="small">{record.type.toUpperCase()}</Tag>
+            <Tag>{record.type.toUpperCase()}</Tag>
           </div>
         </Space>
       ),
@@ -309,7 +309,7 @@ const IntegrationsPage = () => {
           <SafetyOutlined style={{ fontSize: 20 }} />
           <div>
             <div style={{ fontWeight: 500 }}>{provider}</div>
-            <Tag size="small" color={record.walletType === 'multi-sig' ? 'purple' : record.walletType === 'cold' ? 'blue' : 'green'}>
+            <Tag color={record.walletType === 'multi-sig' ? 'purple' : record.walletType === 'cold' ? 'blue' : 'green'}>
               {record.walletType.toUpperCase()}
             </Tag>
           </div>

@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Card, Space, Typography, Tag, Button, Statistic, Row, Col } from 'antd';
 import type { CardProps } from 'antd';
 import {
@@ -11,7 +11,7 @@ import {
 const { Title, Text } = Typography;
 
 // Metric Card with trend indicator
-export interface MetricCardProps extends CardProps {
+export interface MetricCardProps extends Omit<CardProps, 'prefix'> {
   title: string;
   value: string | number;
   prefix?: ReactNode;

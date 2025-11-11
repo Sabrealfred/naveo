@@ -6,7 +6,7 @@ import {
   SyncOutlined,
 } from '@ant-design/icons';
 
-interface TimelineEvent {
+export interface TimelineEvent {
   id: string;
   title: string;
   description: string;

@@ -286,8 +286,8 @@ export async function getDistributionPlatformsStatistics() {
   if (error) throw error;
 
   const uniqueChannels = new Set<string>();
-  data.forEach(platform => {
-    platform.channels?.forEach(channel => uniqueChannels.add(channel));
+  data.forEach((platform) => {
+    platform.channels?.forEach((channel: string) => uniqueChannels.add(channel));
   });
 
   const stats = {

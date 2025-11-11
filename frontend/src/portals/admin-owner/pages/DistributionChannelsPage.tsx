@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { ReactNode } from 'react';
 import { Card, Row, Col, Button, Table, Tag, Space, Modal, Form, Input, Select, Tabs, Switch, message, Statistic, Progress, Descriptions } from 'antd';
 import { ShareAltOutlined, PlusOutlined, ApiOutlined, TeamOutlined, PercentageOutlined, GlobalOutlined, LinkOutlined, KeyOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
@@ -13,6 +14,27 @@ interface DistributionPartner {
   investors: number;
   joinDate: string;
 }
+
+const partnerTypeMap: Record<
+  DistributionPartner['type'],
+  { color: string; label: string; icon: ReactNode }
+> = {
+  'broker-dealer': { color: 'blue', label: 'Broker/Dealer', icon: <TeamOutlined style={{ color: '#1890ff' }} /> },
+  affiliate: { color: 'green', label: 'Affiliate', icon: <ShareAltOutlined style={{ color: '#52c41a' }} /> },
+  'api-partner': { color: 'purple', label: 'API Partner', icon: <ApiOutlined style={{ color: '#722ed1' }} /> },
+  'white-label': { color: 'orange', label: 'White Label', icon: <GlobalOutlined style={{ color: '#fa8c16' }} /> },
+};
+
+const partnerStatusColors: Record<DistributionPartner['status'], string> = {
+  active: 'green',
+  inactive: 'red',
+  pending: 'orange',
+};
+
+const apiStatusColors: Record<APIKey['status'], string> = {
+  active: 'green',
+  revoked: 'red',
+};
 
 interface APIKey {
   id: string;
@@ -143,10 +165,7 @@ const DistributionChannelsPage = () => {
       key: 'name',
       render: (name, record) => (
         <Space>
-          {record.type === 'broker-dealer' && <TeamOutlined style={{ color: '#1890ff' }} />}
-          {record.type === 'affiliate' && <ShareAltOutlined style={{ color: '#52c41a' }} />}
-          {record.type === 'api-partner' && <ApiOutlined style={{ color: '#722ed1' }} />}
-          {record.type === 'white-label' && <GlobalOutlined style={{ color: '#fa8c16' }} />}
+          {partnerTypeMap[record.type].icon}
           <strong>{name}</strong>
         </Space>
       ),
@@ -155,15 +174,9 @@ const DistributionChannelsPage = () => {
       title: 'Type',
       dataIndex: 'type',
       key: 'type',
-      render: (type) => {
-        const config = {
-          'broker-dealer': { color: 'blue', label: 'Broker/Dealer' },
-          'affiliate': { color: 'green', label: 'Affiliate' },
-          'api-partner': { color: 'purple', label: 'API Partner' },
-          'white-label': { color: 'orange', label: 'White Label' },
-        };
-        return <Tag color={config[type].color}>{config[type].label}</Tag>;
-      },
+      render: (type: DistributionPartner['type']) => (
+        <Tag color={partnerTypeMap[type].color}>{partnerTypeMap[type].label}</Tag>
+      ),
     },
     {
       title: 'Volume (MTD)',
@@ -192,10 +205,9 @@ const DistributionChannelsPage = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status) => {
-        const colors = { active: 'green', inactive: 'red', pending: 'orange' };
-        return <Tag color={colors[status]}>{status.toUpperCase()}</Tag>;
-      },
+      render: (status: DistributionPartner['status']) => (
+        <Tag color={partnerStatusColors[status]}>{status.toUpperCase()}</Tag>
+      ),
     },
     {
       title: 'Actions',
@@ -242,10 +254,9 @@ const DistributionChannelsPage = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status) => {
-        const colors = { active: 'green', revoked: 'red' };
-        return <Tag color={colors[status]}>{status.toUpperCase()}</Tag>;
-      },
+      render: (status: APIKey['status']) => (
+        <Tag color={apiStatusColors[status]}>{status.toUpperCase()}</Tag>
+      ),
     },
     {
       title: 'Actions',

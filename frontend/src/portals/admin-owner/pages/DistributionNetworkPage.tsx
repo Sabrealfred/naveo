@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import type { ReactNode } from 'react';
 import {
   Card,
   Row,
@@ -124,6 +125,51 @@ const mockPlatformPartners: DistributionPlatformRow[] = mockDistributionPlatform
   channels: partner.channels ?? [],
   integrationStatus: partner.integrationStatus,
 }));
+
+const distributionTypeConfig: Record<
+  DistributionPartner['type'],
+  { color: string; label: string }
+> = {
+  'broker-dealer': { color: 'blue', label: 'Broker/Dealer' },
+  platform: { color: 'purple', label: 'Platform' },
+  exchange: { color: 'orange', label: 'Exchange' },
+  affiliate: { color: 'green', label: 'Affiliate' },
+  'api-partner': { color: 'magenta', label: 'API Partner' },
+  'white-label': { color: 'cyan', label: 'White Label' },
+};
+
+const integrationStatusConfig: Record<
+  DistributionPartner['integration'],
+  { color: string; icon?: ReactNode; label: string }
+> = {
+  live: { color: 'green', icon: <CheckCircleOutlined />, label: 'Live' },
+  sandbox: { color: 'orange', icon: <ClockCircleOutlined />, label: 'Sandbox' },
+  testing: { color: 'blue', icon: <SyncOutlined spin />, label: 'Testing' },
+  planned: { color: 'default', icon: <ClockCircleOutlined />, label: 'Planned' },
+};
+
+const partnerStatusColorMap: Record<DistributionPartner['status'], string> = {
+  active: 'green',
+  inactive: 'red',
+  pending: 'orange',
+  integration: 'blue',
+};
+
+const apiKeyStatusColors: Record<APIKey['status'], string> = {
+  active: 'green',
+  revoked: 'red',
+  expired: 'orange',
+};
+
+const onboardingStatusConfig: Record<
+  OnboardingTask['status'],
+  { color: string; icon: ReactNode }
+> = {
+  completed: { color: '#52c41a', icon: <CheckCircleOutlined /> },
+  'in-progress': { color: '#1890ff', icon: <SyncOutlined spin /> },
+  pending: { color: '#faad14', icon: <ClockCircleOutlined /> },
+  blocked: { color: '#ff4d4f', icon: <WarningOutlined /> },
+};
 
 const DistributionNetworkPage = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -632,17 +678,9 @@ const partnerColumns: ColumnsType<DistributionPartner> = [
       dataIndex: 'type',
       key: 'type',
       width: 150,
-      render: (type) => {
-        const config = {
-          'broker-dealer': { color: 'blue', label: 'Broker/Dealer' },
-          platform: { color: 'purple', label: 'Platform' },
-          exchange: { color: 'orange', label: 'Exchange' },
-          affiliate: { color: 'green', label: 'Affiliate' },
-          'api-partner': { color: 'magenta', label: 'API Partner' },
-          'white-label': { color: 'cyan', label: 'White Label' },
-        };
-        return <Tag color={config[type].color}>{config[type].label}</Tag>;
-      },
+      render: (type: DistributionPartner['type']) => (
+        <Tag color={distributionTypeConfig[type].color}>{distributionTypeConfig[type].label}</Tag>
+      ),
     },
     {
       title: 'Volume (MTD)',
@@ -717,14 +755,8 @@ const partnerColumns: ColumnsType<DistributionPartner> = [
       dataIndex: 'integration',
       key: 'integration',
       width: 120,
-      render: (integration) => {
-        const config = {
-          live: { color: 'success', icon: <CheckCircleOutlined />, label: 'Live' },
-          sandbox: { color: 'warning', icon: <ClockCircleOutlined />, label: 'Sandbox' },
-          testing: { color: 'processing', icon: <SyncOutlined spin />, label: 'Testing' },
-          planned: { color: 'default', icon: <ClockCircleOutlined />, label: 'Planned' },
-        };
-        const cfg = config[integration];
+      render: (integration: DistributionPartner['integration']) => {
+        const cfg = integrationStatusConfig[integration];
         return (
           <Tag icon={cfg.icon} color={cfg.color}>
             {cfg.label}
@@ -737,15 +769,9 @@ const partnerColumns: ColumnsType<DistributionPartner> = [
       dataIndex: 'status',
       key: 'status',
       width: 100,
-      render: (status) => {
-        const colors = {
-          active: 'success',
-          inactive: 'error',
-          pending: 'warning',
-          integration: 'processing',
-        };
-        return <Tag color={colors[status]}>{status.toUpperCase()}</Tag>;
-      },
+      render: (status: DistributionPartner['status']) => (
+        <Tag color={partnerStatusColorMap[status]}>{status.toUpperCase()}</Tag>
+      ),
     },
     {
       title: 'Actions',
@@ -835,10 +861,9 @@ const platformStatusOptions = {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status) => {
-        const colors = { active: 'green', revoked: 'red', expired: 'orange' };
-        return <Tag color={colors[status]}>{status.toUpperCase()}</Tag>;
-      },
+      render: (status: APIKey['status']) => (
+        <Tag color={apiKeyStatusColors[status]}>{status.toUpperCase()}</Tag>
+      ),
     },
     {
       title: 'Actions',
@@ -890,14 +915,8 @@ const platformStatusOptions = {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status) => {
-        const config = {
-          completed: { color: 'success', icon: <CheckCircleOutlined /> },
-          'in-progress': { color: 'processing', icon: <SyncOutlined spin /> },
-          pending: { color: 'default', icon: <ClockCircleOutlined /> },
-          blocked: { color: 'error', icon: <WarningOutlined /> },
-        };
-        const cfg = config[status];
+      render: (status: OnboardingTask['status']) => {
+        const cfg = onboardingStatusConfig[status];
         return (
           <Tag icon={cfg.icon} color={cfg.color}>
             {status.toUpperCase()}

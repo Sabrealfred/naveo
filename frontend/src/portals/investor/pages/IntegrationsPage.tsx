@@ -45,6 +45,11 @@ interface Exchange {
 }
 
 const IntegrationsPage = () => {
+  const exchangeStatusMap: Record<Exchange['apiStatus'], { color: string; text: string }> = {
+    active: { color: 'green', text: 'Active' },
+    expired: { color: 'red', text: 'Expired' },
+    none: { color: 'default', text: 'No API Key' },
+  };
   const [walletModalVisible, setWalletModalVisible] = useState(false);
   const [paymentModalVisible, setPaymentModalVisible] = useState(false);
   const [exchangeModalVisible, setExchangeModalVisible] = useState(false);
@@ -269,13 +274,8 @@ const IntegrationsPage = () => {
       title: 'API Status',
       dataIndex: 'apiStatus',
       key: 'apiStatus',
-      render: (status) => {
-        const statusConfig = {
-          active: { color: 'green', text: 'Active' },
-          expired: { color: 'red', text: 'Expired' },
-          none: { color: 'default', text: 'No API Key' },
-        };
-        const config = statusConfig[status];
+      render: (status: Exchange['apiStatus']) => {
+        const config = exchangeStatusMap[status];
         return <Tag color={config.color}>{config.text}</Tag>;
       },
     },

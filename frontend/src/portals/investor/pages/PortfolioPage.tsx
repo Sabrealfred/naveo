@@ -632,9 +632,11 @@ const PortfolioPage = () => {
           smooth
           legend={{ position: 'top' }}
           tooltip={{
-            formatter: (datum) => ({
+            formatter: (datum: { fund: string; nav: number; changePercent: number }) => ({
               name: datum.fund,
-              value: `$${datum.nav.toFixed(2)} (${datum.changePercent >= 0 ? '+' : ''}${datum.changePercent.toFixed(2)}%)`,
+              value: `$${datum.nav.toFixed(2)} (${datum.changePercent >= 0 ? '+' : ''}${datum.changePercent.toFixed(
+                2
+              )}%)`,
             }),
           }}
         />
@@ -651,9 +653,9 @@ const PortfolioPage = () => {
           label={{
             position: 'top',
             style: { fill: '#000000', opacity: 0.6 },
-            formatter: (datum) => `${datum.return.toFixed(1)}%`,
+            formatter: (datum: { return: number }) => `${datum.return.toFixed(1)}%`,
           }}
-          color={({ return: ret }) => ret >= 0 ? '#52c41a' : '#ff4d4f'}
+          color={(datum: { return: number }) => (datum.return >= 0 ? '#52c41a' : '#ff4d4f')}
         />
       </Card>
 

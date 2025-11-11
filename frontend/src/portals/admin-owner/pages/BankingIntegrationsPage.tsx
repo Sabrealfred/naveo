@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import type { ReactNode } from 'react';
 import { Card, Row, Col, Button, Table, Tag, Space, Modal, Form, Input, Select, Tabs, Switch, message, Statistic, Badge, Steps } from 'antd';
+import type { BadgeProps } from 'antd';
 import { BankOutlined, PlusOutlined, LinkOutlined, DollarOutlined, SafetyOutlined, CheckCircleOutlined, SyncOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 
@@ -202,22 +204,34 @@ const BankingIntegrationsPage = () => {
       title: 'Verification',
       dataIndex: 'verificationStatus',
       key: 'verificationStatus',
-      render: (status) => {
-        const config = {
+      render: (status: BankAccount['verificationStatus']) => {
+        const verificationConfig: Record<
+          BankAccount['verificationStatus'],
+          { color: BadgeProps['status']; icon?: ReactNode; text: string }
+        > = {
           verified: { color: 'success', icon: <CheckCircleOutlined />, text: 'Verified' },
-          pending: { color: 'warning', icon: <SyncOutlined spin />, text: 'Pending' },
-          failed: { color: 'error', icon: null, text: 'Failed' },
+          pending: { color: 'processing', icon: <SyncOutlined spin />, text: 'Pending' },
+          failed: { color: 'error', icon: undefined, text: 'Failed' },
         };
-        const { color, icon, text } = config[status];
-        return <Badge status={color} icon={icon} text={text} />;
+        const { color, icon, text } = verificationConfig[status];
+        return (
+          <Space size={4}>
+            {icon}
+            <Badge status={color} text={text} />
+          </Space>
+        );
       },
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status) => {
-        const colors = { active: 'green', inactive: 'red', pending: 'orange' };
+      render: (status: BankAccount['status']) => {
+        const colors: Record<BankAccount['status'], string> = {
+          active: 'green',
+          inactive: 'red',
+          pending: 'orange',
+        };
         return <Tag color={colors[status]}>{status.toUpperCase()}</Tag>;
       },
     },
@@ -238,6 +252,12 @@ const BankingIntegrationsPage = () => {
       ),
     },
   ];
+
+  const wireStatusColors: Record<WireTransfer['status'], string> = {
+    completed: 'green',
+    pending: 'orange',
+    failed: 'red',
+  };
 
   const wireColumns: ColumnsType<WireTransfer> = [
     {
@@ -283,10 +303,9 @@ const BankingIntegrationsPage = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status) => {
-        const colors = { completed: 'green', pending: 'orange', failed: 'red' };
-        return <Tag color={colors[status]}>{status.toUpperCase()}</Tag>;
-      },
+      render: (status: WireTransfer['status']) => (
+        <Tag color={wireStatusColors[status]}>{status.toUpperCase()}</Tag>
+      ),
     },
     {
       title: 'Actions',

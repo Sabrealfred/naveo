@@ -233,7 +233,7 @@ const PortfolioPage = () => {
     {
       title: t('common.actions', 'Actions'),
       key: 'actions',
-      render: (_, record: Holding) => (
+      render: (_: unknown, record: Holding) => (
         <Space>
           <Button type="primary" icon={<ShoppingCartOutlined />}>
             {t('investor.portfolio.buyMore', 'Buy More')}
@@ -300,7 +300,7 @@ const PortfolioPage = () => {
               yField="value"
               smooth
               tooltip={{
-                formatter: (datum) => ({
+                formatter: (datum: { value: number }) => ({
                   name: t('investor.dashboard.totalValue', 'Total Value'),
                   value: `$${datum.value.toLocaleString()}`,
                 }),
