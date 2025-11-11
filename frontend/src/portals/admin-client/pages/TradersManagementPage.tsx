@@ -1,37 +1,46 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
-  Button,
   Card,
   Col,
-  Form,
-  Input,
-  InputNumber,
-  Modal,
   Row,
-  Select,
-  Space,
-  Spin,
-  Switch,
   Table,
+  Button,
+  Space,
   Tag,
-  Typography,
+  Input,
+  Select,
+  Statistic,
+  Progress,
+  Tabs,
+  Badge,
   message,
+  Dropdown,
+  Menu,
+  Typography,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
   UserAddOutlined,
   EyeOutlined,
-  EditOutlined,
+  SettingOutlined,
   LockOutlined,
   UnlockOutlined,
+  SearchOutlined,
+  FilterOutlined,
+  DownloadOutlined,
+  MoreOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  ThunderboltOutlined,
+  TrophyOutlined,
+  WarningOutlined,
+  DollarOutlined,
 } from '@ant-design/icons';
-import { Column } from '@ant-design/charts';
+import { Line, Column, Pie } from '@ant-design/charts';
 import { StatCard } from '../../../components/common';
-import { tradersService, fundsService, supabaseClient } from '../../../services';
-import type { Trader as DbTrader } from '../../../services/types';
-import { useTranslation } from 'react-i18next';
+import { TraderManagementModal } from '../../../components/modals';
 
-const { Text, Title } = Typography;
+const { Text } = Typography;
 
 type TraderStatus = 'active' | 'suspended' | 'pending';
 
@@ -39,7 +48,7 @@ interface Trader {
   id: string;
   name: string;
   email: string;
-  role: 'junior' | 'senior' | 'lead';
+  role: 'Junior' | 'Senior' | 'Lead' | 'Principal';
   trades: number;
   volume: number;
   pnl: number;
@@ -47,521 +56,472 @@ interface Trader {
   status: TraderStatus;
   bestTrade: number;
   worstTrade: number;
-  fund_id: string | null;
-  user_id: string | null;
+  assignedAssets: string[];
+  joinDate: string;
+  lastActive: string;
+  avgTradeSize: number;
+  dailyLimit: number;
+  monthlyLimit: number;
+  performance7d: number;
+  performance30d: number;
 }
 
-const statusColors: Record<TraderStatus, string> = {
-  active: 'green',
-  suspended: 'volcano',
-  pending: 'gold',
-};
+const mockTraders: Trader[] = [
+  {
+    id: '1',
+    name: 'John Carter',
+    email: 'john.carter@fund.com',
+    role: 'Lead',
+    trades: 1245,
+    volume: 52500000,
+    pnl: 1245000,
+    winRate: 72.5,
+    status: 'active',
+    bestTrade: 125000,
+    worstTrade: -45000,
+    assignedAssets: ['BTC', 'ETH', 'SOL'],
+    joinDate: '2023-01-15',
+    lastActive: '2024-11-10 16:45',
+    avgTradeSize: 42168,
+    dailyLimit: 500000,
+    monthlyLimit: 10000000,
+    performance7d: 8.5,
+    performance30d: 22.3,
+  },
+  {
+    id: '2',
+    name: 'Sofia Martinez',
+    email: 'sofia.martinez@fund.com',
+    role: 'Senior',
+    trades: 892,
+    volume: 38800000,
+    pnl: 875000,
+    winRate: 68.1,
+    status: 'active',
+    bestTrade: 98000,
+    worstTrade: -32000,
+    assignedAssets: ['ETH', 'MATIC', 'AVAX'],
+    joinDate: '2023-03-20',
+    lastActive: '2024-11-10 15:20',
+    avgTradeSize: 43497,
+    dailyLimit: 400000,
+    monthlyLimit: 8000000,
+    performance7d: 6.2,
+    performance30d: 18.9,
+  },
+  {
+    id: '3',
+    name: 'Marcus Thompson',
+    email: 'marcus.thompson@fund.com',
+    role: 'Principal',
+    trades: 1567,
+    volume: 67200000,
+    pnl: 1567000,
+    winRate: 74.2,
+    status: 'active',
+    bestTrade: 156000,
+    worstTrade: -52000,
+    assignedAssets: ['BTC', 'ETH', 'SOL', 'AVAX', 'LINK'],
+    joinDate: '2022-09-10',
+    lastActive: '2024-11-10 17:10',
+    avgTradeSize: 42865,
+    dailyLimit: 750000,
+    monthlyLimit: 15000000,
+    performance7d: 9.8,
+    performance30d: 28.5,
+  },
+  {
+    id: '4',
+    name: 'Emily Chen',
+    email: 'emily.chen@fund.com',
+    role: 'Senior',
+    trades: 756,
+    volume: 29400000,
+    pnl: 654000,
+    winRate: 65.9,
+    status: 'active',
+    bestTrade: 87000,
+    worstTrade: -28000,
+    assignedAssets: ['BTC', 'LINK', 'UNI'],
+    joinDate: '2023-05-08',
+    lastActive: '2024-11-10 14:55',
+    avgTradeSize: 38889,
+    dailyLimit: 350000,
+    monthlyLimit: 7000000,
+    performance7d: 5.4,
+    performance30d: 16.2,
+  },
+  {
+    id: '5',
+    name: 'David Kim',
+    email: 'david.kim@fund.com',
+    role: 'Lead',
+    trades: 1089,
+    volume: 45600000,
+    pnl: 987000,
+    winRate: 70.3,
+    status: 'suspended',
+    bestTrade: 112000,
+    worstTrade: -67000,
+    assignedAssets: ['ETH', 'SOL', 'MATIC'],
+    joinDate: '2023-02-14',
+    lastActive: '2024-11-08 11:20',
+    avgTradeSize: 41873,
+    dailyLimit: 450000,
+    monthlyLimit: 9000000,
+    performance7d: -2.3,
+    performance30d: 12.7,
+  },
+  {
+    id: '6',
+    name: 'Laura Gomez',
+    email: 'laura.gomez@fund.com',
+    role: 'Junior',
+    trades: 342,
+    volume: 8200000,
+    pnl: 184000,
+    winRate: 60.4,
+    status: 'pending',
+    bestTrade: 32000,
+    worstTrade: -12000,
+    assignedAssets: ['BTC', 'ETH'],
+    joinDate: '2024-02-01',
+    lastActive: '2024-11-09 09:10',
+    avgTradeSize: 23976,
+    dailyLimit: 120000,
+    monthlyLimit: 2500000,
+    performance7d: 2.1,
+    performance30d: 8.4,
+  },
+];
+
+const performanceHistory = [
+  { date: '2024-06', pnl: 320000 },
+  { date: '2024-07', pnl: 410000 },
+  { date: '2024-08', pnl: 380000 },
+  { date: '2024-09', pnl: 460000 },
+  { date: '2024-10', pnl: 520000 },
+  { date: '2024-11', pnl: 560000 },
+];
+
+const tradeDistribution = mockTraders.reduce(
+  (acc, trader) => {
+    acc.labels.push(trader.name);
+    acc.data.push(trader.volume / 1_000_000);
+    return acc;
+  },
+  { labels: [] as string[], data: [] as number[] },
+);
 
 const TradersManagementPage = () => {
-  const { t } = useTranslation();
-  const [loading, setLoading] = useState(true);
-  const [traders, setTraders] = useState<Trader[]>([]);
-  const [currentFundId, setCurrentFundId] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | TraderStatus>('all');
-  const [isInviteModalOpen, setInviteModalOpen] = useState(false);
-  const [isPerformanceModalOpen, setPerformanceModalOpen] = useState(false);
-  const [isPermissionsModalOpen, setPermissionsModalOpen] = useState(false);
+  const [roleFilter, setRoleFilter] = useState<'all' | Trader['role']>('all');
   const [selectedTrader, setSelectedTrader] = useState<Trader | null>(null);
 
-  useEffect(() => {
-    loadTraders();
-  }, []);
-
-  const loadTraders = async () => {
-    try {
-      setLoading(true);
-
-      // Get first active fund (in real app, would get fund by manager ID from auth)
-      const funds = await fundsService.getActiveFunds();
-      if (funds.length === 0) {
-        message.warning('No active funds found');
-        setLoading(false);
-        return;
-      }
-
-      const fundId = funds[0].id;
-      setCurrentFundId(fundId);
-
-      // Load traders for this fund
-      const dbTraders = await tradersService.getTradersByFund(fundId);
-
-      // Map to component format
-      const mappedTraders = dbTraders.map(mapDbTraderToTrader);
-      setTraders(mappedTraders);
-
-    } catch (error: any) {
-      console.error('Error loading traders:', error);
-      message.error('Failed to load traders: ' + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const metrics = useMemo(() => {
-    const total = traders.length;
-    const active = traders.filter((trader) => trader.status === 'active').length;
-    const volume = traders.reduce((sum, trader) => sum + trader.volume, 0);
-    const avgWinRate =
-      traders.reduce((sum, trader) => sum + trader.winRate, 0) / (total || 1);
-
-    return {
-      total,
-      active,
-      volume,
-      avgWinRate,
-    };
-  }, [traders]);
-
   const filteredTraders = useMemo(() => {
-    return traders.filter((trader) => {
+    return mockTraders.filter((trader) => {
       const matchesSearch =
         trader.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         trader.email.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === 'all' || trader.status === statusFilter;
-      return matchesSearch && matchesStatus;
+      const matchesRole = roleFilter === 'all' || trader.role === roleFilter;
+      return matchesSearch && matchesStatus && matchesRole;
     });
-  }, [traders, searchTerm, statusFilter]);
+  }, [searchTerm, statusFilter, roleFilter]);
 
-  const columns: ColumnsType<Trader> = [
+  const traderColumns: ColumnsType<Trader> = [
     {
-      title: t('adminClient.tradersManagement.name', 'Name'),
+      title: 'Trader',
       dataIndex: 'name',
-      render: (value, record) => (
+      render: (value: string, record) => (
         <Space direction="vertical" size={0}>
-          <Text strong>{value}</Text>
-          <Text type="secondary">{record.email}</Text>
+          <strong>{value}</strong>
+          <span style={{ color: '#888' }}>{record.email}</span>
         </Space>
       ),
-      sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
-      title: t('adminClient.tradersManagement.role', 'Role'),
+      title: 'Rol',
       dataIndex: 'role',
-      render: (role: string) => role?.charAt(0).toUpperCase() + role?.slice(1),
       filters: [
-        { text: t('adminClient.tradersManagement.junior', 'Junior'), value: 'junior' },
-        { text: t('adminClient.tradersManagement.senior', 'Senior'), value: 'senior' },
-        { text: t('adminClient.tradersManagement.lead', 'Lead'), value: 'lead' },
+        { text: 'Junior', value: 'Junior' },
+        { text: 'Senior', value: 'Senior' },
+        { text: 'Lead', value: 'Lead' },
+        { text: 'Principal', value: 'Principal' },
       ],
       onFilter: (value, record) => record.role === value,
     },
     {
-      title: t('adminClient.tradersManagement.totalTrades', 'Total Trades'),
+      title: 'Operaciones',
       dataIndex: 'trades',
       sorter: (a, b) => a.trades - b.trades,
+      render: (value: number) => value.toLocaleString(),
     },
     {
-      title: t('adminClient.tradersManagement.volume', 'Volume'),
+      title: 'Volumen (USD)',
       dataIndex: 'volume',
-      render: (value: number) => `$${(value / 1_000_000).toFixed(2)}M`,
       sorter: (a, b) => a.volume - b.volume,
+      render: (value: number) => `$${value.toLocaleString()}`,
     },
     {
-      title: t('adminClient.traders.profitLoss', 'P&L'),
+      title: 'P&L',
       dataIndex: 'pnl',
       render: (value: number) => (
         <Tag color={value >= 0 ? 'green' : 'volcano'}>
           {value >= 0 ? '+' : '-'}${Math.abs(value).toLocaleString()}
         </Tag>
       ),
-      sorter: (a, b) => a.pnl - b.pnl,
     },
     {
-      title: t('adminClient.traders.winRate', 'Win Rate'),
+      title: 'Win Rate',
       dataIndex: 'winRate',
       render: (value: number) => (
-        <Tag color={value > 60 ? 'blue' : 'default'}>
-          {value.toFixed(1)}%
-        </Tag>
+        <Tag color={value >= 65 ? 'blue' : 'default'}>{value.toFixed(1)}%</Tag>
       ),
-      sorter: (a, b) => a.winRate - b.winRate,
     },
     {
-      title: t('adminClient.tradersManagement.status', 'Status'),
-      dataIndex: 'status',
-      render: (value: TraderStatus) => <Tag color={statusColors[value]}>{value.toUpperCase()}</Tag>,
-      filters: [
-        { text: t('adminClient.traders.active', 'Active'), value: 'active' },
-        { text: t('transactionsPage.pending', 'Pending'), value: 'pending' },
-        { text: t('adminClient.tradersManagement.suspend', 'Suspended'), value: 'suspended' },
-      ],
-      onFilter: (value, record) => record.status === value,
-    },
-    {
-      title: t('common.actions', 'Actions'),
+      title: 'Acciones',
       key: 'actions',
       render: (_, record) => (
         <Space>
           <Button
             icon={<EyeOutlined />}
             size="small"
-            onClick={() => {
-              setSelectedTrader(record);
-              setPerformanceModalOpen(true);
-            }}
+            onClick={() => setSelectedTrader(record)}
           >
-            {t('adminClient.tradersManagement.viewPerformance', 'View')}
+            Ver
           </Button>
-          <Button
-            icon={<EditOutlined />}
-            size="small"
-            onClick={() => {
-              setSelectedTrader(record);
-              setPermissionsModalOpen(true);
-            }}
-          >
-            {t('adminClient.tradersManagement.editPermissions', 'Edit')}
-          </Button>
-          <Switch
-            checkedChildren={<UnlockOutlined />}
-            unCheckedChildren={<LockOutlined />}
-            checked={record.status === 'active'}
-            onChange={(checked) =>
-              handleStatusChange(record.id, checked ? 'active' : 'suspended')
+          <Dropdown
+            overlay={
+              <Menu
+                items={[
+                  {
+                    key: 'promote',
+                    label: 'Proponer ascenso',
+                    icon: <ThunderboltOutlined />,
+                  },
+                  {
+                    key: 'suspend',
+                    label: record.status === 'suspended' ? 'Reactivar' : 'Suspender',
+                    icon: record.status === 'suspended' ? <UnlockOutlined /> : <LockOutlined />,
+                  },
+                ]}
+              />
             }
-          />
+          >
+            <Button icon={<MoreOutlined />} size="small" />
+          </Dropdown>
         </Space>
       ),
     },
   ];
 
-  const handleStatusChange = async (traderId: string, status: TraderStatus) => {
-    try {
-      await tradersService.updateTrader(traderId, { status });
-
-      setTraders((prev) =>
-        prev.map((trader) =>
-          trader.id === traderId ? { ...trader, status } : trader,
-        ),
-      );
-      message.success(`Trader ${status === 'active' ? 'activated' : 'suspended'}`);
-    } catch (error: any) {
-      console.error('Error updating trader status:', error);
-      message.error('Failed to update trader status: ' + error.message);
-    }
-  };
-
-  const handleInviteSubmit = async (values: { name: string; email: string; role: Trader['role']; limit: number }) => {
-    try {
-      // In real app, would create user first, then create trader record
-      // For now, creating trader with user_id placeholder
-      const newDbTrader = await tradersService.createTrader({
-        fund_id: currentFundId,
-        user_id: values.email, // Placeholder - would be actual user ID
-        role: values.role,
-        status: 'pending'
-      });
-
-      const newTrader = mapDbTraderToTrader(newDbTrader);
-      setTraders((prev) => [newTrader, ...prev]);
-      message.success('Trader invited successfully');
-      setInviteModalOpen(false);
-    } catch (error: any) {
-      console.error('Error creating trader:', error);
-      message.error('Failed to invite trader: ' + error.message);
-    }
-  };
-
-  const performanceHistory = useMemo(() => {
-    if (!selectedTrader) return [];
-    return Array.from({ length: 8 }).map((_, index) => ({
-      month: `2024-${(index + 5).toString().padStart(2, '0')}`,
-      pnl: selectedTrader.pnl / 8 + (Math.random() - 0.5) * 20000,
-    }));
-  }, [selectedTrader]);
-
-  const recentTrades = useMemo(() => {
-    if (!selectedTrader) return [];
-    return Array.from({ length: 10 }).map((_, index) => ({
-      id: `TX-${index + 1}`,
-      symbol: ['BTC', 'ETH', 'SOL', 'ATOM'][index % 4],
-      type: index % 3 === 0 ? 'Short' : 'Long',
-      pnl: (Math.random() - 0.4) * 15000,
-      size: Math.round(Math.random() * 300000),
-      date: `2024-11-${(10 - index).toString().padStart(2, '0')}`,
-    }));
-  }, [selectedTrader]);
-
-  if (loading) {
-    return (
-      <div style={{ padding: '24px', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
-        <Spin size="large" tip="Loading traders..." />
-      </div>
-    );
-  }
-
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       <Row gutter={[16, 16]}>
         <Col xs={24} md={6}>
-          <StatCard title={t('adminClient.tradersManagement.totalTraders', 'Total Traders')} value={metrics.total} />
+          <StatCard title="Traders Activos" value={mockTraders.filter((t) => t.status === 'active').length} />
         </Col>
         <Col xs={24} md={6}>
-          <StatCard title={t('adminClient.tradersManagement.activeTraders', 'Active Traders')} value={metrics.active} />
+          <StatCard title="Volumen 30d" value={`$${(mockTraders.reduce((sum, t) => sum + t.volume, 0) / 1_000_000).toFixed(1)}M`} />
         </Col>
         <Col xs={24} md={6}>
-          <StatCard
-            title={t('adminClient.tradersManagement.totalVolume', 'Total Volume')}
-            value={`$${(metrics.volume / 1_000_000).toFixed(1)}M`}
-          />
+          <StatCard title="Win Rate medio" value={`${(mockTraders.reduce((sum, t) => sum + t.winRate, 0) / mockTraders.length).toFixed(1)}%`} />
         </Col>
         <Col xs={24} md={6}>
-          <StatCard title={t('adminClient.tradersManagement.avgWinRate', 'Avg Win Rate')} value={`${metrics.avgWinRate.toFixed(1)}%`} />
+          <StatCard title="P&L YTD" value={`$${(mockTraders.reduce((sum, t) => sum + t.pnl, 0) / 1_000_000).toFixed(2)}M`} />
         </Col>
       </Row>
 
-      <Card
-        title={t('adminClient.tradersManagement.title', 'Traders Management')}
-        extra={
-          <Button
-            type="primary"
-            icon={<UserAddOutlined />}
-            onClick={() => setInviteModalOpen(true)}
-          >
-            {t('adminClient.tradersManagement.addTrader', 'Add Trader')}
-          </Button>
-        }
-      >
-        <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-          <Col xs={24} md={16}>
+      <Card>
+        <Row gutter={[16, 16]}>
+          <Col xs={24} md={8}>
             <Input
-              placeholder={t('adminClient.tradersManagement.email', 'Search by name or email...')}
+              prefix={<SearchOutlined />}
+              placeholder="Buscar trader"
               allowClear
               onChange={(event) => setSearchTerm(event.target.value)}
             />
           </Col>
           <Col xs={24} md={8}>
             <Select
-              value={statusFilter}
-              onChange={(value) => setStatusFilter(value as 'all' | TraderStatus)}
-              options={[
-                { label: t('adminClient.tradersManagement.status', 'All Status'), value: 'all' },
-                { label: t('adminClient.traders.active', 'Active'), value: 'active' },
-                { label: t('transactionsPage.pending', 'Pending'), value: 'pending' },
-                { label: t('adminClient.tradersManagement.suspend', 'Suspended'), value: 'suspended' },
-              ]}
               style={{ width: '100%' }}
+              placeholder="Filtrar por estado"
+              value={statusFilter}
+              onChange={(value) => setStatusFilter(value as typeof statusFilter)}
+              options={[
+                { label: 'Todos', value: 'all' },
+                { label: 'Activos', value: 'active' },
+                { label: 'Suspendidos', value: 'suspended' },
+                { label: 'Pendientes', value: 'pending' },
+              ]}
+            />
+          </Col>
+          <Col xs={24} md={8}>
+            <Select
+              style={{ width: '100%' }}
+              placeholder="Filtrar por rol"
+              value={roleFilter}
+              onChange={(value) => setRoleFilter(value as typeof roleFilter)}
+              options={[
+                { label: 'Todos', value: 'all' },
+                { label: 'Junior', value: 'Junior' },
+                { label: 'Senior', value: 'Senior' },
+                { label: 'Lead', value: 'Lead' },
+                { label: 'Principal', value: 'Principal' },
+              ]}
             />
           </Col>
         </Row>
-
-        <Table
-          rowKey="id"
-          columns={columns}
-          dataSource={filteredTraders}
-          pagination={{ pageSize: 8 }}
-        />
       </Card>
 
-      <Modal
-        title={t('adminClient.tradersManagement.addTrader', 'Add Trader')}
-        open={isInviteModalOpen}
-        onCancel={() => setInviteModalOpen(false)}
-        footer={null}
-      >
-        <Form layout="vertical" onFinish={handleInviteSubmit}>
-          <Form.Item
-            label={t('adminClient.tradersManagement.name', 'Name')}
-            name="name"
-            rules={[{ required: true, message: t('adminClient.tradersManagement.name', 'Name') }]}
-          >
-            <Input placeholder="Jane Doe" />
-          </Form.Item>
-          <Form.Item
-            label={t('adminClient.tradersManagement.email', 'Email')}
-            name="email"
-            rules={[
-              { required: true, message: t('adminClient.tradersManagement.email', 'Email') },
-              { type: 'email', message: t('login.emailInvalid', 'Invalid email') },
-            ]}
-          >
-            <Input placeholder="trader@navfund.com" />
-          </Form.Item>
-          <Form.Item
-            label={t('adminClient.tradersManagement.role', 'Role')}
-            name="role"
-            rules={[{ required: true, message: t('adminClient.tradersManagement.role', 'Role') }]}
-          >
-            <Select
-              options={[
-                { label: t('adminClient.tradersManagement.junior', 'Junior'), value: 'junior' },
-                { label: t('adminClient.tradersManagement.senior', 'Senior'), value: 'senior' },
-                { label: t('adminClient.tradersManagement.lead', 'Lead'), value: 'lead' },
-              ]}
+      <Table
+        dataSource={filteredTraders}
+        columns={traderColumns}
+        rowKey="id"
+        pagination={{ pageSize: 5 }}
+      />
+
+      <Row gutter={[16, 16]}>
+        <Col xs={24} lg={12}>
+          <Card title="P&L histórico">
+            <Line
+              data={performanceHistory}
+              xField="date"
+              yField="pnl"
+              point={{ size: 4 }}
+              smooth
+              yAxis={{ label: { formatter: (val) => `$${Number(val) / 1_000}K` } }}
             />
-          </Form.Item>
-          <Form.Item
-            label={t('adminClient.tradersManagement.totalVolume', 'Trading Limit')}
-            name="limit"
-            rules={[{ required: true, message: t('adminClient.tradersManagement.totalVolume', 'Trading Limit') }]}
-          >
-            <InputNumber
-              min={500_000}
-              step={100_000}
-              style={{ width: '100%' }}
-              prefix="$"
+          </Card>
+        </Col>
+        <Col xs={24} lg={12}>
+          <Card title="Distribución volumen por trader">
+            <Column
+              data={mockTraders.map((trader) => ({
+                trader: trader.name,
+                volume: trader.volume / 1_000_000,
+              }))}
+              xField="trader"
+              yField="volume"
+              label={{ position: 'top', formatter: (val) => `${val.value.toFixed(1)}M` }}
             />
-          </Form.Item>
-          <Button type="primary" htmlType="submit" block>
-            {t('common.submit', 'Submit')}
+          </Card>
+        </Col>
+      </Row>
+
+      <Tabs
+        defaultActiveKey="performance"
+        items={[
+          {
+            key: 'performance',
+            label: 'Performance Insights',
+            children: (
+              <Row gutter={[16, 16]}>
+                <Col xs={24} md={12}>
+                  <Card title="Ranking YTD">
+                    <Pie
+                      data={mockTraders.map((trader) => ({
+                        trader: trader.name,
+                        pnl: trader.pnl,
+                      }))}
+                      angleField="pnl"
+                      colorField="trader"
+                      radius={1}
+                      label={{ type: 'outer', content: '{name} {percentage}' }}
+                    />
+                  </Card>
+                </Col>
+                <Col xs={24} md={12}>
+                  <Card title="Alertas">
+                    <Space direction="vertical">
+                      <Badge status="warning" text="David Kim está suspendido por límites excedidos" />
+                      <Badge status="processing" text="Laura Gomez pendiente de aprobación final" />
+                      <Badge status="error" text="Marcus Thompson requiere revisión de límites" />
+                    </Space>
+                  </Card>
+                </Col>
+              </Row>
+            ),
+          },
+          {
+            key: 'limits',
+            label: 'Límites & Riesgo',
+            children: (
+              <Row gutter={[16, 16]}>
+                {mockTraders.slice(0, 4).map((trader) => (
+                  <Col xs={24} md={12} key={trader.id}>
+                    <Card title={trader.name}>
+                      <Space direction="vertical" style={{ width: '100%' }}>
+                        <Text type="secondary">Uso diario</Text>
+                        <Progress percent={((trader.avgTradeSize * trader.trades) / trader.dailyLimit) * 100} />
+                        <Text type="secondary">Uso mensual</Text>
+                        <Progress percent={(trader.volume / trader.monthlyLimit) * 100} status="active" />
+                      </Space>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
+            ),
+          },
+        ]}
+      />
+
+      <Card
+        title="Controles"
+        extra={
+          <Button type="primary" icon={<UserAddOutlined />}>
+            Invitar Trader
           </Button>
-        </Form>
-      </Modal>
-
-      <Modal
-        title={`${t('adminClient.tradersManagement.viewPerformance', 'Trader Performance')} - ${selectedTrader?.name ?? ''}`}
-        open={isPerformanceModalOpen}
-        onCancel={() => {
-          setPerformanceModalOpen(false);
-          setSelectedTrader(null);
-        }}
-        footer={null}
-        width={900}
+        }
       >
-        {selectedTrader && (
-          <Space direction="vertical" size="large" style={{ width: '100%' }}>
-            <Row gutter={[16, 16]}>
-              <Col span={6}>
-                <StatCard title={t('adminClient.tradersManagement.totalTrades', 'Total Trades')} value={selectedTrader.trades} />
-              </Col>
-              <Col span={6}>
-                <StatCard title={t('adminClient.traders.winRate', 'Win Rate')} value={`${selectedTrader.winRate}%`} />
-              </Col>
-              <Col span={6}>
-                <StatCard
-                  title={t('adminClient.traders.trades', 'Best Trade')}
-                  value={`$${selectedTrader.bestTrade.toLocaleString()}`}
-                />
-              </Col>
-              <Col span={6}>
-                <StatCard
-                  title={t('adminClient.traders.trades', 'Worst Trade')}
-                  value={`$${selectedTrader.worstTrade.toLocaleString()}`}
-                  color="#ff4d4f"
-                />
-              </Col>
-            </Row>
+        <Row gutter={[16, 16]}>
+          <Col xs={24} md={8}>
+            <Button block icon={<FilterOutlined />}>
+              Crear política
+            </Button>
+          </Col>
+          <Col xs={24} md={8}>
+            <Button block icon={<DownloadOutlined />}>
+              Exportar reporte
+            </Button>
+          </Col>
+          <Col xs={24} md={8}>
+            <Button block icon={<SettingOutlined />}>
+              Configurar límites globales
+            </Button>
+          </Col>
+        </Row>
+      </Card>
 
-            <Card title={t('adminClient.traders.profitLoss', 'Monthly P&L History')}>
-              <Column
-                data={performanceHistory}
-                xField="month"
-                yField="pnl"
-                color={({ pnl }: { pnl: number }) => (pnl >= 0 ? '#52c41a' : '#ff4d4f')}
-                height={260}
-              />
-            </Card>
-
-            <Card title={t('adminClient.dashboard.recentTransactions', 'Recent Trades')} bodyStyle={{ padding: 0 }}>
-              <Table
-                dataSource={recentTrades}
-                rowKey="id"
-                pagination={false}
-                columns={[
-                  { title: 'ID', dataIndex: 'id' },
-                  { title: t('adminClient.transactions.asset', 'Asset'), dataIndex: 'symbol' },
-                  { title: t('adminClient.transactions.type', 'Type'), dataIndex: 'type' },
-                  {
-                    title: t('adminClient.transactions.amount', 'Amount'),
-                    dataIndex: 'size',
-                    render: (value: number) => `$${value.toLocaleString()}`,
-                  },
-                  {
-                    title: t('adminClient.traders.profitLoss', 'P&L'),
-                    dataIndex: 'pnl',
-                    render: (value: number) => (
-                      <Tag color={value >= 0 ? 'green' : 'volcano'}>
-                        {value >= 0 ? '+' : '-'}${Math.abs(value).toLocaleString()}
-                      </Tag>
-                    ),
-                  },
-                  { title: t('adminClient.assets.date', 'Date'), dataIndex: 'date' },
-                ]}
-              />
-            </Card>
-          </Space>
-        )}
-      </Modal>
-
-      <Modal
-        title={t('adminClient.tradersManagement.editPermissions', 'Edit Permissions')}
-        open={isPermissionsModalOpen}
-        onCancel={() => {
-          setPermissionsModalOpen(false);
-          setSelectedTrader(null);
-        }}
-        onOk={() => {
-          message.success(t('adminClient.tradersManagement.editPermissions', 'Permissions updated'));
-          setPermissionsModalOpen(false);
-        }}
-      >
-        <Space direction="vertical" style={{ width: '100%' }}>
-          <div>
-            <Title level={5}>{selectedTrader?.name}</Title>
-            <Text type="secondary">{selectedTrader?.email}</Text>
-          </div>
-
-          <Form layout="vertical">
-            <Form.Item label={t('adminClient.tradersManagement.role', 'Role')}>
-              <Select
-                defaultValue={selectedTrader?.role}
-                options={[
-                  { label: `${t('adminClient.tradersManagement.junior', 'Junior')} - $1M`, value: 'junior' },
-                  { label: `${t('adminClient.tradersManagement.senior', 'Senior')} - $5M`, value: 'senior' },
-                  { label: `${t('adminClient.tradersManagement.lead', 'Lead')}`, value: 'lead' },
-                ]}
-              />
-            </Form.Item>
-            <Form.Item label={t('adminClient.assets.type', 'Asset Types')}>
-              <Select
-                mode="multiple"
-                defaultValue={['crypto', 'defi']}
-                options={[
-                  { label: t('marketplace.cryptoFund', 'Crypto'), value: 'crypto' },
-                  { label: t('marketplace.defi', 'DeFi'), value: 'defi' },
-                  { label: t('marketplace.realEstate', 'Real Estate'), value: 'rwa' },
-                  { label: 'Derivatives', value: 'derivatives' },
-                ]}
-              />
-            </Form.Item>
-          </Form>
-        </Space>
-      </Modal>
+      <TraderManagementModal
+        visible={Boolean(selectedTrader)}
+        trader={
+          selectedTrader
+            ? {
+                id: selectedTrader.id,
+                name: selectedTrader.name,
+                email: selectedTrader.email,
+                role: selectedTrader.role,
+                status: selectedTrader.status === 'active' ? 'active' : 'suspended',
+                joinDate: selectedTrader.joinDate,
+                totalTrades: selectedTrader.trades,
+                successRate: selectedTrader.winRate,
+                pnl: selectedTrader.pnl,
+                assignedAssets: selectedTrader.assignedAssets,
+                tradingLimit: {
+                  daily: selectedTrader.dailyLimit,
+                  monthly: selectedTrader.monthlyLimit,
+                },
+              }
+            : undefined
+        }
+        onClose={() => setSelectedTrader(null)}
+        onSubmit={() => message.success('Configuración actualizada')}
+      />
     </Space>
   );
 };
 
 export default TradersManagementPage;
-
-// Helper function to map database Trader to component Trader
-const mapDbTraderToTrader = (dbTrader: DbTrader): Trader => {
-  // Extract name from user_id or use placeholder
-  const userId = dbTrader.user_id || '';
-  const name = userId.includes('@')
-    ? userId.split('@')[0].replace(/[._-]/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
-    : `Trader ${userId.substring(0, 8)}`;
-
-  const email = userId.includes('@') ? userId : `${userId}@naveo.dev`;
-
-  return {
-    id: dbTrader.id,
-    name,
-    email,
-    role: (dbTrader.role as Trader['role']) || 'junior',
-    trades: dbTrader.total_trades || 0,
-    volume: dbTrader.total_volume || 0,
-    pnl: dbTrader.total_pnl || 0,
-    winRate: dbTrader.win_rate || 0,
-    status: (dbTrader.status as TraderStatus) || 'pending',
-    bestTrade: 0, // Would need additional query to get best/worst trades
-    worstTrade: 0,
-    fund_id: dbTrader.fund_id,
-    user_id: dbTrader.user_id,
-  };
-};

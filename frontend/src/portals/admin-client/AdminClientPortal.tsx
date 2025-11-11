@@ -11,6 +11,7 @@ import {
   UserSwitchOutlined,
   BarChartOutlined,
   BellOutlined,
+  RobotOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import {
@@ -19,15 +20,18 @@ import {
   AssetsManagementPage,
   OfficersManagementPage,
   TradersManagementPage,
+  PortfolioManagementPage,
+  InvestorsManagementPage,
+  SubAdminsManagementPage,
+  TransactionsPage,
+  CompliancePage,
+  FundReportsPage,
+  AIStrategyManagementPage,
+  AnalyticsDashboardPage,
   KYCManagementPage,
   AnalyticsPage,
   ReportsPage,
   NotificationsCenterPage,
-  InvestorsManagementPage,
-  TransactionsPage,
-  CompliancePage,
-  PortfolioManagementPage,
-  SubAdminsManagementPage,
 } from './pages';
 
 const AdminClientPortal = () => {
@@ -46,6 +50,11 @@ const AdminClientPortal = () => {
       key: '/admin-client/portfolio',
       icon: <FundProjectionScreenOutlined />,
       label: 'Mi Portafolio',
+    },
+    {
+      key: '/admin-client/ai-strategy',
+      icon: <RobotOutlined />,
+      label: 'Estrategias AI',
     },
     {
       key: '/admin-client/nav',
@@ -90,7 +99,7 @@ const AdminClientPortal = () => {
     {
       key: '/admin-client/notifications',
       icon: <BellOutlined />,
-      label: 'Notifications',
+      label: 'Notificaciones',
     },
   ];
 
@@ -103,17 +112,21 @@ const AdminClientPortal = () => {
       <Routes>
         <Route index element={<DashboardPage />} />
         <Route path="nav" element={<NAVSystemPage />} />
-        <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="assets" element={<AssetsManagementPage />} />
-        <Route path="traders" element={<TradersManagementPage />} />
         <Route path="portfolio" element={<PortfolioManagementPage />} />
+        <Route path="ai-strategy" element={<AIStrategyManagementPage />} />
+        <Route path="analytics" element={<AnalyticsDashboardPage />} />
+        <Route path="analytics/custom" element={<AnalyticsPage />} />
         <Route path="investors" element={<InvestorsManagementPage />} />
+        <Route path="traders" element={<TradersManagementPage />} />
         <Route path="officers" element={<OfficersManagementPage />} />
         <Route path="admins" element={<SubAdminsManagementPage />} />
         <Route path="transactions" element={<TransactionsPage />} />
         <Route path="compliance" element={<CompliancePage />} />
-        <Route path="reports" element={<ReportsPage />} />
+        <Route path="reports" element={<FundReportsPage />} />
+        <Route path="reports/custom" element={<ReportsPage />} />
         <Route path="notifications" element={<NotificationsCenterPage />} />
+        <Route path="kyc" element={<KYCManagementPage />} />
       </Routes>
     </DashboardLayout>
   );
