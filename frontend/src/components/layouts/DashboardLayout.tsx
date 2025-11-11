@@ -57,6 +57,18 @@ const DashboardLayout = ({
     }
   };
 
+  const handleUserMenuClick = ({ key }: { key: string }) => {
+    if (key === 'profile') {
+      navigate('/profile');
+    } else if (key === 'settings') {
+      navigate('/settings');
+    } else if (key === 'logout') {
+      // Handle logout
+      console.log('Logout clicked');
+      navigate('/login');
+    }
+  };
+
   const userMenuItems: MenuProps['items'] = [
     {
       key: 'profile',
@@ -78,6 +90,52 @@ const DashboardLayout = ({
       danger: true,
     },
   ];
+
+  const notificationsMenuItems: MenuProps['items'] = [
+    {
+      key: 'notif1',
+      label: (
+        <div style={{ width: 280 }}>
+          <div style={{ fontWeight: 600, marginBottom: 4 }}>New transaction completed</div>
+          <div style={{ fontSize: '12px', color: '#999' }}>Your purchase of $5,000 was successful</div>
+          <div style={{ fontSize: '11px', color: '#bbb', marginTop: 4 }}>2 minutes ago</div>
+        </div>
+      ),
+    },
+    {
+      key: 'notif2',
+      label: (
+        <div style={{ width: 280 }}>
+          <div style={{ fontWeight: 600, marginBottom: 4 }}>NAV update available</div>
+          <div style={{ fontSize: '12px', color: '#999' }}>Alpha Growth Fund NAV updated to $127.85</div>
+          <div style={{ fontSize: '11px', color: '#bbb', marginTop: 4 }}>1 hour ago</div>
+        </div>
+      ),
+    },
+    {
+      key: 'notif3',
+      label: (
+        <div style={{ width: 280 }}>
+          <div style={{ fontWeight: 600, marginBottom: 4 }}>Monthly report ready</div>
+          <div style={{ fontSize: '12px', color: '#999' }}>Your October portfolio report is available</div>
+          <div style={{ fontSize: '11px', color: '#bbb', marginTop: 4 }}>3 hours ago</div>
+        </div>
+      ),
+    },
+    {
+      type: 'divider',
+    },
+    {
+      key: 'viewAll',
+      label: <div style={{ textAlign: 'center', color: '#1890ff' }}>View all notifications</div>,
+    },
+  ];
+
+  const handleNotificationClick = ({ key }: { key: string }) => {
+    if (key === 'viewAll') {
+      navigate('/notifications');
+    }
+  };
 
   // Logo component for sidebar
   const logoContent = (
@@ -173,11 +231,21 @@ const DashboardLayout = ({
           <Space size={isMobile ? 'middle' : 'large'}>
             {!isMobile && <LanguageSwitcher />}
 
-            <Badge count={5}>
-              <BellOutlined style={{ fontSize: '18px', cursor: 'pointer' }} />
-            </Badge>
+            <Dropdown
+              menu={{ items: notificationsMenuItems, onClick: handleNotificationClick }}
+              placement="bottomRight"
+              trigger={['click']}
+            >
+              <Badge count={5} style={{ cursor: 'pointer' }}>
+                <BellOutlined style={{ fontSize: '18px', cursor: 'pointer' }} />
+              </Badge>
+            </Dropdown>
 
-            <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+            <Dropdown
+              menu={{ items: userMenuItems, onClick: handleUserMenuClick }}
+              placement="bottomRight"
+              trigger={['click']}
+            >
               <Space style={{ cursor: 'pointer' }}>
                 <Avatar style={{ backgroundColor: '#1890ff' }}>
                   {userName.charAt(0).toUpperCase()}
