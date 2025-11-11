@@ -7,6 +7,81 @@ import { useTranslation } from 'react-i18next';
 import { transactionsService, fundsService } from '../../../services';
 import type { Transaction } from '../../../services/types';
 
+const MOCK_FUNDS = [
+  { id: 'fund-001', name: 'Digital Credit Opportunities' },
+  { id: 'fund-002', name: 'Blockchain Infrastructure Fund' },
+  { id: 'fund-003', name: 'Stable Yield Treasury' },
+];
+
+const MOCK_TRANSACTIONS: Transaction[] = [
+  {
+    id: 'tx-mock-001',
+    user_id: 'mock-user',
+    fund_id: 'fund-001',
+    type: 'buy',
+    shares: 125.4321,
+    nav_at_time: 1250.75,
+    amount: 157000,
+    status: 'completed',
+    created_at: '2025-01-12T14:20:00Z',
+  },
+  {
+    id: 'tx-mock-002',
+    user_id: 'mock-user',
+    fund_id: 'fund-001',
+    type: 'sell',
+    shares: 80.25,
+    nav_at_time: 1310.12,
+    amount: 105000,
+    status: 'completed',
+    created_at: '2025-02-03T10:45:00Z',
+  },
+  {
+    id: 'tx-mock-003',
+    user_id: 'mock-user',
+    fund_id: 'fund-002',
+    type: 'buy',
+    shares: 50,
+    nav_at_time: 3500,
+    amount: 175000,
+    status: 'pending',
+    created_at: '2025-02-14T16:05:00Z',
+  },
+  {
+    id: 'tx-mock-004',
+    user_id: 'mock-user',
+    fund_id: 'fund-003',
+    type: 'deposit',
+    shares: null,
+    nav_at_time: null,
+    amount: 250000,
+    status: 'completed',
+    created_at: '2025-01-28T09:10:00Z',
+  },
+  {
+    id: 'tx-mock-005',
+    user_id: 'mock-user',
+    fund_id: 'fund-003',
+    type: 'withdrawal',
+    shares: null,
+    nav_at_time: null,
+    amount: 75000,
+    status: 'pending',
+    created_at: '2025-02-18T12:30:00Z',
+  },
+  {
+    id: 'tx-mock-006',
+    user_id: 'mock-user',
+    fund_id: 'fund-002',
+    type: 'buy',
+    shares: 15,
+    nav_at_time: 4250,
+    amount: 63750,
+    status: 'failed',
+    created_at: '2025-02-05T18:55:00Z',
+  },
+];
+
 interface TransactionDisplay {
   key: string;
   date: string;
@@ -39,19 +114,20 @@ const TransactionsPage = () => {
     try {
       setLoading(true);
 
-      // Load all funds first to get names
       const funds = await fundsService.getAllFunds();
-      const fundNamesMap = funds.reduce((acc, fund) => {
+      const effectiveFunds = funds.length ? funds : MOCK_FUNDS;
+      const fundNamesMap = effectiveFunds.reduce((acc, fund) => {
         acc[fund.id] = fund.name;
         return acc;
       }, {} as Record<string, string>);
       setFundNames(fundNamesMap);
 
-      // Load user transactions
       const dbTransactions = await transactionsService.getTransactionsByUser(userId);
+      const transactionsSource = dbTransactions.length ? dbTransactions : MOCK_TRANSACTIONS;
 
-      // Map to display format
-      const displayTransactions = dbTransactions.map(mapTransactionToDisplay);
+      const displayTransactions = transactionsSource.map((tx) =>
+        mapTransactionToDisplay(tx, fundNamesMap)
+      );
       setTransactions(displayTransactions);
 
     } catch (error: any) {
@@ -62,8 +138,11 @@ const TransactionsPage = () => {
     }
   };
 
-  const mapTransactionToDisplay = (tx: Transaction): TransactionDisplay => {
-    const fundName = tx.fund_id ? (fundNames[tx.fund_id] || 'Unknown Fund') : 'N/A';
+  const mapTransactionToDisplay = (
+    tx: Transaction,
+    fundMap: Record<string, string>
+  ): TransactionDisplay => {
+    const fundName = tx.fund_id ? fundMap[tx.fund_id] || 'Unknown Fund' : 'N/A';
     const shares = tx.shares || 0;
     const navAtTime = tx.nav_at_time || 0;
     const amount = tx.amount || 0;
