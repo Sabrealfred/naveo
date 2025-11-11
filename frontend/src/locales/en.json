@@ -30,6 +30,24 @@
     "admin-client": "Fund and trader management",
     "investor": "Portfolio and marketplace"
   },
+  "investor": {
+    "dashboard": {
+      "welcome": "Welcome back, {{name}}",
+      "summary": "Here is the latest summary of your tokenized portfolio",
+      "totalValue": "Total Portfolio Value",
+      "totalReturn": "Total Return",
+      "returnPercent": "Return %",
+      "quickActions": "Quick Actions",
+      "depositFunds": "Deposit Funds",
+      "buyTokens": "Buy Tokens",
+      "withdraw": "Withdraw",
+      "viewReports": "View Reports",
+      "portfolioPerformance": "Portfolio Performance",
+      "assetAllocation": "Asset Allocation",
+      "myHoldings": "My Holdings",
+      "recentTransactions": "Recent Transactions"
+    }
+  },
   "ai": {
     "title": "AI Strategy Management",
     "subtitle": "AI-powered portfolio optimization and multi-manager strategies",

@@ -30,6 +30,24 @@
     "admin-client": "Gestión de fondos y traders",
     "investor": "Portfolio y marketplace"
   },
+  "investor": {
+    "dashboard": {
+      "welcome": "Bienvenido de nuevo, {{name}}",
+      "summary": "Aquí tienes el resumen más reciente de tu portafolio tokenizado",
+      "totalValue": "Valor Total del Portafolio",
+      "totalReturn": "Retorno Total",
+      "returnPercent": "Retorno %",
+      "quickActions": "Acciones Rápidas",
+      "depositFunds": "Depositar Fondos",
+      "buyTokens": "Comprar Tokens",
+      "withdraw": "Retirar",
+      "viewReports": "Ver Reportes",
+      "portfolioPerformance": "Rendimiento del Portafolio",
+      "assetAllocation": "Distribución de Activos",
+      "myHoldings": "Mis Tenencias",
+      "recentTransactions": "Transacciones Recientes"
+    }
+  },
   "ai": {
     "title": "Gestión de Estrategias AI",
     "subtitle": "Optimización de portafolio y estrategias multi-manager con IA",
