@@ -1,8 +1,88 @@
-import { Row, Col, Card, Table, Button, Space, Statistic, Tag } from 'antd';
-import { DownloadOutlined, CalculatorOutlined, HistoryOutlined } from '@ant-design/icons';
+import { Row, Col, Card, Table, Button, Space, Statistic, Tag, Tabs, Progress, Alert, Badge, Timeline, Divider, Modal, Form, InputNumber, Select, DatePicker, message } from 'antd';
+import { DownloadOutlined, CalculatorOutlined, HistoryOutlined, CheckCircleOutlined, SyncOutlined, WarningOutlined, EyeOutlined, FileTextOutlined, SafetyOutlined, ClockCircleOutlined, DollarOutlined, AuditOutlined, ApiOutlined, LineChartOutlined } from '@ant-design/icons';
 import { PerformanceChart, PerformanceGauge, ComparisonChart } from '../../../components/common';
+import { useState } from 'react';
+import { Line, Column } from '@ant-design/charts';
 
 const NAVSystemPage = () => {
+  const [calculateModalVisible, setCalculateModalVisible] = useState(false);
+  const [adjustmentModalVisible, setAdjustmentModalVisible] = useState(false);
+  const [form] = Form.useForm();
+
+  // Asset Holdings Breakdown
+  const assetHoldings = [
+    { id: 1, asset: 'BTC', symbol: 'BTC', quantity: 425.5, price: 35200, value: 14977600, priceSource: 'Coinbase', lastUpdate: '2 min ago', status: 'verified' },
+    { id: 2, asset: 'ETH', symbol: 'ETH', quantity: 1820.3, price: 1850, value: 3367555, priceSource: 'Kraken', lastUpdate: '2 min ago', status: 'verified' },
+    { id: 3, asset: 'SOL', symbol: 'SOL', quantity: 8500, price: 98.5, value: 837250, priceSource: 'Binance', lastUpdate: '5 min ago', status: 'verified' },
+    { id: 4, asset: 'MATIC', symbol: 'MATIC', quantity: 125000, price: 0.82, value: 102500, priceSource: 'Coinbase', lastUpdate: '3 min ago', status: 'verified' },
+    { id: 5, asset: 'LINK', symbol: 'LINK', quantity: 18500, price: 14.8, value: 273800, priceSource: 'Binance', lastUpdate: '4 min ago', status: 'verified' },
+    { id: 6, asset: 'USDC', symbol: 'USDC', quantity: 4300000, price: 1.0, value: 4300000, priceSource: 'Circle', lastUpdate: '1 min ago', status: 'verified' },
+  ];
+
+  // NAV Calculation Workflow Steps
+  const navWorkflowSteps = [
+    { step: 1, title: 'Data Collection', status: 'completed', time: '18:00:12', description: 'Fetched balances from 8 custodians' },
+    { step: 2, title: 'Price Verification', status: 'completed', time: '18:00:45', description: 'Verified prices from 5 sources' },
+    { step: 3, title: 'Asset Valuation', status: 'completed', time: '18:01:02', description: 'Calculated $25.8M total assets' },
+    { step: 4, title: 'Liabilities Calculation', status: 'completed', time: '18:01:15', description: 'Computed $300K liabilities' },
+    { step: 5, title: 'NAV Calculation', status: 'completed', time: '18:01:23', description: 'NAV per unit: $135.45' },
+    { step: 6, title: 'Validation & Checks', status: 'completed', time: '18:01:35', description: 'All 12 checks passed' },
+    { step: 7, title: 'Awaiting Approval', status: 'pending', time: '-', description: 'Pending compliance officer review' },
+  ];
+
+  // Data Source Integration Status
+  const dataSourceStatus = [
+    { source: 'Coinbase Custody', type: 'Exchange', assets: 3, status: 'connected', lastSync: '2 min ago', health: 100 },
+    { source: 'Kraken', type: 'Exchange', assets: 2, status: 'connected', lastSync: '2 min ago', health: 100 },
+    { source: 'Binance', type: 'Exchange', assets: 3, status: 'connected', lastSync: '4 min ago', health: 98 },
+    { source: 'Fireblocks', type: 'Custody', assets: 4, status: 'connected', lastSync: '1 min ago', health: 100 },
+    { source: 'Circle', type: 'Stablecoin', assets: 1, status: 'connected', lastSync: '1 min ago', health: 100 },
+    { source: 'CoinGecko API', type: 'Price Feed', assets: 12, status: 'connected', lastSync: '30 sec ago', health: 100 },
+    { source: 'Chainlink Oracles', type: 'Price Feed', assets: 12, status: 'connected', lastSync: '15 sec ago', health: 100 },
+  ];
+
+  // Validation Checks
+  const validationChecks = [
+    { check: 'Balance Reconciliation', status: 'passed', details: 'All balances match across sources' },
+    { check: 'Price Deviation Check', status: 'passed', details: 'Max deviation: 0.12%' },
+    { check: 'Liquidity Threshold', status: 'passed', details: '92% liquidity ratio (target: >80%)' },
+    { check: 'Asset Count Verification', status: 'passed', details: '12 assets verified' },
+    { check: 'Liability Calculation', status: 'passed', details: 'All fees calculated correctly' },
+    { check: 'Units Outstanding', status: 'passed', details: '188,324 units verified' },
+    { check: 'Historical Variance', status: 'warning', details: '0.24% change (within 2% threshold)' },
+    { check: 'Audit Trail', status: 'passed', details: 'All changes logged' },
+  ];
+
+  // NAV Adjustment History
+  const adjustmentHistory = [
+    { date: '2024-11-08', type: 'Manual Correction', amount: -125, reason: 'Price feed error correction', approvedBy: 'Jane Smith', status: 'approved' },
+    { date: '2024-11-01', type: 'Fee Accrual', amount: -450, reason: 'Performance fee accrual', approvedBy: 'John Doe', status: 'approved' },
+    { date: '2024-10-25', type: 'Asset Revaluation', amount: 820, reason: 'Illiquid asset fair value adjustment', approvedBy: 'Jane Smith', status: 'approved' },
+  ];
+
+  // Price History for validation
+  const priceHistoryData = [
+    { time: '14:00', btc: 35100, eth: 1845 },
+    { time: '15:00', btc: 35150, eth: 1848 },
+    { time: '16:00', btc: 35180, eth: 1852 },
+    { time: '17:00', btc: 35210, eth: 1855 },
+    { time: '18:00', btc: 35200, eth: 1850 },
+  ];
+
+  const handleCalculateNAV = () => {
+    message.loading('Calculating NAV...', 2).then(() => {
+      message.success('NAV calculated successfully: $135.47');
+      setCalculateModalVisible(false);
+    });
+  };
+
+  const handleAdjustment = (values: any) => {
+    console.log('NAV Adjustment:', values);
+    message.success('NAV adjustment submitted for approval');
+    setAdjustmentModalVisible(false);
+    form.resetFields();
+  };
+
   const navHistoryColumns = [
     {
       title: 'Fecha',
@@ -149,14 +229,51 @@ const NAVSystemPage = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <h1 style={{ margin: 0 }}>Sistema NAV</h1>
         <Space>
-          <Button icon={<CalculatorOutlined />}>
+          <Button icon={<CalculatorOutlined />} onClick={() => setCalculateModalVisible(true)} size="large">
             Calcular NAV
           </Button>
-          <Button type="primary" icon={<DownloadOutlined />}>
+          <Button icon={<AuditOutlined />} onClick={() => setAdjustmentModalVisible(true)} size="large">
+            Ajustar NAV
+          </Button>
+          <Button type="primary" icon={<DownloadOutlined />} size="large">
             Exportar Reporte
           </Button>
         </Space>
       </div>
+
+      {/* NAV Calculation Workflow Status */}
+      <Card
+        title={
+          <Space>
+            <SyncOutlined spin={navWorkflowSteps.some(s => s.status === 'pending')} />
+            <span>Estado del Flujo de Cálculo NAV</span>
+            <Badge status="processing" text="En Progreso" />
+          </Space>
+        }
+        style={{ marginBottom: 24 }}
+        bordered={false}
+      >
+        <Timeline
+          items={navWorkflowSteps.map((step) => ({
+            color: step.status === 'completed' ? 'green' : step.status === 'pending' ? 'blue' : 'gray',
+            dot: step.status === 'completed' ? <CheckCircleOutlined /> : step.status === 'pending' ? <ClockCircleOutlined /> : undefined,
+            children: (
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                  <strong>{step.title}</strong>
+                  <Space>
+                    <Tag color={step.status === 'completed' ? 'green' : 'blue'}>
+                      {step.status.toUpperCase()}
+                    </Tag>
+                    {step.time !== '-' && <span style={{ fontSize: '12px', color: '#8c8c8c' }}>{step.time}</span>}
+                  </Space>
+                </div>
+                <div style={{ fontSize: '13px', color: '#666' }}>{step.description}</div>
+              </div>
+            ),
+          }))}
+        />
+      </Card>
 
       {/* Métricas Principales */}
       <Row gutter={16} style={{ marginBottom: 24 }}>
@@ -254,6 +371,238 @@ const NAVSystemPage = () => {
         </Col>
       </Row>
 
+      {/* Asset Holdings Breakdown */}
+      <Card
+        title={
+          <Space>
+            <DollarOutlined style={{ color: '#1890ff' }} />
+            <span>Desglose de Activos</span>
+            <Badge count={assetHoldings.length} style={{ backgroundColor: '#52c41a' }} />
+          </Space>
+        }
+        style={{ marginBottom: 24 }}
+        bordered={false}
+      >
+        <Table
+          dataSource={assetHoldings}
+          columns={[
+            {
+              title: 'Asset',
+              dataIndex: 'asset',
+              key: 'asset',
+              render: (text: string, record: any) => (
+                <Space>
+                  <strong>{text}</strong>
+                  <Tag color="blue">{record.symbol}</Tag>
+                </Space>
+              ),
+            },
+            {
+              title: 'Cantidad',
+              dataIndex: 'quantity',
+              key: 'quantity',
+              render: (val: number) => val.toLocaleString(undefined, { maximumFractionDigits: 4 }),
+            },
+            {
+              title: 'Precio',
+              dataIndex: 'price',
+              key: 'price',
+              render: (val: number) => `$${val.toLocaleString()}`,
+            },
+            {
+              title: 'Valor',
+              dataIndex: 'value',
+              key: 'value',
+              render: (val: number) => `$${val.toLocaleString()}`,
+              sorter: (a: any, b: any) => a.value - b.value,
+            },
+            {
+              title: 'Fuente de Precio',
+              dataIndex: 'priceSource',
+              key: 'priceSource',
+              render: (text: string) => <Tag>{text}</Tag>,
+            },
+            {
+              title: 'Última Actualización',
+              dataIndex: 'lastUpdate',
+              key: 'lastUpdate',
+              render: (text: string) => (
+                <span style={{ fontSize: '12px', color: '#8c8c8c' }}>{text}</span>
+              ),
+            },
+            {
+              title: 'Estado',
+              dataIndex: 'status',
+              key: 'status',
+              render: (status: string) => (
+                <Tag color="green" icon={<CheckCircleOutlined />}>
+                  {status.toUpperCase()}
+                </Tag>
+              ),
+            },
+          ]}
+          pagination={false}
+          scroll={{ x: 1000 }}
+          summary={(pageData) => {
+            const totalValue = pageData.reduce((sum, record) => sum + record.value, 0);
+            return (
+              <Table.Summary fixed>
+                <Table.Summary.Row style={{ background: '#fafafa' }}>
+                  <Table.Summary.Cell index={0} colSpan={3}>
+                    <strong>Total Assets</strong>
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell index={1}>
+                    <strong style={{ color: '#52c41a', fontSize: '16px' }}>
+                      ${totalValue.toLocaleString()}
+                    </strong>
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell index={2} colSpan={3} />
+                </Table.Summary.Row>
+              </Table.Summary>
+            );
+          }}
+        />
+      </Card>
+
+      {/* Data Source Integration Status */}
+      <Card
+        title={
+          <Space>
+            <ApiOutlined style={{ color: '#722ed1' }} />
+            <span>Estado de Integraciones</span>
+            <Tag color="green">Todas Conectadas</Tag>
+          </Space>
+        }
+        style={{ marginBottom: 24 }}
+        bordered={false}
+      >
+        <Row gutter={[16, 16]}>
+          {dataSourceStatus.map((source, index) => (
+            <Col xs={24} sm={12} lg={8} key={index}>
+              <Card size="small" style={{ background: '#fafafa' }}>
+                <Space direction="vertical" style={{ width: '100%' }} size={8}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <strong>{source.source}</strong>
+                    <Badge status={source.status === 'connected' ? 'success' : 'error'} />
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#666' }}>
+                    Tipo: {source.type} • Assets: {source.assets}
+                  </div>
+                  <Progress percent={source.health} size="small" strokeColor="#52c41a" />
+                  <div style={{ fontSize: '11px', color: '#8c8c8c' }}>
+                    Última sincronización: {source.lastSync}
+                  </div>
+                </Space>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      </Card>
+
+      {/* Validation Checks */}
+      <Card
+        title={
+          <Space>
+            <SafetyOutlined style={{ color: '#52c41a' }} />
+            <span>Validación y Verificaciones</span>
+            <Tag color="green">7/8 Pasadas</Tag>
+          </Space>
+        }
+        style={{ marginBottom: 24 }}
+        bordered={false}
+      >
+        <Row gutter={[16, 16]}>
+          {validationChecks.map((check, index) => (
+            <Col xs={24} sm={12} key={index}>
+              <Alert
+                message={
+                  <Space>
+                    {check.status === 'passed' ? (
+                      <CheckCircleOutlined style={{ color: '#52c41a' }} />
+                    ) : (
+                      <WarningOutlined style={{ color: '#faad14' }} />
+                    )}
+                    <strong>{check.check}</strong>
+                  </Space>
+                }
+                description={check.details}
+                type={check.status === 'passed' ? 'success' : 'warning'}
+                showIcon={false}
+                style={{ fontSize: '13px' }}
+              />
+            </Col>
+          ))}
+        </Row>
+      </Card>
+
+      {/* Price Verification & Adjustment History */}
+      <Row gutter={16} style={{ marginBottom: 24 }}>
+        <Col xs={24} lg={12}>
+          <Card
+            title={
+              <Space>
+                <LineChartOutlined style={{ color: '#1890ff' }} />
+                <span>Verificación de Precios (Últimas 4h)</span>
+              </Space>
+            }
+            bordered={false}
+          >
+            <Line
+              data={priceHistoryData.flatMap(item => [
+                { time: item.time, asset: 'BTC', price: item.btc },
+                { time: item.time, asset: 'ETH', price: item.eth },
+              ])}
+              xField="time"
+              yField="price"
+              seriesField="asset"
+              height={250}
+              smooth
+              legend={{ position: 'top' }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} lg={12}>
+          <Card
+            title={
+              <Space>
+                <FileTextOutlined style={{ color: '#fa8c16' }} />
+                <span>Historial de Ajustes</span>
+              </Space>
+            }
+            bordered={false}
+          >
+            <Table
+              dataSource={adjustmentHistory}
+              columns={[
+                { title: 'Fecha', dataIndex: 'date', key: 'date', width: 100 },
+                { title: 'Tipo', dataIndex: 'type', key: 'type' },
+                {
+                  title: 'Monto',
+                  dataIndex: 'amount',
+                  key: 'amount',
+                  render: (val: number) => (
+                    <Tag color={val >= 0 ? 'green' : 'red'}>
+                      {val >= 0 ? '+' : ''}${Math.abs(val)}
+                    </Tag>
+                  ),
+                },
+                {
+                  title: 'Estado',
+                  dataIndex: 'status',
+                  key: 'status',
+                  render: (status: string) => (
+                    <Tag color="green">{status.toUpperCase()}</Tag>
+                  ),
+                },
+              ]}
+              pagination={false}
+              size="small"
+              scroll={{ x: 600 }}
+            />
+          </Card>
+        </Col>
+      </Row>
+
       {/* Detalles del Cálculo NAV */}
       <Card title="Detalle del Cálculo NAV (Hoy)" style={{ marginBottom: 24 }}>
         <Row gutter={16}>
@@ -334,6 +683,134 @@ const NAVSystemPage = () => {
           scroll={{ x: 1200 }}
         />
       </Card>
+
+      {/* Calculate NAV Modal */}
+      <Modal
+        title={
+          <Space>
+            <CalculatorOutlined />
+            <span>Calcular NAV</span>
+          </Space>
+        }
+        open={calculateModalVisible}
+        onCancel={() => setCalculateModalVisible(false)}
+        onOk={handleCalculateNAV}
+        width={600}
+        okText="Calcular"
+        cancelText="Cancelar"
+      >
+        <Alert
+          message="Cálculo Automático de NAV"
+          description="El sistema ejecutará el flujo completo de cálculo de NAV incluyendo: recopilación de datos, verificación de precios, valoración de activos, cálculo de pasivos y validaciones."
+          type="info"
+          showIcon
+          style={{ marginBottom: 16 }}
+        />
+        <Divider />
+        <Space direction="vertical" style={{ width: '100%' }} size={16}>
+          <div>
+            <strong>Fuentes de datos a consultar:</strong>
+            <ul style={{ marginTop: 8, marginBottom: 0 }}>
+              <li>Coinbase Custody, Kraken, Binance (Balances)</li>
+              <li>Fireblocks (Custody Balances)</li>
+              <li>CoinGecko, Chainlink Oracles (Precios)</li>
+            </ul>
+          </div>
+          <div>
+            <strong>Validaciones a ejecutar:</strong>
+            <ul style={{ marginTop: 8, marginBottom: 0 }}>
+              <li>Reconciliación de balances</li>
+              <li>Verificación de desviación de precios</li>
+              <li>Ratio de liquidez</li>
+              <li>Varianza histórica</li>
+            </ul>
+          </div>
+        </Space>
+      </Modal>
+
+      {/* NAV Adjustment Modal */}
+      <Modal
+        title={
+          <Space>
+            <AuditOutlined />
+            <span>Ajustar NAV Manualmente</span>
+          </Space>
+        }
+        open={adjustmentModalVisible}
+        onCancel={() => setAdjustmentModalVisible(false)}
+        onOk={() => form.submit()}
+        width={700}
+        okText="Enviar para Aprobación"
+        cancelText="Cancelar"
+      >
+        <Alert
+          message="Requiere Aprobación"
+          description="Los ajustes manuales al NAV requieren aprobación del Compliance Officer antes de ser aplicados."
+          type="warning"
+          showIcon
+          style={{ marginBottom: 16 }}
+        />
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleAdjustment}
+        >
+          <Form.Item
+            name="adjustmentType"
+            label="Tipo de Ajuste"
+            rules={[{ required: true, message: 'Selecciona el tipo de ajuste' }]}
+          >
+            <Select placeholder="Selecciona tipo">
+              <Select.Option value="manual_correction">Corrección Manual</Select.Option>
+              <Select.Option value="fee_accrual">Acumulación de Comisiones</Select.Option>
+              <Select.Option value="asset_revaluation">Revaluación de Activo</Select.Option>
+              <Select.Option value="price_correction">Corrección de Precio</Select.Option>
+              <Select.Option value="other">Otro</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            name="amount"
+            label="Monto del Ajuste ($)"
+            rules={[{ required: true, message: 'Ingresa el monto' }]}
+          >
+            <InputNumber
+              style={{ width: '100%' }}
+              placeholder="0.00"
+              precision={2}
+              step={0.01}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="effectiveDate"
+            label="Fecha Efectiva"
+            rules={[{ required: true, message: 'Selecciona la fecha' }]}
+          >
+            <DatePicker style={{ width: '100%' }} />
+          </Form.Item>
+
+          <Form.Item
+            name="reason"
+            label="Razón del Ajuste"
+            rules={[{ required: true, message: 'Describe la razón' }]}
+          >
+            <Select.TextArea
+              rows={4}
+              placeholder="Describe detalladamente la razón del ajuste..."
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="supportingDocs"
+            label="Documentos de Soporte"
+          >
+            <Button icon={<DownloadOutlined />}>
+              Adjuntar Documentos
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };
