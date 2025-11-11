@@ -15,114 +15,41 @@ import {
   Tag,
   message,
   Skeleton,
+  Spin,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import { Line } from '@ant-design/charts';
 import { StatCard } from '../../../components/common';
-import { fetchAssets, type AssetRecord } from '../../../services/adminClient';
+import { assetsService, fundsService } from '../../../services';
+import type { Asset as AssetType } from '../../../services/types';
 import { useTranslation } from 'react-i18next';
 
-type AssetType = 'Crypto' | 'Token' | 'Stablecoin';
-
-interface Asset {
-  id: string;
-  symbol: string;
-  name: string;
-  type: AssetType;
-  quantity: number;
-  currentPrice: number;
-  purchasePrice: number;
-  purchaseDate: string;
-  change24h: number;
+interface Asset extends AssetType {
+  change24h?: number;
 }
 
 interface AssetFormValues {
   symbol: string;
   name: string;
-  type: AssetType;
+  type: string;
   quantity: number;
-  purchasePrice: number;
-  currentPrice: number;
-  change24h: number;
-  purchaseDate: dayjs.Dayjs;
+  purchase_price: number;
+  current_price: number;
+  purchase_date: dayjs.Dayjs;
 }
-
-const marketReference: Record<string, { currentPrice: number; change24h: number }> = {
-  BTC: { currentPrice: 42150, change24h: 3.5 },
-  ETH: { currentPrice: 2250, change24h: 5.2 },
-  SOL: { currentPrice: 145.3, change24h: 2.1 },
-  USDC: { currentPrice: 1, change24h: 0 },
-  USDT: { currentPrice: 1, change24h: 0 },
-  MKR: { currentPrice: 2315, change24h: -1.1 },
-};
-
-const defaultAssets: Asset[] = [
-  {
-    id: 'btc',
-    symbol: 'BTC',
-    name: 'Bitcoin',
-    type: 'Crypto',
-    quantity: 15.5,
-    currentPrice: 42150,
-    purchasePrice: 31500,
-    purchaseDate: '2024-03-12',
-    change24h: 3.5,
-  },
-  {
-    id: 'eth',
-    symbol: 'ETH',
-    name: 'Ethereum',
-    type: 'Crypto',
-    quantity: 250,
-    currentPrice: 2250,
-    purchasePrice: 1875,
-    purchaseDate: '2024-04-02',
-    change24h: 5.2,
-  },
-  {
-    id: 'usdc',
-    symbol: 'USDC',
-    name: 'USD Coin',
-    type: 'Stablecoin',
-    quantity: 125000,
-    currentPrice: 1,
-    purchasePrice: 1,
-    purchaseDate: '2024-02-18',
-    change24h: 0,
-  },
-  {
-    id: 'sol',
-    symbol: 'SOL',
-    name: 'Solana',
-    type: 'Token',
-    quantity: 4200,
-    currentPrice: 145.3,
-    purchasePrice: 96.2,
-    purchaseDate: '2023-11-20',
-    change24h: 2.1,
-  },
-  {
-    id: 'mkr',
-    symbol: 'MKR',
-    name: 'MakerDAO',
-    type: 'Token',
-    quantity: 350,
-    currentPrice: 2315,
-    purchasePrice: 1960,
-    purchaseDate: '2024-05-09',
-    change24h: -1.1,
-  },
-];
-
-// assetTypeOptions moved inside components to use translations
 
 const usePortfolioMetrics = (assets: Asset[]) =>
   useMemo(() => {
-    const totalValue = assets.reduce((acc, asset) => acc + asset.quantity * asset.currentPrice, 0);
-    const bestPerformer = [...assets].sort((a, b) => b.change24h - a.change24h)[0];
-    const worstPerformer = [...assets].sort((a, b) => a.change24h - b.change24h)[0];
+    const totalValue = assets.reduce((acc, asset) => acc + (asset.quantity || 0) * (asset.current_price || 0), 0);
+    const assetsWithPerformance = assets.map(asset => ({
+      ...asset,
+      performance: ((asset.current_price || 0) - (asset.purchase_price || 0)) / (asset.purchase_price || 1) * 100
+    }));
+
+    const bestPerformer = [...assetsWithPerformance].sort((a, b) => (b.performance || 0) - (a.performance || 0))[0];
+    const worstPerformer = [...assetsWithPerformance].sort((a, b) => (a.performance || 0) - (b.performance || 0))[0];
 
     return {
       totalAssets: assets.length,
@@ -149,10 +76,9 @@ const AssetFormModal = ({
   const { t } = useTranslation();
 
   const assetTypeOptions = [
-    { label: t('adminClient.assets.allTypes'), value: 'all' },
-    { label: t('adminClient.assets.crypto'), value: 'Crypto' },
-    { label: t('adminClient.assets.token'), value: 'Token' },
-    { label: t('adminClient.assets.stablecoin'), value: 'Stablecoin' },
+    { label: t('adminClient.assets.crypto'), value: 'crypto' },
+    { label: t('adminClient.assets.token'), value: 'token' },
+    { label: t('adminClient.assets.stablecoin'), value: 'stablecoin' },
   ];
 
   const handleOk = async () => {
@@ -178,10 +104,9 @@ const AssetFormModal = ({
         form={form}
         initialValues={
           initialValues ?? {
-            purchaseDate: dayjs(),
-            type: 'Crypto',
-            change24h: 0,
-            currentPrice: 0,
+            purchase_date: dayjs(),
+            type: 'crypto',
+            current_price: 0,
           }
         }
       >
@@ -192,24 +117,24 @@ const AssetFormModal = ({
           <Input placeholder="Bitcoin" />
         </Form.Item>
         <Form.Item name="type" label={t('adminClient.assets.type')} rules={[{ required: true }]}>
-          <Select options={assetTypeOptions.filter((option) => option.value !== 'all')} />
+          <Select options={assetTypeOptions} />
         </Form.Item>
         <Form.Item
           name="quantity"
           label={t('adminClient.assets.quantity')}
           rules={[{ required: true, message: t('adminClient.assets.enterQuantity') }]}
         >
-          <InputNumber min={0} precision={2} style={{ width: '100%' }} />
+          <InputNumber min={0} precision={8} style={{ width: '100%' }} />
         </Form.Item>
         <Form.Item
-          name="purchasePrice"
+          name="purchase_price"
           label={t('adminClient.assets.purchasePrice')}
           rules={[{ required: true, message: t('adminClient.assets.enterPurchasePrice') }]}
         >
           <InputNumber min={0} prefix="$" style={{ width: '100%' }} />
         </Form.Item>
         <Form.Item
-          name="currentPrice"
+          name="current_price"
           label={t('adminClient.assets.currentPrice')}
           tooltip={t('adminClient.assets.marketReference')}
           rules={[{ required: true, message: t('adminClient.assets.enterCurrentPrice') }]}
@@ -217,14 +142,7 @@ const AssetFormModal = ({
           <InputNumber min={0} prefix="$" style={{ width: '100%' }} />
         </Form.Item>
         <Form.Item
-          name="change24h"
-          label={t('adminClient.assets.change24h')}
-          rules={[{ required: true, message: t('adminClient.assets.enterChange') }]}
-        >
-          <InputNumber min={-100} max={100} precision={2} suffix="%" style={{ width: '100%' }} />
-        </Form.Item>
-        <Form.Item
-          name="purchaseDate"
+          name="purchase_date"
           label={t('adminClient.assets.purchaseDate')}
           rules={[{ required: true, message: t('adminClient.assets.selectDate') }]}
         >
@@ -248,18 +166,16 @@ const AssetDetailsModal = ({
 
   const priceHistory = useMemo(() => {
     if (!asset) return [];
-    const basePrice = asset.currentPrice;
+    const basePrice = asset.current_price || 0;
     return Array.from({ length: 12 }).map((_, idx) => ({
       month: dayjs().subtract(11 - idx, 'month').format('MMM YYYY'),
       value: basePrice * (1 + Math.sin(idx / 3) * 0.08),
     }));
   }, [asset]);
 
-  const recentTransactions = [
-    { type: 'Buy', amount: 5, date: '2024-09-02', price: asset?.currentPrice ?? 0 },
-    { type: 'Sell', amount: 2, date: '2024-07-18', price: (asset?.currentPrice ?? 0) * 0.92 },
-    { type: 'Buy', amount: 3, date: '2024-05-05', price: (asset?.currentPrice ?? 0) * 0.88 },
-  ];
+  const performance = asset
+    ? ((asset.current_price || 0) - (asset.purchase_price || 0)) / (asset.purchase_price || 1) * 100
+    : 0;
 
   return (
     <Modal
@@ -275,20 +191,20 @@ const AssetDetailsModal = ({
             <Col span={8}>
               <StatCard
                 title={t('adminClient.assets.currentPrice')}
-                value={`$${asset.currentPrice.toLocaleString()}`}
-                trend={asset.change24h}
+                value={`$${(asset.current_price || 0).toLocaleString()}`}
+                trend={{ value: performance, isPositive: performance >= 0 }}
               />
             </Col>
             <Col span={8}>
               <StatCard
                 title={t('adminClient.assets.quantity')}
-                value={asset.quantity.toLocaleString()}
+                value={(asset.quantity || 0).toLocaleString()}
               />
             </Col>
             <Col span={8}>
               <StatCard
                 title={t('adminClient.assets.totalValue')}
-                value={`$${(asset.quantity * asset.currentPrice).toLocaleString()}`}
+                value={`$${((asset.quantity || 0) * (asset.current_price || 0)).toLocaleString()}`}
               />
             </Col>
           </Row>
@@ -305,26 +221,14 @@ const AssetDetailsModal = ({
             />
           </Card>
 
-          <Card title={t('adminClient.assets.recentActivity')}>
-            <Table
-              rowKey="date"
-              dataSource={recentTransactions}
-              pagination={false}
-              columns={[
-                { title: t('adminClient.transactions.type'), dataIndex: 'type' },
-                {
-                  title: t('adminClient.assets.quantity'),
-                  dataIndex: 'amount',
-                  render: (value) => `${value} ${asset.symbol}`,
-                },
-                {
-                  title: t('adminClient.assets.price'),
-                  dataIndex: 'price',
-                  render: (value) => `$${value.toLocaleString()}`,
-                },
-                { title: t('adminClient.assets.date'), dataIndex: 'date' },
-              ]}
-            />
+          <Card title="Asset Information">
+            <Space direction="vertical" style={{ width: '100%' }}>
+              <p><strong>Symbol:</strong> {asset.symbol}</p>
+              <p><strong>Type:</strong> {asset.type}</p>
+              <p><strong>Purchase Price:</strong> ${(asset.purchase_price || 0).toLocaleString()}</p>
+              <p><strong>Purchase Date:</strong> {asset.purchase_date ? new Date(asset.purchase_date).toLocaleDateString() : 'N/A'}</p>
+              <p><strong>P&L:</strong> <Tag color={performance >= 0 ? 'green' : 'red'}>{performance.toFixed(2)}%</Tag></p>
+            </Space>
           </Card>
         </Space>
       )}
@@ -334,7 +238,7 @@ const AssetDetailsModal = ({
 
 const AssetsManagementPage = () => {
   const { t } = useTranslation();
-  const [assets, setAssets] = useState<Asset[]>(defaultAssets);
+  const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -342,37 +246,45 @@ const AssetsManagementPage = () => {
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [isDetailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
+  const [currentFundId, setCurrentFundId] = useState<string | null>(null);
 
   const assetTypeOptions = [
     { label: t('adminClient.assets.allTypes'), value: 'all' },
-    { label: t('adminClient.assets.crypto'), value: 'Crypto' },
-    { label: t('adminClient.assets.token'), value: 'Token' },
-    { label: t('adminClient.assets.stablecoin'), value: 'Stablecoin' },
+    { label: t('adminClient.assets.crypto'), value: 'crypto' },
+    { label: t('adminClient.assets.token'), value: 'token' },
+    { label: t('adminClient.assets.stablecoin'), value: 'stablecoin' },
   ];
 
   useEffect(() => {
-    let mounted = true;
-    setLoading(true);
+    loadAssets();
+  }, []);
 
-    const loadAssets = async () => {
-      const { data, error } = await fetchAssets();
-      if (!mounted) return;
-      if (error) {
-        console.warn('Supabase assets error', error);
+  const loadAssets = async () => {
+    try {
+      setLoading(true);
+
+      // Get first active fund (in real app, get from context/auth)
+      const funds = await fundsService.getActiveFunds();
+      if (funds.length === 0) {
+        message.warning('No active funds found');
         setLoading(false);
         return;
       }
-      if (data && data.length) {
-        setAssets(data.map(mapAssetRecord));
-      }
-      setLoading(false);
-    };
 
-    loadAssets();
-    return () => {
-      mounted = false;
-    };
-  }, []);
+      const fundId = funds[0].id;
+      setCurrentFundId(fundId);
+
+      // Load assets for the fund
+      const fundAssets = await assetsService.getAssetsByFund(fundId);
+      setAssets(fundAssets);
+
+    } catch (error: any) {
+      console.error('Error loading assets:', error);
+      message.error('Failed to load assets: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const metrics = usePortfolioMetrics(assets);
 
@@ -380,8 +292,8 @@ const AssetsManagementPage = () => {
     return assets.filter((asset) => {
       const matchesType = filterType === 'all' || asset.type === filterType;
       const matchesSearch =
-        asset.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        asset.symbol.toLowerCase().includes(searchTerm.toLowerCase());
+        (asset.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (asset.symbol || '').toLowerCase().includes(searchTerm.toLowerCase());
       return matchesType && matchesSearch;
     });
   }, [assets, filterType, searchTerm]);
@@ -406,42 +318,53 @@ const AssetsManagementPage = () => {
         .filter((option) => option.value !== 'all')
         .map((option) => ({ text: option.label, value: option.value })),
       onFilter: (value, record) => record.type === value,
+      render: (type: string) => (
+        <Tag color={type === 'crypto' ? 'blue' : type === 'stablecoin' ? 'green' : 'purple'}>
+          {type?.toUpperCase()}
+        </Tag>
+      ),
     },
     {
       title: t('adminClient.assets.quantity'),
       dataIndex: 'quantity',
-      sorter: (a, b) => a.quantity - b.quantity,
-      render: (value) => value.toLocaleString(),
+      sorter: (a, b) => (a.quantity || 0) - (b.quantity || 0),
+      render: (value) => (value || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 8 }),
     },
     {
       title: t('adminClient.assets.currentPrice'),
-      dataIndex: 'currentPrice',
-      sorter: (a, b) => a.currentPrice - b.currentPrice,
-      render: (value) => `$${value.toLocaleString()}`,
+      dataIndex: 'current_price',
+      sorter: (a, b) => (a.current_price || 0) - (b.current_price || 0),
+      render: (value) => `$${(value || 0).toLocaleString()}`,
     },
     {
       title: t('adminClient.assets.totalValue'),
       dataIndex: 'totalValue',
-      sorter: (a, b) => a.quantity * a.currentPrice - b.quantity * b.currentPrice,
-      render: (_, record) => `$${(record.quantity * record.currentPrice).toLocaleString()}`,
+      sorter: (a, b) => ((a.quantity || 0) * (a.current_price || 0)) - ((b.quantity || 0) * (b.current_price || 0)),
+      render: (_, record) => `$${((record.quantity || 0) * (record.current_price || 0)).toLocaleString()}`,
     },
     {
       title: t('adminClient.assets.portfolio'),
       render: (_, record) => {
-        const percentage = (record.quantity * record.currentPrice * 100) / totalPortfolioValue;
+        const percentage = ((record.quantity || 0) * (record.current_price || 0) * 100) / totalPortfolioValue;
         return `${percentage.toFixed(2)}%`;
       },
     },
     {
-      title: t('adminClient.assets.change24h'),
-      dataIndex: 'change24h',
-      sorter: (a, b) => a.change24h - b.change24h,
-      render: (value: number) => (
-        <Tag color={value >= 0 ? 'green' : 'volcano'}>
-          {value >= 0 ? '+' : ''}
-          {value}%
-        </Tag>
-      ),
+      title: 'P&L',
+      render: (_, record) => {
+        const performance = ((record.current_price || 0) - (record.purchase_price || 0)) / (record.purchase_price || 1) * 100;
+        return (
+          <Tag color={performance >= 0 ? 'green' : 'red'}>
+            {performance >= 0 ? '+' : ''}
+            {performance.toFixed(2)}%
+          </Tag>
+        );
+      },
+      sorter: (a, b) => {
+        const perfA = ((a.current_price || 0) - (a.purchase_price || 0)) / (a.purchase_price || 1) * 100;
+        const perfB = ((b.current_price || 0) - (b.purchase_price || 0)) / (b.purchase_price || 1) * 100;
+        return perfA - perfB;
+      },
     },
     {
       title: t('adminClient.assets.actions'),
@@ -456,7 +379,7 @@ const AssetsManagementPage = () => {
               setDetailsModalOpen(true);
             }}
           >
-            {t('adminClient.assets.viewDetails')}
+            View
           </Button>
           <Button
             size="small"
@@ -466,7 +389,7 @@ const AssetsManagementPage = () => {
               setEditModalOpen(true);
             }}
           >
-            {t('common.edit')}
+            Edit
           </Button>
           <Button
             size="small"
@@ -474,7 +397,7 @@ const AssetsManagementPage = () => {
             icon={<DeleteOutlined />}
             onClick={() => handleRemoveAsset(record.id)}
           >
-            {t('adminClient.assets.removeAsset')}
+            Remove
           </Button>
         </Space>
       ),
@@ -484,79 +407,90 @@ const AssetsManagementPage = () => {
   const handleRemoveAsset = (assetId: string) => {
     Modal.confirm({
       title: t('adminClient.assets.removeAsset'),
-      content: t('adminClient.assets.deleteConfirm'),
+      content: 'Are you sure you want to delete this asset?',
       okText: t('common.delete'),
       okType: 'danger',
       cancelText: t('common.cancel'),
       centered: true,
-      onOk: () => {
-        setAssets((prev) => prev.filter((asset) => asset.id !== assetId));
-        message.success(t('adminClient.assets.deleteSuccess'));
+      onOk: async () => {
+        try {
+          await assetsService.deleteAsset(assetId);
+          setAssets((prev) => prev.filter((asset) => asset.id !== assetId));
+          message.success('Asset deleted successfully');
+        } catch (error: any) {
+          message.error('Failed to delete asset: ' + error.message);
+        }
       },
     });
   };
 
-  const handleModalSubmit = (values: AssetFormValues, assetId?: string) => {
-    const reference = marketReference[values.symbol.toUpperCase()];
-    const payload: Asset = {
-      id: assetId ?? values.symbol.toLowerCase(),
-      symbol: values.symbol.toUpperCase(),
-      name: values.name,
-      type: values.type,
-      quantity: values.quantity,
-      purchasePrice: values.purchasePrice,
-      currentPrice: values.currentPrice || reference?.currentPrice || values.purchasePrice,
-      purchaseDate: values.purchaseDate.format('YYYY-MM-DD'),
-      change24h: values.change24h ?? reference?.change24h ?? 0,
-    };
+  const handleModalSubmit = async (values: AssetFormValues, assetId?: string) => {
+    if (!currentFundId) {
+      message.error('No fund selected');
+      return;
+    }
 
-    setAssets((prev) => {
+    try {
+      const payload = {
+        fund_id: currentFundId,
+        symbol: values.symbol.toUpperCase(),
+        name: values.name,
+        type: values.type,
+        quantity: values.quantity,
+        purchase_price: values.purchase_price,
+        current_price: values.current_price,
+        purchase_date: values.purchase_date.format('YYYY-MM-DD'),
+      };
+
       if (assetId) {
-        return prev.map((asset) => (asset.id === assetId ? payload : asset));
+        const updated = await assetsService.updateAsset(assetId, payload);
+        setAssets((prev) => prev.map((asset) => (asset.id === assetId ? updated : asset)));
+        message.success('Asset updated successfully');
+      } else {
+        const created = await assetsService.createAsset(payload);
+        setAssets((prev) => [...prev, created]);
+        message.success('Asset added successfully');
       }
-      return [...prev, payload];
-    });
 
-    message.success(assetId ? t('adminClient.assets.updateSuccess') : t('adminClient.assets.addSuccess'));
-    setSelectedAsset(null);
-    setAddModalOpen(false);
-    setEditModalOpen(false);
+      setSelectedAsset(null);
+      setAddModalOpen(false);
+      setEditModalOpen(false);
+    } catch (error: any) {
+      message.error('Failed to save asset: ' + error.message);
+    }
   };
+
+  if (loading) {
+    return (
+      <div style={{ padding: '24px', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+        <Spin size="large" tip="Loading assets..." />
+      </div>
+    );
+  }
 
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       <Row gutter={[16, 16]}>
-        {loading ? (
-          <>
-            <Col xs={24} md={6}><Skeleton active /></Col>
-            <Col xs={24} md={6}><Skeleton active /></Col>
-            <Col xs={24} md={6}><Skeleton active /></Col>
-            <Col xs={24} md={6}><Skeleton active /></Col>
-          </>
-        ) : (
-          <>
-            <Col xs={24} md={6}>
-              <StatCard title={t('adminClient.assets.totalAssets')} value={metrics.totalAssets} />
-            </Col>
-            <Col xs={24} md={6}>
-              <StatCard title={t('adminClient.assets.portfolioValue')} value={`$${metrics.totalValue.toLocaleString()}`} />
-            </Col>
-            <Col xs={24} md={6}>
-              <StatCard
-                title={t('adminClient.assets.bestPerformer')}
-                value={metrics.bestPerformer ? metrics.bestPerformer.symbol : '—'}
-                trend={metrics.bestPerformer?.change24h}
-              />
-            </Col>
-            <Col xs={24} md={6}>
-              <StatCard
-                title={t('adminClient.assets.worstPerformer')}
-                value={metrics.worstPerformer ? metrics.worstPerformer.symbol : '—'}
-                trend={metrics.worstPerformer?.change24h}
-              />
-            </Col>
-          </>
-        )}
+        <Col xs={24} md={6}>
+          <StatCard title={t('adminClient.assets.totalAssets')} value={metrics.totalAssets.toString()} />
+        </Col>
+        <Col xs={24} md={6}>
+          <StatCard title={t('adminClient.assets.portfolioValue')} value={`$${metrics.totalValue.toLocaleString()}`} />
+        </Col>
+        <Col xs={24} md={6}>
+          <StatCard
+            title={t('adminClient.assets.bestPerformer')}
+            value={metrics.bestPerformer ? metrics.bestPerformer.symbol : '—'}
+            trend={metrics.bestPerformer ? { value: ((metrics.bestPerformer.current_price || 0) - (metrics.bestPerformer.purchase_price || 0)) / (metrics.bestPerformer.purchase_price || 1) * 100, isPositive: true } : undefined}
+          />
+        </Col>
+        <Col xs={24} md={6}>
+          <StatCard
+            title={t('adminClient.assets.worstPerformer')}
+            value={metrics.worstPerformer ? metrics.worstPerformer.symbol : '—'}
+            trend={metrics.worstPerformer ? { value: ((metrics.worstPerformer.current_price || 0) - (metrics.worstPerformer.purchase_price || 0)) / (metrics.worstPerformer.purchase_price || 1) * 100, isPositive: false } : undefined}
+          />
+        </Col>
       </Row>
 
       <Card
@@ -590,8 +524,7 @@ const AssetsManagementPage = () => {
           rowKey="id"
           dataSource={filteredAssets}
           columns={columns}
-          pagination={{ pageSize: 8 }}
-          loading={loading}
+          pagination={{ pageSize: 10 }}
         />
       </Card>
 
@@ -608,14 +541,13 @@ const AssetsManagementPage = () => {
         initialValues={
           selectedAsset
             ? {
-              symbol: selectedAsset.symbol,
-              name: selectedAsset.name,
-              type: selectedAsset.type,
-              quantity: selectedAsset.quantity,
-              purchasePrice: selectedAsset.purchasePrice,
-              currentPrice: selectedAsset.currentPrice,
-              change24h: selectedAsset.change24h,
-              purchaseDate: dayjs(selectedAsset.purchaseDate),
+              symbol: selectedAsset.symbol || '',
+              name: selectedAsset.name || '',
+              type: selectedAsset.type || 'crypto',
+              quantity: selectedAsset.quantity || 0,
+              purchase_price: selectedAsset.purchase_price || 0,
+              current_price: selectedAsset.current_price || 0,
+              purchase_date: selectedAsset.purchase_date ? dayjs(selectedAsset.purchase_date) : dayjs(),
             }
             : undefined
         }
@@ -639,15 +571,3 @@ const AssetsManagementPage = () => {
 };
 
 export default AssetsManagementPage;
-
-const mapAssetRecord = (record: AssetRecord): Asset => ({
-  id: record.id,
-  symbol: record.symbol,
-  name: record.name,
-  type: (record.type as AssetType) ?? 'Crypto',
-  quantity: Number(record.quantity ?? 0),
-  purchasePrice: Number(record.purchase_price ?? 0),
-  currentPrice: Number(record.current_price ?? 0),
-  purchaseDate: record.purchase_date ?? dayjs().format('YYYY-MM-DD'),
-  change24h: 0,
-});
