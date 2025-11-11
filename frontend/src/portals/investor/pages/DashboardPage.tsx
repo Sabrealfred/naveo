@@ -13,11 +13,13 @@ import {
 import { Line, Pie } from '@ant-design/charts';
 import { StatCard } from '../../../components/common';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { portfolioService, transactionsService } from '../../../services';
 import type { PortfolioHolding, Transaction, PortfolioValue } from '../../../services/types';
 
 export default function DashboardPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   // State
   const [loading, setLoading] = useState(true);
@@ -74,7 +76,7 @@ export default function DashboardPage() {
       <div style={{ padding: '24px' }}>
         <Card>
           <p>No portfolio data available. Start investing to see your dashboard.</p>
-          <Button type="primary" style={{ marginTop: 16 }}>
+          <Button type="primary" style={{ marginTop: 16 }} onClick={() => navigate('/investor/marketplace')}>
             Explore Funds
           </Button>
         </Card>
@@ -180,10 +182,10 @@ export default function DashboardPage() {
     {
       title: 'Actions',
       key: 'actions',
-      render: () => (
+      render: (_: any, record: PortfolioHolding) => (
         <Space>
-          <Button type="primary" size="small">Buy</Button>
-          <Button size="small">Sell</Button>
+          <Button type="primary" size="small" onClick={() => navigate('/investor/marketplace')}>Buy</Button>
+          <Button size="small" onClick={() => navigate('/investor/transactions')}>Sell</Button>
         </Space>
       ),
     },
@@ -305,29 +307,35 @@ export default function DashboardPage() {
       {/* Quick Actions */}
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col span={24}>
-          <Card title={t('investor.dashboard.quickActions')}>
-            <Space size="middle">
+          <Card title={t('investor.dashboard.quickActions', 'Quick Actions')}>
+            <Space size="middle" wrap>
               <Button
                 type="primary"
                 icon={<ArrowUpOutlined />}
                 size="large"
+                onClick={() => navigate('/investor/transactions')}
               >
-                {t('investor.dashboard.depositFunds')}
+                {t('investor.dashboard.depositFunds', 'Deposit Funds')}
               </Button>
               <Button
                 icon={<SwapOutlined />}
                 size="large"
+                onClick={() => navigate('/investor/marketplace')}
               >
-                {t('investor.dashboard.buyTokens')}
+                {t('investor.dashboard.buyTokens', 'Buy Tokens')}
               </Button>
               <Button
                 icon={<ArrowDownOutlined />}
                 size="large"
+                onClick={() => navigate('/investor/transactions')}
               >
-                {t('investor.dashboard.withdraw')}
+                {t('investor.dashboard.withdraw', 'Withdraw')}
               </Button>
-              <Button size="large">
-                {t('investor.dashboard.viewReports')}
+              <Button
+                size="large"
+                onClick={() => navigate('/investor/reports')}
+              >
+                {t('investor.dashboard.viewReports', 'View Reports')}
               </Button>
             </Space>
           </Card>
@@ -374,9 +382,9 @@ export default function DashboardPage() {
       <Row gutter={[16, 16]}>
         <Col span={24}>
           <Card
-            title={t('investor.dashboard.recentTransactions')}
+            title={t('investor.dashboard.recentTransactions', 'Recent Transactions')}
             bordered={false}
-            extra={<Button type="link">{t('dashboard.viewAll')}</Button>}
+            extra={<Button type="link" onClick={() => navigate('/investor/transactions')}>{t('dashboard.viewAll', 'View All')}</Button>}
           >
             <Table
               dataSource={recentTransactions}

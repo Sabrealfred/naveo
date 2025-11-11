@@ -12,6 +12,7 @@ import {
   FilePdfOutlined,
   AuditOutlined,
   UserAddOutlined,
+  LinkOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +29,7 @@ import {
   StatementsPage,
   TaxDocumentsPage,
   NotificationsCenterPage,
+  IntegrationsPage,
 } from './pages';
 
 const InvestorPortal = () => {
@@ -80,6 +82,11 @@ const InvestorPortal = () => {
       label: t('menu.investor.notifications'),
     },
     {
+      key: '/investor/integrations',
+      icon: <LinkOutlined />,
+      label: t('menu.investor.integrations'),
+    },
+    {
       key: '/investor/profile',
       icon: <UserOutlined />,
       label: t('menu.investor.profile'),
@@ -107,6 +114,7 @@ const InvestorPortal = () => {
         <Route path="statements" element={<StatementsPage />} />
         <Route path="tax-documents" element={<TaxDocumentsPage />} />
         <Route path="notifications" element={<NotificationsCenterPage />} />
+        <Route path="integrations" element={<IntegrationsPage />} />
         <Route path="onboarding" element={<OnboardingFlowPage />} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="kyc-status" element={<KYCStatusPage />} />

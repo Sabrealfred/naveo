@@ -18,6 +18,7 @@ import {
   CalendarOutlined,
   DollarOutlined,
   SyncOutlined,
+  LinkOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import { useTranslation } from 'react-i18next';
@@ -44,6 +45,7 @@ import {
   GateManagementPage,
   AIStrategyManagementPage,
   AIAgentPage,
+  IntegrationsPage,
 } from './pages';
 
 const AdminClientPortal = () => {
@@ -141,6 +143,11 @@ const AdminClientPortal = () => {
       label: t('menu.adminClient.compliance'),
     },
     {
+      key: '/admin-client/integrations',
+      icon: <LinkOutlined />,
+      label: t('menu.adminClient.integrations'),
+    },
+    {
       key: '/admin-client/reports',
       icon: <FileTextOutlined />,
       label: t('menu.adminClient.reports'),
@@ -178,6 +185,7 @@ const AdminClientPortal = () => {
         <Route path="admins" element={<SubAdminsManagementPage />} />
         <Route path="transactions" element={<TransactionsPage />} />
         <Route path="compliance" element={<CompliancePage />} />
+        <Route path="integrations" element={<IntegrationsPage />} />
         <Route path="reports" element={<ReportsPage />} />
         <Route path="notifications" element={<NotificationsCenterPage />} />
       </Routes>
