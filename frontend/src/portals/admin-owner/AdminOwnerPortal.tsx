@@ -36,6 +36,7 @@ import {
   KYCAMLManagementPage,
   TokenizationFlowPage,
   TokenizationWizardPage,
+  TokenizationAnalyticsPage,
 } from './pages';
 
 const AdminOwnerPortal = () => {
@@ -73,6 +74,7 @@ const AdminOwnerPortal = () => {
       children: [
         { key: '/admin-owner/tokenization-flow', label: 'Process Tracking' },
         { key: '/admin-owner/tokenization-wizard', label: 'Start New Tokenization' },
+        { key: '/admin-owner/tokenization-analytics', label: 'Analytics & Insights' },
       ],
     },
     {
@@ -141,6 +143,7 @@ const AdminOwnerPortal = () => {
         <Route path="product-structuring" element={<ProductStructuringPage />} />
         <Route path="tokenization-flow" element={<TokenizationFlowPage />} />
         <Route path="tokenization-wizard" element={<TokenizationWizardPage />} />
+        <Route path="tokenization-analytics" element={<TokenizationAnalyticsPage />} />
         <Route path="kyc-aml" element={<KYCAMLManagementPage />} />
         <Route path="clients" element={<ClientsManagementPage />} />
         <Route path="users" element={<UsersPermissionsPage />} />
