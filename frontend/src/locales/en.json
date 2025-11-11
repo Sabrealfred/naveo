@@ -30,6 +30,15 @@
     "admin-client": "Fund and trader management",
     "investor": "Portfolio and marketplace"
   },
+  "layout": {
+    "search": "Search",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout",
+    "viewNotificationsAll": "View all notifications",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode"
+  },
   "menu": {
     "adminOwner": {
       "dashboard": "Dashboard",
