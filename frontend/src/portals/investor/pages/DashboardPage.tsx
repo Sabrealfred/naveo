@@ -1,4 +1,5 @@
-import { Card, Col, Row, Statistic, Table, Tag, Button, Space, Avatar } from 'antd';
+import { useState, useEffect } from 'react';
+import { Card, Col, Row, Statistic, Table, Tag, Button, Space, Avatar, Spin, message } from 'antd';
 import {
   DollarOutlined,
   RiseOutlined,
@@ -12,110 +13,92 @@ import {
 import { Line, Pie } from '@ant-design/charts';
 import { StatCard } from '../../../components/common';
 import { useTranslation } from 'react-i18next';
+import { portfolioService, transactionsService } from '../../../services';
+import type { PortfolioHolding, Transaction, PortfolioValue } from '../../../services/types';
 
 export default function DashboardPage() {
   const { t } = useTranslation();
-  // Mock data for Investor Dashboard - Replace with real Supabase data
-  const portfolioMetrics = {
-    totalValue: 125000, // $125K
-    totalInvested: 100000, // $100K
-    totalReturn: 25000, // $25K
-    returnPercentage: 25.0, // 25%
-    availableCash: 15000, // $15K
-    pendingTransactions: 2,
+
+  // State
+  const [loading, setLoading] = useState(true);
+  const [portfolioValue, setPortfolioValue] = useState<PortfolioValue | null>(null);
+  const [holdings, setHoldings] = useState<PortfolioHolding[]>([]);
+  const [recentTransactions, setRecentTransactions] = useState<Transaction[]>([]);
+  const [portfolioAllocation, setPortfolioAllocation] = useState<any[]>([]);
+
+  // Mock user ID (in real app, get from auth context)
+  const userId = '10000000-0000-0000-0000-000000000001';
+
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+
+      // Load portfolio value
+      const value = await portfolioService.calculatePortfolioValue(userId);
+      setPortfolioValue(value);
+
+      // Load holdings
+      const portfolioHoldings = await portfolioService.getPortfolioHoldings(userId);
+      setHoldings(portfolioHoldings);
+
+      // Load portfolio allocation
+      const allocation = await portfolioService.getPortfolioAllocation(userId);
+      setPortfolioAllocation(allocation);
+
+      // Load recent transactions (last 30 days)
+      const transactions = await transactionsService.getRecentTransactions(30, userId);
+      setRecentTransactions(transactions.slice(0, 10)); // Show only 10 most recent
+
+    } catch (error: any) {
+      console.error('Error loading investor dashboard:', error);
+      message.error('Failed to load dashboard data: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  if (loading) {
+    return (
+      <div style={{ padding: '24px', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+        <Spin size="large" tip="Loading your portfolio..." />
+      </div>
+    );
+  }
+
+  if (!portfolioValue) {
+    return (
+      <div style={{ padding: '24px' }}>
+        <Card>
+          <p>No portfolio data available. Start investing to see your dashboard.</p>
+          <Button type="primary" style={{ marginTop: 16 }}>
+            Explore Funds
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
+  // Calculate portfolio history (mock for now - would need historical snapshots)
   const portfolioHistoryData = [
-    { date: '2024-06', value: 100000 },
-    { date: '2024-07', value: 105000 },
-    { date: '2024-08', value: 108000 },
-    { date: '2024-09', value: 112000 },
-    { date: '2024-10', value: 120000 },
-    { date: '2024-11', value: 125000 },
+    { date: '6 months ago', value: portfolioValue.total_invested_amount * 0.85 },
+    { date: '5 months ago', value: portfolioValue.total_invested_amount * 0.90 },
+    { date: '4 months ago', value: portfolioValue.total_invested_amount * 0.95 },
+    { date: '3 months ago', value: portfolioValue.total_invested_amount },
+    { date: '2 months ago', value: portfolioValue.total_invested_amount * 1.05 },
+    { date: '1 month ago', value: portfolioValue.total_invested_amount * 1.08 },
+    { date: 'Today', value: portfolioValue.total_current_value },
   ];
 
-  const assetAllocation = [
-    { asset: 'Alpha Growth Fund', value: 45, amount: 56250 },
-    { asset: 'Beta Stable Fund', value: 30, amount: 37500 },
-    { asset: 'Gamma Yield Fund', value: 15, amount: 18750 },
-    { asset: 'Cash', value: 10, amount: 12500 },
-  ];
-
-  const myHoldings = [
-    {
-      key: '1',
-      fund: 'Alpha Growth Fund',
-      nav: 127.85,
-      shares: 350,
-      invested: 35000,
-      currentValue: 44747.5,
-      return: 27.85,
-      color: '#1890ff',
-    },
-    {
-      key: '2',
-      fund: 'Beta Stable Fund',
-      nav: 108.76,
-      shares: 300,
-      invested: 30000,
-      currentValue: 32628,
-      return: 8.76,
-      color: '#52c41a',
-    },
-    {
-      key: '3',
-      fund: 'Gamma Yield Fund',
-      nav: 98.34,
-      shares: 200,
-      invested: 20000,
-      currentValue: 19668,
-      return: -1.66,
-      color: '#722ed1',
-    },
-  ];
-
-  const recentTransactions = [
-    {
-      key: '1',
-      type: 'Buy',
-      fund: 'Alpha Growth Fund',
-      shares: 50,
-      nav: 127.85,
-      amount: 6392.5,
-      date: '2024-11-08',
-      status: 'completed',
-    },
-    {
-      key: '2',
-      type: 'Buy',
-      fund: 'Beta Stable Fund',
-      shares: 100,
-      nav: 108.76,
-      amount: 10876,
-      date: '2024-11-05',
-      status: 'completed',
-    },
-    {
-      key: '3',
-      type: 'Sell',
-      fund: 'Gamma Yield Fund',
-      shares: 50,
-      nav: 98.34,
-      amount: 4917,
-      date: '2024-11-03',
-      status: 'completed',
-    },
-    {
-      key: '4',
-      type: 'Deposit',
-      fund: 'Cash',
-      shares: 0,
-      nav: 0,
-      amount: 15000,
-      date: '2024-11-01',
-      status: 'completed',
-    },
-  ];
+  // Transform allocation for pie chart
+  const allocationChartData = portfolioAllocation.map(item => ({
+    asset: item.fund_name,
+    value: item.allocation_percentage,
+    amount: item.current_value
+  }));
 
   const portfolioChartConfig = {
     data: portfolioHistoryData,
@@ -131,7 +114,7 @@ export default function DashboardPage() {
   };
 
   const allocationConfig = {
-    data: assetAllocation,
+    data: allocationChartData,
     angleField: 'value',
     colorField: 'asset',
     radius: 0.8,
@@ -144,12 +127,12 @@ export default function DashboardPage() {
   const holdingsColumns = [
     {
       title: 'Fund',
-      dataIndex: 'fund',
-      key: 'fund',
-      render: (text: string, record: any) => (
+      dataIndex: 'fund_name',
+      key: 'fund_name',
+      render: (text: string) => (
         <Space>
           <Avatar
-            style={{ backgroundColor: record.color }}
+            style={{ backgroundColor: '#1890ff' }}
             icon={<TrophyOutlined />}
           />
           <span style={{ fontWeight: 500 }}>{text}</span>
@@ -158,38 +141,39 @@ export default function DashboardPage() {
     },
     {
       title: 'Current NAV',
-      dataIndex: 'nav',
-      key: 'nav',
-      render: (nav: number) => `$${nav.toFixed(2)}`,
+      dataIndex: 'current_nav',
+      key: 'current_nav',
+      render: (nav: number) => `$${(nav || 0).toFixed(2)}`,
     },
     {
       title: 'Shares',
       dataIndex: 'shares',
       key: 'shares',
+      render: (shares: number) => (shares || 0).toFixed(4),
     },
     {
       title: 'Invested',
-      dataIndex: 'invested',
-      key: 'invested',
-      render: (val: number) => `$${val.toLocaleString()}`,
+      dataIndex: 'invested_amount',
+      key: 'invested_amount',
+      render: (val: number) => `$${(val || 0).toLocaleString()}`,
     },
     {
       title: 'Current Value',
-      dataIndex: 'currentValue',
-      key: 'currentValue',
-      render: (val: number) => `$${val.toLocaleString()}`,
-      sorter: (a: any, b: any) => a.currentValue - b.currentValue,
+      dataIndex: 'current_value',
+      key: 'current_value',
+      render: (val: number) => `$${(val || 0).toLocaleString()}`,
+      sorter: (a: any, b: any) => (a.current_value || 0) - (b.current_value || 0),
     },
     {
       title: 'Return',
-      dataIndex: 'return',
-      key: 'return',
+      dataIndex: 'return_percentage',
+      key: 'return_percentage',
       render: (ret: number) => (
         <Tag
-          color={ret >= 0 ? 'green' : 'red'}
-          icon={ret >= 0 ? <RiseOutlined /> : <FallOutlined />}
+          color={(ret || 0) >= 0 ? 'green' : 'red'}
+          icon={(ret || 0) >= 0 ? <RiseOutlined /> : <FallOutlined />}
         >
-          {ret >= 0 ? '+' : ''}{ret.toFixed(2)}%
+          {(ret || 0) >= 0 ? '+' : ''}{(ret || 0).toFixed(2)}%
         </Tag>
       ),
     },
@@ -212,49 +196,51 @@ export default function DashboardPage() {
       key: 'type',
       render: (type: string) => {
         const colorMap: Record<string, string> = {
-          Buy: 'green',
-          Sell: 'red',
-          Deposit: 'blue',
-          Withdraw: 'orange',
+          buy: 'green',
+          sell: 'red',
+          deposit: 'blue',
+          withdraw: 'orange',
         };
-        return <Tag color={colorMap[type]}>{type}</Tag>;
+        return <Tag color={colorMap[type] || 'default'}>{type?.toUpperCase()}</Tag>;
       },
     },
     {
-      title: 'Fund/Asset',
-      dataIndex: 'fund',
-      key: 'fund',
+      title: 'Fund',
+      dataIndex: 'fund_id',
+      key: 'fund_id',
+      render: (fundId: string) => fundId?.substring(0, 8) + '...',
     },
     {
       title: 'Shares',
       dataIndex: 'shares',
       key: 'shares',
-      render: (shares: number) => shares > 0 ? shares : '-',
+      render: (shares: number) => shares > 0 ? (shares || 0).toFixed(4) : '-',
     },
     {
       title: 'NAV',
-      dataIndex: 'nav',
-      key: 'nav',
-      render: (nav: number) => nav > 0 ? `$${nav.toFixed(2)}` : '-',
+      dataIndex: 'nav_at_time',
+      key: 'nav_at_time',
+      render: (nav: number) => nav > 0 ? `$${(nav || 0).toFixed(2)}` : '-',
     },
     {
       title: 'Amount',
       dataIndex: 'amount',
       key: 'amount',
-      render: (amt: number) => `$${amt.toLocaleString()}`,
+      render: (amt: number) => `$${(amt || 0).toLocaleString()}`,
     },
     {
       title: 'Date',
-      dataIndex: 'date',
-      key: 'date',
+      dataIndex: 'created_at',
+      key: 'created_at',
+      render: (date: string) => new Date(date).toLocaleDateString(),
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => (
-        <Tag color={status === 'completed' ? 'green' : 'orange'}>
-          {status.toUpperCase()}
+        <Tag color={status === 'completed' ? 'green' : status === 'pending' ? 'orange' : 'red'}>
+          {status?.toUpperCase()}
         </Tag>
       ),
     },
@@ -265,7 +251,7 @@ export default function DashboardPage() {
       {/* Welcome Header */}
       <div style={{ marginBottom: '24px' }}>
         <h1 style={{ marginBottom: '8px', fontFamily: 'var(--font-heading)' }}>
-          {t('investor.dashboard.welcome', { name: 'John Doe' })}
+          {t('investor.dashboard.welcome', { name: 'Investor' })}
         </h1>
         <p style={{ color: '#8c8c8c', fontSize: '14px' }}>
           {t('investor.dashboard.summary')}
@@ -277,11 +263,11 @@ export default function DashboardPage() {
         <Col xs={24} sm={12} lg={6}>
           <StatCard
             title={t('investor.dashboard.totalValue')}
-            value={`$${portfolioMetrics.totalValue.toLocaleString()}`}
+            value={`$${(portfolioValue.total_current_value || 0).toLocaleString()}`}
             icon={<WalletOutlined />}
             trend={{
-              value: portfolioMetrics.returnPercentage,
-              isPositive: true,
+              value: portfolioValue.total_return_percentage || 0,
+              isPositive: (portfolioValue.total_return_percentage || 0) >= 0,
             }}
             color="#1890ff"
           />
@@ -289,15 +275,15 @@ export default function DashboardPage() {
         <Col xs={24} sm={12} lg={6}>
           <StatCard
             title={t('investor.dashboard.totalReturn')}
-            value={`$${portfolioMetrics.totalReturn.toLocaleString()}`}
+            value={`$${(portfolioValue.total_unrealized_pnl || 0).toLocaleString()}`}
             icon={<RiseOutlined />}
-            color="#52c41a"
+            color={(portfolioValue.total_unrealized_pnl || 0) >= 0 ? '#52c41a' : '#ff4d4f'}
           />
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title={t('investor.dashboard.availableCash')}
-            value={`$${portfolioMetrics.availableCash.toLocaleString()}`}
+            title="Total Invested"
+            value={`$${(portfolioValue.total_invested_amount || 0).toLocaleString()}`}
             icon={<DollarOutlined />}
             color="#722ed1"
           />
@@ -306,10 +292,10 @@ export default function DashboardPage() {
           <Card>
             <Statistic
               title={t('investor.dashboard.returnPercent')}
-              value={portfolioMetrics.returnPercentage}
+              value={portfolioValue.total_return_percentage || 0}
               precision={1}
-              valueStyle={{ color: '#3f8600' }}
-              prefix={<RiseOutlined />}
+              valueStyle={{ color: (portfolioValue.total_return_percentage || 0) >= 0 ? '#3f8600' : '#cf1322' }}
+              prefix={(portfolioValue.total_return_percentage || 0) >= 0 ? <RiseOutlined /> : <FallOutlined />}
               suffix="%"
             />
           </Card>
@@ -352,12 +338,20 @@ export default function DashboardPage() {
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} lg={16}>
           <Card title={t('investor.dashboard.portfolioPerformance')} bordered={false}>
-            <Line {...portfolioChartConfig} />
+            {portfolioHistoryData.length > 0 ? (
+              <Line {...portfolioChartConfig} />
+            ) : (
+              <p>No performance history available</p>
+            )}
           </Card>
         </Col>
         <Col xs={24} lg={8}>
           <Card title={t('investor.dashboard.assetAllocation')} bordered={false}>
-            <Pie {...allocationConfig} />
+            {allocationChartData.length > 0 ? (
+              <Pie {...allocationConfig} />
+            ) : (
+              <p>No allocation data available</p>
+            )}
           </Card>
         </Col>
       </Row>
@@ -367,9 +361,10 @@ export default function DashboardPage() {
         <Col span={24}>
           <Card title={t('investor.dashboard.myHoldings')} bordered={false}>
             <Table
-              dataSource={myHoldings}
+              dataSource={holdings}
               columns={holdingsColumns}
               pagination={false}
+              rowKey="portfolio_id"
             />
           </Card>
         </Col>
@@ -387,6 +382,7 @@ export default function DashboardPage() {
               dataSource={recentTransactions}
               columns={transactionColumns}
               pagination={{ pageSize: 5 }}
+              rowKey="id"
             />
           </Card>
         </Col>
