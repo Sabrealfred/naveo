@@ -6,3 +6,4 @@ export { default as OfficersManagementPage } from './OfficersManagementPage';
 export { default as KYCManagementPage } from './KYCManagementPage';
 export { default as AnalyticsPage } from './AnalyticsPage';
 export { default as ReportsPage } from './ReportsPage';
+export { default as NotificationsCenterPage } from './NotificationsCenterPage';
