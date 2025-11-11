@@ -14,7 +14,6 @@ import {
 import {
   WalletOutlined,
   RiseOutlined,
-  FallOutlined,
   ShoppingCartOutlined,
   DollarOutlined,
 } from '@ant-design/icons';
@@ -252,8 +251,7 @@ const PortfolioPage = () => {
             value={`$${metrics.totalValue.toLocaleString()}`}
             icon={<WalletOutlined />}
             color="#4f6bed"
-            trend="up"
-            trendValue={metrics.totalReturnPercent}
+            trend={{ value: Math.abs(metrics.totalReturnPercent), isPositive: metrics.totalReturnPercent >= 0 }}
           />
         </Col>
         <Col xs={24} md={8}>
@@ -262,8 +260,7 @@ const PortfolioPage = () => {
             value={`$${metrics.totalReturn.toLocaleString()}`}
             icon={<RiseOutlined />}
             color="#52c41a"
-            trend={metrics.totalReturn >= 0 ? 'up' : 'down'}
-            trendValue={metrics.totalReturnPercent}
+            trend={{ value: Math.abs(metrics.totalReturnPercent), isPositive: metrics.totalReturn >= 0 }}
           />
         </Col>
         <Col xs={24} md={8}>

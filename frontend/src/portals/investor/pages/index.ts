@@ -9,3 +9,5 @@ export { default as SuitabilityQuestionnairePage } from './SuitabilityQuestionna
 export { default as SubscriptionWorkflowPage } from './SubscriptionWorkflowPage';
 export { default as TradingPlatformPage } from './TradingPlatformPage';
 export { default as RedemptionPage } from './RedemptionPage';
+export { default as InvestorReportsPage } from './InvestorReportsPage';
+export { default as ProfilePage } from './ProfilePage';

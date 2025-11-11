@@ -22,6 +22,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../components/common/LanguageSwitcher';
+import { MiraLogo } from '../components/common';
 
 const { Title, Text } = Typography;
 
@@ -92,10 +93,13 @@ const LoginPage = () => {
             <div style={{ position: 'absolute', top: 20, right: 20 }}>
               <LanguageSwitcher />
             </div>
+            <div style={{ textAlign: 'center', marginBottom: 16 }}>
+              <MiraLogo variant="light" size="md" />
+            </div>
             <div>
               <Badge.Ribbon text={t('login.alphaAccess')} color="purple">
                 <div style={{ padding: '0 8px 24px 8px' }}>
-                  <Text type="secondary">{t('login.platformName')}</Text>
+                  <Text type="secondary">MiraLabs Platform</Text>
                   <Title level={2} style={{ marginTop: 4, marginBottom: 0 }}>
                     {t('login.title')}
                   </Title>
@@ -123,7 +127,7 @@ const LoginPage = () => {
                 <Input
                   size="large"
                   prefix={<MailOutlined />}
-                  placeholder="you@navlabs.com"
+                  placeholder="you@miralabs.com"
                 />
               </Form.Item>
 
@@ -190,7 +194,7 @@ const LoginPage = () => {
             <Space direction="vertical" style={{ width: '100%' }}>
               <Text type="secondary">
                 {t('login.needAccess')}{' '}
-                <a href="mailto:support@naveo.io">
+                <a href="mailto:support@miralabs.com">
                   {t('login.contactSupport')}
                 </a>
               </Text>

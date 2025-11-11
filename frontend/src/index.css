@@ -1,26 +1,30 @@
 /* ========================================
-   MARSALA.DEV TYPOGRAPHY SYSTEM
+   MIRALABS PLATFORM DESIGN SYSTEM
    ======================================== */
 
 :root {
-  /* Typography Variables */
-  --font-heading: 'Space Grotesk', -apple-system, sans-serif;
+  /* Typography Variables - Mira Labs Style */
+  --font-heading: 'Sansation', 'Space Grotesk', -apple-system, sans-serif;
   --font-body: 'Inter', -apple-system, sans-serif;
   --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
 
-  /* Color Palette - Dark Tech Aesthetic */
-  --color-bg-primary: #111111;
-  --color-bg-secondary: #1a1a1a;
-  --color-text-primary: #EAEAEA;
-  --color-text-secondary: #B4B4B4;
-  --color-text-tertiary: #D3D3D3;
-  --color-accent: #9AE6B4;
-  --color-accent-hover: #68D391;
+  /* Mira Labs Color Palette */
+  --color-background: #fafafa;
+  --color-foreground: #1a1a1a;
+  --color-primary: #2d2d2d;
+  --color-secondary: #666666;
+  --color-accent: #999999;
+  --color-border: #e5e5e5;
+  --color-highlight: #3d3d3d;
+  --color-dot-primary: #4a4a4a;
+  --color-dot-secondary: #c0c0c0;
 
-  /* Light Mode (default for Naveo) */
-  --color-bg-light: #f0f2f5;
+  /* Light Mode (Mira Labs default) */
+  --color-bg-light: #fafafa;
   --color-bg-card: #ffffff;
-  --color-border: #e8e8e8;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #666666;
+  --color-text-tertiary: #999999;
 }
 
 * {
@@ -31,18 +35,19 @@
 
 body {
   margin: 0;
-  font-family: var(--font-body);
+  font-family: var(--font-body), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-weight: 400;
-  line-height: 1.65;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--color-bg-light);
-  color: #262626;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
 }
 
-/* Headings - Space Grotesk */
+/* Headings - Sansation (Mira Labs Style) */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
+  font-family: var(--font-heading), 'Sansation', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.2;
@@ -66,9 +71,9 @@ code, pre, .mono {
   min-height: 100vh;
 }
 
-/* Estilos globales para Ant Design */
+/* Estilos globales para Ant Design - Mira Labs Style */
 .ant-layout {
-  background: #f0f2f5;
+  background: var(--color-background);
 }
 
 .ant-card {
@@ -85,21 +90,35 @@ code, pre, .mono {
   transition: all 0.2s ease-in-out;
 }
 
-/* Scrollbar personalizado */
+/* Scrollbar personalizado - Mira Labs Style */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f0f2f5;
+  background: var(--color-background);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d9d9d9;
+  background: var(--color-accent);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #bfbfbf;
+  background: var(--color-secondary);
+}
+
+/* Mira Labs Professional Card Style */
+.professional-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.professional-card:hover {
+  border-color: var(--color-highlight);
+  box-shadow: 0 8px 24px rgba(45, 45, 45, 0.08);
+  transform: translateY(-2px);
 }

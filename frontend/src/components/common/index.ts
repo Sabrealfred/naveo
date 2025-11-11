@@ -7,3 +7,4 @@ export { default as ProgressRing } from './ProgressRing';
 export { default as TransactionHeatmap } from './TransactionHeatmap';
 export { default as ComparisonChart } from './ComparisonChart';
 export { default as PerformanceGauge } from './PerformanceGauge';
+export { MiraLogo } from './MiraLogo';

@@ -10,6 +10,9 @@ import {
   SettingOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
+import { MiraLogo } from '../common';
+import LanguageSwitcher from '../common/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 const { Header, Sider, Content } = Layout;
 
@@ -28,6 +31,7 @@ const DashboardLayout = ({
 }: DashboardLayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(false);
 
   // Handle menu navigation
@@ -39,12 +43,12 @@ const DashboardLayout = ({
     {
       key: 'profile',
       icon: <UserOutlined />,
-      label: 'Mi Perfil',
+      label: t('layout.myProfile'),
     },
     {
       key: 'settings',
       icon: <SettingOutlined />,
-      label: 'Configuración',
+      label: t('layout.settings'),
     },
     {
       type: 'divider',
@@ -52,7 +56,7 @@ const DashboardLayout = ({
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: 'Cerrar Sesión',
+      label: t('layout.logout'),
       danger: true,
     },
   ];
@@ -74,16 +78,23 @@ const DashboardLayout = ({
       >
         <div style={{
           height: '64px',
-          margin: '16px',
+          padding: collapsed ? '16px 8px' : '16px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#1890ff',
-          fontSize: collapsed ? '20px' : '24px',
-          fontWeight: 'bold',
           transition: 'all 0.2s'
         }}>
-          {collapsed ? 'N' : 'NAVEO'}
+          {collapsed ? (
+            <div style={{
+              color: '#fff',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              fontFamily: 'Sansation, sans-serif',
+              letterSpacing: '0.05em'
+            }}>M</div>
+          ) : (
+            <MiraLogo variant="dark" size="xs" />
+          )}
         </div>
         <Menu
           theme="dark"
@@ -110,6 +121,8 @@ const DashboardLayout = ({
           />
 
           <Space size="large">
+            <LanguageSwitcher />
+
             <Badge count={5}>
               <BellOutlined style={{ fontSize: '18px', cursor: 'pointer' }} />
             </Badge>

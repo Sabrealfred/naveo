@@ -6,8 +6,10 @@ interface StatCardProps {
   value: number | string;
   prefix?: string;
   suffix?: string;
-  trend?: 'up' | 'down';
-  trendValue?: number;
+  trend?: {
+    value: number;
+    isPositive: boolean;
+  };
   icon?: React.ReactNode;
   color?: string;
   loading?: boolean;
@@ -19,7 +21,6 @@ const StatCard = ({
   prefix,
   suffix,
   trend,
-  trendValue,
   icon,
   color = '#1890ff',
   loading = false
@@ -34,19 +35,19 @@ const StatCard = ({
             prefix={prefix}
             suffix={suffix}
             valueStyle={{
-              color: trend === 'down' ? '#cf1322' : color,
+              color: trend && !trend.isPositive ? '#cf1322' : color,
               fontSize: '24px',
               fontWeight: 600
             }}
           />
-          {trend && trendValue && (
+          {trend && (
             <div style={{ marginTop: 8 }}>
               <span style={{
-                color: trend === 'up' ? '#3f8600' : '#cf1322',
+                color: trend.isPositive ? '#3f8600' : '#cf1322',
                 fontSize: '14px'
               }}>
-                {trend === 'up' ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
-                {' '}{trendValue}%
+                {trend.isPositive ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+                {' '}{trend.value}%
                 <span style={{ color: '#666', marginLeft: 8 }}>vs mes anterior</span>
               </span>
             </div>

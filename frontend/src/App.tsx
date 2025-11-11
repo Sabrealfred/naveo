@@ -4,6 +4,9 @@ import routerProvider from '@refinedev/react-router';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { dataProvider, liveProvider } from '@refinedev/supabase';
 import { ConfigProvider } from 'antd';
+import enUS from 'antd/locale/en_US';
+import esES from 'antd/locale/es_ES';
+import { useTranslation } from 'react-i18next';
 import { supabaseClient } from './services/supabaseClient';
 
 // Import portal components (will create these next)
@@ -12,11 +15,58 @@ import AdminClientPortal from './portals/admin-client/AdminClientPortal';
 import InvestorPortal from './portals/investor/InvestorPortal';
 import LoginPage from './pages/LoginPage';
 
+// MiraLabs theme configuration
+const miraLabsTheme = {
+  token: {
+    colorPrimary: '#2d2d2d',
+    colorSuccess: '#52c41a',
+    colorWarning: '#faad14',
+    colorError: '#f5222d',
+    colorInfo: '#666666',
+    colorTextBase: '#1a1a1a',
+    colorBgBase: '#fafafa',
+    borderRadius: 8,
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    fontSize: 14,
+  },
+  components: {
+    Layout: {
+      colorBgHeader: '#ffffff',
+      colorBgBody: '#fafafa',
+    },
+    Menu: {
+      colorItemBg: '#2d2d2d',
+      colorItemText: '#e5e5e5',
+      colorItemTextSelected: '#ffffff',
+      colorItemBgSelected: '#3d3d3d',
+      colorItemTextHover: '#ffffff',
+      colorItemBgHover: '#3d3d3d',
+    },
+    Card: {
+      colorBgContainer: '#ffffff',
+      borderRadiusLG: 8,
+    },
+    Button: {
+      colorPrimary: '#2d2d2d',
+      colorPrimaryHover: '#3d3d3d',
+      borderRadius: 6,
+    },
+  },
+};
+
 function App() {
+  const { i18n } = useTranslation();
+
+  // Get Ant Design locale based on current language
+  const getAntdLocale = () => {
+    const currentLang = i18n.language || 'es';
+    return currentLang.startsWith('en') ? enUS : esES;
+  };
+
   return (
     <BrowserRouter>
       <RefineKbarProvider>
-        <ConfigProvider>
+        <ConfigProvider theme={miraLabsTheme} locale={getAntdLocale()}>
           <Refine
             dataProvider={dataProvider(supabaseClient)}
             liveProvider={liveProvider(supabaseClient)}

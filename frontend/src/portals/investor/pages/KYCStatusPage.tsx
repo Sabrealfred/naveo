@@ -1,16 +1,27 @@
-import { Card, Steps, Tag, Button, Alert, Descriptions, Timeline, Upload } from 'antd';
+import { useState } from 'react';
+import { Card, Steps, Tag, Button, Alert, Descriptions, Timeline, message } from 'antd';
 import { CheckCircleOutlined, ClockCircleOutlined, WarningOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons';
+import { KYCFormModal } from '../../../components/modals';
 
 export default function KYCStatusPage() {
+  const [kycModalVisible, setKycModalVisible] = useState(false);
+
+  // Mock data - In production, fetch from Supabase
   const kycStatus = {
-    status: 'approved', // 'pending', 'approved', 'rejected', 'incomplete'
-    level: 'Level 2',
-    submittedAt: '2024-10-15',
-    approvedAt: '2024-10-18',
-    verificationId: 'KYC-2024-1015-892',
+    status: 'incomplete', // 'pending', 'approved', 'rejected', 'incomplete'
+    level: 'Level 0',
+    submittedAt: null,
+    approvedAt: null,
+    verificationId: null,
   };
 
   const currentStep = kycStatus.status === 'approved' ? 3 : kycStatus.status === 'pending' ? 1 : 0;
+
+  const handleKYCSubmit = (values: any) => {
+    console.log('KYC Form submitted:', values);
+    message.success('KYC verification submitted successfully! We will review your documents within 1-2 business days.');
+    // In production: Send to Supabase, update status to 'pending'
+  };
 
   return (
     <div style={{ padding: '24px' }}>
@@ -37,6 +48,22 @@ export default function KYCStatusPage() {
           showIcon
           icon={<ClockCircleOutlined />}
           style={{ marginBottom: '24px' }}
+        />
+      )}
+
+      {kycStatus.status === 'incomplete' && (
+        <Alert
+          message="KYC Verification Required"
+          description="To access all platform features and increase your investment limits, please complete the KYC verification process."
+          type="warning"
+          showIcon
+          icon={<WarningOutlined />}
+          style={{ marginBottom: '24px' }}
+          action={
+            <Button type="primary" size="large" onClick={() => setKycModalVisible(true)}>
+              Start KYC Verification
+            </Button>
+          }
         />
       )}
 
@@ -71,19 +98,27 @@ export default function KYCStatusPage() {
       <Card title="Verification Details" style={{ marginBottom: '24px' }}>
         <Descriptions column={2}>
           <Descriptions.Item label="Status">
-            <Tag color={kycStatus.status === 'approved' ? 'green' : 'orange'}>
+            <Tag color={
+              kycStatus.status === 'approved' ? 'green' :
+              kycStatus.status === 'pending' ? 'blue' :
+              kycStatus.status === 'rejected' ? 'red' : 'orange'
+            }>
               {kycStatus.status.toUpperCase()}
             </Tag>
           </Descriptions.Item>
           <Descriptions.Item label="Verification Level">
             {kycStatus.level}
           </Descriptions.Item>
-          <Descriptions.Item label="Verification ID">
-            {kycStatus.verificationId}
-          </Descriptions.Item>
-          <Descriptions.Item label="Submitted">
-            {kycStatus.submittedAt}
-          </Descriptions.Item>
+          {kycStatus.verificationId && (
+            <Descriptions.Item label="Verification ID">
+              {kycStatus.verificationId}
+            </Descriptions.Item>
+          )}
+          {kycStatus.submittedAt && (
+            <Descriptions.Item label="Submitted">
+              {kycStatus.submittedAt}
+            </Descriptions.Item>
+          )}
           {kycStatus.approvedAt && (
             <Descriptions.Item label="Approved">
               {kycStatus.approvedAt}
@@ -97,25 +132,30 @@ export default function KYCStatusPage() {
           items={[
             {
               color: 'green',
-              children: 'Account created - 2024-10-10',
+              children: 'Account created - 2024-11-01',
             },
             {
-              color: 'green',
-              children: 'Personal information submitted - 2024-10-15',
+              color: kycStatus.status === 'incomplete' ? 'gray' : 'green',
+              children: kycStatus.status === 'incomplete'
+                ? 'Waiting for KYC submission...'
+                : `Personal information submitted - ${kycStatus.submittedAt}`,
             },
-            {
-              color: 'green',
-              children: 'Documents uploaded - 2024-10-15',
-            },
-            {
+            ...(kycStatus.status !== 'incomplete' ? [{
               color: kycStatus.status === 'approved' ? 'green' : 'blue',
               children: kycStatus.status === 'approved'
                 ? `Verification approved - ${kycStatus.approvedAt}`
                 : 'Under review...',
-            },
+            }] : []),
           ]}
         />
       </Card>
+
+      <KYCFormModal
+        visible={kycModalVisible}
+        onClose={() => setKycModalVisible(false)}
+        onSubmit={handleKYCSubmit}
+        type="individual"
+      />
     </div>
   );
 }
