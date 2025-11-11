@@ -10,6 +10,7 @@ import {
   LineChartOutlined,
   BarChartOutlined,
   RollbackOutlined,
+  BankOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import {
@@ -26,6 +27,7 @@ import {
   RedemptionPage,
   InvestorReportsPage,
   ProfilePage,
+  LendingPage,
 } from './pages';
 
 const InvestorPortal = () => {
@@ -44,6 +46,11 @@ const InvestorPortal = () => {
       key: '/investor/performance',
       icon: <LineChartOutlined />,
       label: 'Performance Analytics',
+    },
+    {
+      key: '/investor/lending',
+      icon: <BankOutlined />,
+      label: 'Lending & Borrowing',
     },
     {
       key: '/investor/marketplace',
@@ -103,6 +110,7 @@ const InvestorPortal = () => {
         <Route path="onboarding" element={<OnboardingPage />} />
         <Route path="portfolio" element={<PortfolioPage />} />
         <Route path="performance" element={<PerformanceAnalyticsPage />} />
+        <Route path="lending" element={<LendingPage />} />
         <Route path="marketplace" element={<MarketplacePage />} />
         <Route path="trading" element={<TradingPlatformPage />} />
         <Route path="subscription" element={<SubscriptionWorkflowPage />} />

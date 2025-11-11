@@ -11,3 +11,4 @@ export { default as TradingPlatformPage } from './TradingPlatformPage';
 export { default as RedemptionPage } from './RedemptionPage';
 export { default as InvestorReportsPage } from './InvestorReportsPage';
 export { default as ProfilePage } from './ProfilePage';
+export { default as LendingPage } from './LendingPage';
