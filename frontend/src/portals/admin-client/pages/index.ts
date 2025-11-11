@@ -10,3 +10,4 @@ export { default as TransactionsPage } from './TransactionsPage';
 export { default as CompliancePage } from './CompliancePage';
 export { default as FundReportsPage } from './FundReportsPage';
 export { default as AIStrategyManagementPage } from './AIStrategyManagementPage';
+export { default as AnalyticsDashboardPage } from './AnalyticsDashboardPage';

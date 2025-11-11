@@ -25,6 +25,7 @@ import {
   CompliancePage,
   FundReportsPage,
   AIStrategyManagementPage,
+  AnalyticsDashboardPage,
 } from './pages';
 
 const AdminClientPortal = () => {
@@ -105,6 +106,7 @@ const AdminClientPortal = () => {
         <Route path="transactions" element={<TransactionsPage />} />
         <Route path="compliance" element={<CompliancePage />} />
         <Route path="reports" element={<FundReportsPage />} />
+        <Route path="analytics" element={<AnalyticsDashboardPage />} />
       </Routes>
     </DashboardLayout>
   );
