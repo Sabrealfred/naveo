@@ -1,4 +1,4 @@
-import { supabaseClient } from '../lib/supabase';
+import { supabaseClient } from './supabaseClient';
 import type { StrategicPartner, DistributionPlatform } from './types';
 
 // ============================================

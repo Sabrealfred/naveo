@@ -24,11 +24,12 @@ import {
   FallOutlined,
   ShoppingCartOutlined,
   DollarOutlined,
-  TrendingUpOutlined,
   LineChartOutlined,
   InfoCircleOutlined,
   BarChartOutlined,
   PieChartOutlined,
+  ThunderboltOutlined,
+  WarningOutlined,
 } from '@ant-design/icons';
 import { Line, Pie, Column, Heatmap, DualAxes, Area } from '@ant-design/charts';
 import { StatCard } from '../../../components/common';
@@ -492,7 +493,7 @@ const PortfolioPage = () => {
       </Row>
 
       {/* Advanced Risk Metrics */}
-      <Card title={<Space><TrendingUpOutlined /> Advanced Risk Metrics</Space>}>
+      <Card title={<Space><ThunderboltOutlined /> Advanced Risk Metrics</Space>}>
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={12} md={6}>
             <Statistic
