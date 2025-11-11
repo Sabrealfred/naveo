@@ -10,6 +10,7 @@ import {
   RobotOutlined,
   LineChartOutlined,
   SafetyOutlined,
+  PieChartOutlined,
   BulbOutlined,
   ThunderboltFilled,
   FireOutlined,
