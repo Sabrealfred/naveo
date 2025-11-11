@@ -237,6 +237,51 @@ export interface FundAnalytics {
   total_asset_value: number;
 }
 
+export interface UserProfile {
+  id: string;
+  full_name: string | null;
+  display_name: string | null;
+  avatar_url: string | null;
+  phone: string | null;
+  date_of_birth: string | null;
+  street_address: string | null;
+  city: string | null;
+  state_province: string | null;
+  postal_code: string | null;
+  country: string | null;
+  investor_type: 'individual' | 'corporate' | 'institutional' | 'trust' | 'other' | null;
+  risk_tolerance: 'conservative' | 'moderate' | 'aggressive' | 'very_aggressive' | null;
+  investment_experience: 'none' | 'limited' | 'intermediate' | 'advanced' | 'expert' | null;
+  accredited_investor: boolean | null;
+  annual_income_range: string | null;
+  net_worth_range: string | null;
+  job_title: string | null;
+  department: string | null;
+  company_name: string | null;
+  professional_bio: string | null;
+  linkedin_url: string | null;
+  language: string | null;
+  timezone: string | null;
+  currency: string | null;
+  notification_preferences: any;
+  tax_id: string | null;
+  passport_number: string | null;
+  id_document_type: string | null;
+  id_document_number: string | null;
+  id_document_expiry: string | null;
+  citizenship: string | null;
+  tax_residency: string | null;
+  onboarding_completed: boolean | null;
+  profile_completed_at: string | null;
+  last_login_at: string | null;
+  login_count: number | null;
+  terms_accepted_at: string | null;
+  privacy_policy_accepted_at: string | null;
+  metadata: any;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface KYCStatistics {
   total_verifications: number;
   pending_count: number;

@@ -32,3 +32,6 @@ export * as notificationsService from './notificationsService';
 
 // Reports Service
 export * as reportsService from './reportsService';
+
+// Profile Service
+export * as profileService from './profileService';
