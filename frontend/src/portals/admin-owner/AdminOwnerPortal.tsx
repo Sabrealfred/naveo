@@ -17,6 +17,7 @@ import {
   FireOutlined,
   ApartmentOutlined,
   CheckCircleOutlined,
+  ClusterOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import {
@@ -36,14 +37,15 @@ import {
   AuditLogsPage,
   NotificationsCenterPage,
   AssetPipelinePage,
+  CapitalPartnersPage,
   WalletManagementPage,
   BankingIntegrationsPage,
-  DistributionChannelsPage,
   TokenLifecyclePage,
   BusinessRulesPage,
   ApprovalWorkflowsPage,
   ProductStructuringPage,
   FundRolesManagementPage,
+  DistributionNetworkPage,
 } from './pages';
 
 const AdminOwnerPortal = () => {
@@ -63,6 +65,11 @@ const AdminOwnerPortal = () => {
       key: '/admin-owner/asset-pipeline',
       icon: <ProjectOutlined />,
       label: 'Asset Pipeline',
+    },
+    {
+      key: '/admin-owner/capital-partners',
+      icon: <ClusterOutlined />,
+      label: 'Capital Partners',
     },
     {
       key: 'tokenization',
@@ -140,6 +147,7 @@ const AdminOwnerPortal = () => {
         <Route index element={<DashboardPage />} />
         <Route path="funds" element={<FundsManagementPage />} />
         <Route path="asset-pipeline" element={<AssetPipelinePage />} />
+        <Route path="capital-partners" element={<CapitalPartnersPage />} />
 
         {/* Tokenization Routes */}
         <Route path="product-structuring" element={<ProductStructuringPage />} />
@@ -155,7 +163,7 @@ const AdminOwnerPortal = () => {
         {/* Integrations Routes */}
         <Route path="integrations/wallets" element={<WalletManagementPage />} />
         <Route path="integrations/banking" element={<BankingIntegrationsPage />} />
-        <Route path="integrations/distribution" element={<DistributionChannelsPage />} />
+        <Route path="integrations/distribution" element={<DistributionNetworkPage />} />
         <Route path="integrations/kyc" element={<IntegrationsKYCPage />} />
         <Route path="integrations/onramp" element={<IntegrationsOnRampPage />} />
         <Route path="integrations/blockchain" element={<IntegrationsBlockchainPage />} />

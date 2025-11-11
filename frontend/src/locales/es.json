@@ -361,7 +361,8 @@
   "layout": {
     "myProfile": "Mi Perfil",
     "settings": "Configuración",
-    "logout": "Cerrar Sesión"
+    "logout": "Cerrar Sesión",
+    "search": "Buscar"
   },
   "traders": {
     "manageTrader": "Gestionar Trader",

@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Layout, Menu, Avatar, Dropdown, Badge, Space, Button, Drawer, Grid } from 'antd';
+import { Layout, Menu, Avatar, Dropdown, Badge, Space, Button, Drawer, Grid, Modal, Input, List, Tag } from 'antd';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -8,11 +8,14 @@ import {
   UserOutlined,
   LogoutOutlined,
   SettingOutlined,
+  SearchOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { MiraLogo } from '../common';
 import LanguageSwitcher from '../common/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
+import { SEARCH_INDEX } from '../../mocks/searchIndex';
+import type { SearchItem } from '../../mocks/searchIndex';
 
 const { Header, Sider, Content } = Layout;
 const { useBreakpoint } = Grid;
@@ -35,6 +38,8 @@ const DashboardLayout = ({
   const screens = useBreakpoint();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const { t } = useTranslation();
 
   // Check if we're on mobile (xs or sm breakpoints)
@@ -161,6 +166,40 @@ const DashboardLayout = ({
     </div>
   );
 
+  const filteredSearch = useMemo(() => {
+    if (!searchQuery) {
+      return SEARCH_INDEX.slice(0, 8);
+    }
+    const normalized = searchQuery.toLowerCase();
+    return SEARCH_INDEX.filter((item) => {
+      const matchesLabel = item.label.toLowerCase().includes(normalized);
+      const matchesDesc = item.description.toLowerCase().includes(normalized);
+      const matchesTags = item.tags?.some((tag) => tag.toLowerCase().includes(normalized));
+      return matchesLabel || matchesDesc || matchesTags;
+    });
+  }, [searchQuery]);
+
+  const handleSearchSelect = (item: SearchItem) => {
+    navigate(item.route);
+    setSearchOpen(false);
+    setSearchQuery('');
+    if (isMobile) {
+      setMobileMenuOpen(false);
+    }
+  };
+
+  const renderCategoryTag = (category: SearchItem['category']) => {
+    const colorMap: Record<SearchItem['category'], string> = {
+      asset: 'blue',
+      portfolio: 'green',
+      client: 'purple',
+      partner: 'volcano',
+      report: 'gold',
+      distribution: 'cyan',
+    };
+    return <Tag color={colorMap[category]}>{category.toUpperCase()}</Tag>;
+  };
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
       {/* Mobile: Drawer menu */}
@@ -229,6 +268,13 @@ const DashboardLayout = ({
           />
 
           <Space size={isMobile ? 'middle' : 'large'}>
+            <Button
+              icon={<SearchOutlined />}
+              type="text"
+              onClick={() => setSearchOpen(true)}
+            >
+              {!isMobile && t('layout.search')}
+            </Button>
             {!isMobile && <LanguageSwitcher />}
 
             <Dropdown
@@ -267,6 +313,45 @@ const DashboardLayout = ({
         }}>
           {children}
         </Content>
+        <Modal
+          open={searchOpen}
+          onCancel={() => setSearchOpen(false)}
+          footer={null}
+          width={isMobile ? '90%' : 640}
+          title={t('layout.search')}
+        >
+          <Input
+            placeholder="Busca activos, portafolios, reportes..."
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            allowClear
+            size="large"
+            autoFocus
+            prefix={<SearchOutlined />}
+          />
+          <List
+            style={{ marginTop: 16, maxHeight: 360, overflowY: 'auto' }}
+            dataSource={filteredSearch}
+            locale={{ emptyText: 'No hay resultados' }}
+            renderItem={(item) => (
+              <List.Item
+                key={item.id}
+                style={{ cursor: 'pointer' }}
+                onClick={() => handleSearchSelect(item)}
+              >
+                <List.Item.Meta
+                  title={
+                    <Space>
+                      {renderCategoryTag(item.category)}
+                      <span>{item.label}</span>
+                    </Space>
+                  }
+                  description={item.description}
+                />
+              </List.Item>
+            )}
+          />
+        </Modal>
       </Layout>
     </Layout>
   );
