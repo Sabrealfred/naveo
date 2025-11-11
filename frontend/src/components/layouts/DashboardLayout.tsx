@@ -230,7 +230,7 @@ const DashboardLayout = ({
           M
         </div>
       ) : (
-        <MiraLogo variant="light" size="xs" />
+        <MiraLogo variant="dark" size="xs" />
       )}
     </div>
   );
