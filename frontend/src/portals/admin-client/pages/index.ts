@@ -16,3 +16,7 @@ export { default as TransactionsPage } from './TransactionsPage';
 export { default as CompliancePage } from './CompliancePage';
 export { default as FundReportsPage } from './FundReportsPage';
 export { default as AIStrategyManagementPage } from './AIStrategyManagementPage';
+export { default as KYCManagementPage } from './KYCManagementPage';
+export { default as AnalyticsPage } from './AnalyticsPage';
+export { default as ReportsPage } from './ReportsPage';
+export { default as NotificationsCenterPage } from './NotificationsCenterPage';

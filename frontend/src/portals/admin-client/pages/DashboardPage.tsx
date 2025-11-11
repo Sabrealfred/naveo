@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Card, Col, Row, Statistic, Table, Tag, Progress, Button, Space, Timeline, Badge, message, Modal } from 'antd';
+import { useState, useEffect } from 'react';
+import { Card, Col, Row, Statistic, Table, Tag, Progress, Button, Space, Spin, message } from 'antd';
 import {
   DollarOutlined,
   RiseOutlined,
@@ -8,197 +8,130 @@ import {
   SwapOutlined,
   TrophyOutlined,
   BankOutlined,
-  RocketOutlined,
-  CheckCircleOutlined,
-  ClockCircleOutlined,
-  FileTextOutlined,
-  LinkOutlined,
 } from '@ant-design/icons';
 import { Line, Column, Pie } from '@ant-design/charts';
 import { StatCard, PerformanceChart } from '../../../components/common';
+import { useTranslation } from 'react-i18next';
+import { fundsService, tradersService, assetsService, reportsService } from '../../../services';
+import type { Fund, FundPerformance, Trader, NavHistory } from '../../../services/types';
 
 export default function DashboardPage() {
-  const [loadingDetails, setLoadingDetails] = useState(false);
+  const { t } = useTranslation();
 
-  const handleViewFullDetails = () => {
-    setLoadingDetails(true);
-    message.info('Loading full tokenization details...');
-    setTimeout(() => {
-      setLoadingDetails(false);
-      Modal.info({
-        title: 'Fund Tokenization Details',
-        width: 600,
-        content: (
-          <div>
-            <p><strong>Contract Address:</strong> 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb</p>
-            <p><strong>Token Standard:</strong> ERC-3643 (T-REX Protocol)</p>
-            <p><strong>Blockchain:</strong> Ethereum Mainnet</p>
-            <p><strong>Total Supply:</strong> 850,000 AGROWTH</p>
-            <p><strong>Circulating Supply:</strong> 850,000 AGROWTH (100%)</p>
-            <p><strong>Token Holders:</strong> 245</p>
-            <p><strong>Transfer Restrictions:</strong> Accredited Investors Only, 12-month lock-up</p>
-            <p><strong>Next Compliance Audit:</strong> December 15, 2024</p>
-            <p><strong>Audit Firm:</strong> CertiK</p>
-            <p><strong>Last Audit Score:</strong> 95/100 (Excellent)</p>
-          </div>
-        ),
-      });
-    }, 1000);
+  // State
+  const [loading, setLoading] = useState(true);
+  const [fund, setFund] = useState<Fund | null>(null);
+  const [fundPerformance, setFundPerformance] = useState<FundPerformance | null>(null);
+  const [navHistory, setNavHistory] = useState<NavHistory[]>([]);
+  const [topTraders, setTopTraders] = useState<Trader[]>([]);
+  const [assetAllocation, setAssetAllocation] = useState<any[]>([]);
+  const [topAssets, setTopAssets] = useState<any[]>([]);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+
+      // Get first active fund (in real app, would get fund by manager ID from auth)
+      const funds = await fundsService.getActiveFunds();
+      if (funds.length === 0) {
+        message.warning('No active funds found');
+        setLoading(false);
+        return;
+      }
+
+      const currentFund = funds[0];
+      setFund(currentFund);
+
+      // Load fund performance
+      const performance = await fundsService.getFundPerformance(currentFund.id);
+      setFundPerformance(performance as FundPerformance);
+
+      // Load NAV history
+      const navData = await reportsService.getNavHistory(currentFund.id, undefined, undefined, 12);
+      setNavHistory(navData);
+
+      // Load top traders
+      const traders = await tradersService.getTopPerformingTraders(5, currentFund.id);
+      setTopTraders(traders);
+
+      // Load asset allocation
+      const allocation = await assetsService.getFundAssetAllocation(currentFund.id);
+      setAssetAllocation(allocation);
+
+      // Load top performing assets
+      const assets = await assetsService.getTopPerformingAssets(currentFund.id, 5);
+      setTopAssets(assets);
+
+    } catch (error: any) {
+      console.error('Error loading dashboard data:', error);
+      message.error('Failed to load dashboard data: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleViewOnEtherscan = () => {
-    message.success('Opening Etherscan in new tab...');
-    setTimeout(() => {
-      window.open('https://etherscan.io/address/0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb', '_blank');
-    }, 300);
+  if (loading) {
+    return (
+      <div style={{ padding: '24px', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+        <Spin size="large" tip="Loading dashboard..." />
+      </div>
+    );
+  }
+
+  if (!fund || !fundPerformance) {
+    return (
+      <div style={{ padding: '24px' }}>
+        <Card>
+          <p>No fund data available. Please contact support.</p>
+        </Card>
+      </div>
+    );
+  }
+
+  // Calculate monthly and YTD returns from NAV history
+  const calculateReturns = () => {
+    if (navHistory.length < 2) return { monthly: 0, ytd: 0 };
+
+    const latestNav = navHistory[0].nav;
+    const monthAgoNav = navHistory[1]?.nav || latestNav;
+    const ytdNav = navHistory[navHistory.length - 1]?.nav || latestNav;
+
+    const monthlyReturn = ((latestNav - monthAgoNav) / monthAgoNav) * 100;
+    const ytdReturn = ((latestNav - ytdNav) / ytdNav) * 100;
+
+    return { monthly: monthlyReturn, ytd: ytdReturn };
   };
-  // Mock data for Fund Manager Dashboard - Replace with real Supabase data
-  const fundMetrics = {
-    fundName: 'Alpha Growth Fund',
-    currentNAV: 127.85,
-    totalAUM: 85000000, // $85M
-    investors: 245,
-    monthlyReturn: 2.3, // %
-    ytdReturn: 18.2, // %
-    tradersActive: 8,
-    pendingOrders: 12,
-  };
 
-  const navHistoryData = [
-    { date: '2024-01', nav: 100.0 },
-    { date: '2024-02', nav: 102.5 },
-    { date: '2024-03', nav: 105.8 },
-    { date: '2024-04', nav: 108.2 },
-    { date: '2024-05', nav: 112.4 },
-    { date: '2024-06', nav: 115.7 },
-    { date: '2024-07', nav: 118.9 },
-    { date: '2024-08', nav: 121.3 },
-    { date: '2024-09', nav: 124.6 },
-    { date: '2024-10', nav: 126.1 },
-    { date: '2024-11', nav: 127.85 },
-  ];
+  const { monthly, ytd } = calculateReturns();
 
-  const assetAllocation = [
-    { asset: 'BTC', value: 42, amount: 35700000 },
-    { asset: 'ETH', value: 28, amount: 23800000 },
-    { asset: 'Tokens', value: 18, amount: 15300000 },
-    { asset: 'Stablecoins', value: 10, amount: 8500000 },
-    { asset: 'Others', value: 2, amount: 1700000 },
-  ];
+  // Transform NAV history for chart
+  const navChartData = navHistory
+    .slice()
+    .reverse()
+    .map(entry => ({
+      date: new Date(entry.calculation_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+      nav: entry.nav
+    }));
 
-  const performanceByAsset = [
-    { asset: 'BTC', return: 15.2 },
-    { asset: 'ETH', return: 22.8 },
-    { asset: 'SOL', return: 45.3 },
-    { asset: 'MATIC', return: 12.1 },
-    { asset: 'LINK', return: 8.7 },
-  ];
+  // Transform asset allocation for pie chart
+  const allocationChartData = assetAllocation.map(item => ({
+    asset: item.type,
+    value: item.percentage,
+    amount: item.value
+  }));
 
-  const topTraders = [
-    {
-      key: '1',
-      name: 'John Trader',
-      trades: 145,
-      volume: 12500000,
-      profitLoss: 245000,
-      winRate: 68.5,
-      status: 'active',
-    },
-    {
-      key: '2',
-      name: 'Sarah Johnson',
-      trades: 98,
-      volume: 8200000,
-      profitLoss: 182000,
-      winRate: 71.2,
-      status: 'active',
-    },
-    {
-      key: '3',
-      name: 'Michael Chen',
-      trades: 76,
-      volume: 6800000,
-      profitLoss: -45000,
-      winRate: 54.3,
-      status: 'review',
-    },
-    {
-      key: '4',
-      name: 'Emily Davis',
-      trades: 124,
-      volume: 9400000,
-      profitLoss: 198000,
-      winRate: 65.8,
-      status: 'active',
-    },
-  ];
-
-  const recentTransactions = [
-    {
-      key: '1',
-      type: 'Buy',
-      asset: 'BTC',
-      amount: 2.5,
-      value: 125000,
-      trader: 'John Trader',
-      time: '2 hours ago',
-    },
-    {
-      key: '2',
-      type: 'Sell',
-      asset: 'ETH',
-      amount: 45,
-      value: 85000,
-      trader: 'Sarah Johnson',
-      time: '4 hours ago',
-    },
-    {
-      key: '3',
-      type: 'Buy',
-      asset: 'SOL',
-      amount: 1200,
-      value: 95000,
-      trader: 'Emily Davis',
-      time: '6 hours ago',
-    },
-  ];
-
-  // Tokenization status for this fund
-  const fundTokenizationStatus = {
-    isTokenized: true,
-    tokenSymbol: 'AGROWTH',
-    contractAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb',
-    blockchain: 'Ethereum',
-    totalTokensIssued: 850000,
-    tokenHolders: 245,
-    complianceStandard: 'ERC-3643',
-    nextComplianceAudit: '2024-12-15',
-    recentMilestones: [
-      {
-        date: '2024-11-10',
-        event: '15 new investors onboarded (US)',
-        status: 'completed',
-      },
-      {
-        date: '2024-11-08',
-        event: 'SEC Form D amendment filed',
-        status: 'completed',
-      },
-      {
-        date: '2024-11-05',
-        event: 'Q3 investor reporting completed',
-        status: 'completed',
-      },
-      {
-        date: '2024-11-12',
-        event: 'Compliance audit scheduled',
-        status: 'pending',
-      },
-    ],
-  };
+  // Transform top assets for performance chart
+  const performanceChartData = topAssets.map(asset => ({
+    asset: asset.symbol,
+    return: asset.pnl_percentage
+  }));
 
   const navChartConfig = {
-    data: navHistoryData,
+    data: navChartData,
     xField: 'date',
     yField: 'nav',
     smooth: true,
@@ -211,7 +144,7 @@ export default function DashboardPage() {
   };
 
   const assetAllocationConfig = {
-    data: assetAllocation,
+    data: allocationChartData,
     angleField: 'value',
     colorField: 'asset',
     radius: 0.8,
@@ -227,7 +160,7 @@ export default function DashboardPage() {
   };
 
   const performanceConfig = {
-    data: performanceByAsset,
+    data: performanceChartData,
     xField: 'asset',
     yField: 'return',
     label: {
@@ -245,37 +178,43 @@ export default function DashboardPage() {
   const traderColumns = [
     {
       title: 'Trader',
-      dataIndex: 'name',
-      key: 'name',
-      render: (text: string) => <span style={{ fontWeight: 500 }}>{text}</span>,
+      dataIndex: 'user_id',
+      key: 'user_id',
+      render: (userId: string) => <span style={{ fontWeight: 500 }}>Trader {userId.substring(0, 8)}</span>,
+    },
+    {
+      title: 'Role',
+      dataIndex: 'role',
+      key: 'role',
+      render: (role: string) => <Tag color="blue">{role?.toUpperCase()}</Tag>,
     },
     {
       title: 'Trades',
-      dataIndex: 'trades',
-      key: 'trades',
+      dataIndex: 'total_trades',
+      key: 'total_trades',
     },
     {
       title: 'Volume',
-      dataIndex: 'volume',
-      key: 'volume',
-      render: (vol: number) => `$${(vol / 1000000).toFixed(1)}M`,
-      sorter: (a: any, b: any) => a.volume - b.volume,
+      dataIndex: 'total_volume',
+      key: 'total_volume',
+      render: (vol: number) => `$${((vol || 0) / 1000000).toFixed(1)}M`,
+      sorter: (a: any, b: any) => (a.total_volume || 0) - (b.total_volume || 0),
     },
     {
       title: 'P&L',
-      dataIndex: 'profitLoss',
-      key: 'profitLoss',
+      dataIndex: 'total_pnl',
+      key: 'total_pnl',
       render: (pl: number) => (
-        <Tag color={pl >= 0 ? 'green' : 'red'}>
-          {pl >= 0 ? '+' : ''}${(pl / 1000).toFixed(0)}K
+        <Tag color={(pl || 0) >= 0 ? 'green' : 'red'}>
+          {(pl || 0) >= 0 ? '+' : ''}${((pl || 0) / 1000).toFixed(0)}K
         </Tag>
       ),
     },
     {
       title: 'Win Rate',
-      dataIndex: 'winRate',
-      key: 'winRate',
-      render: (rate: number) => `${rate.toFixed(1)}%`,
+      dataIndex: 'win_rate',
+      key: 'win_rate',
+      render: (rate: number) => `${(rate || 0).toFixed(1)}%`,
     },
     {
       title: 'Status',
@@ -283,56 +222,9 @@ export default function DashboardPage() {
       key: 'status',
       render: (status: string) => (
         <Tag color={status === 'active' ? 'green' : 'orange'}>
-          {status.toUpperCase()}
+          {status?.toUpperCase()}
         </Tag>
       ),
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      render: () => (
-        <Space>
-          <Button type="link" size="small">View</Button>
-          <Button type="link" size="small">Manage</Button>
-        </Space>
-      ),
-    },
-  ];
-
-  const transactionColumns = [
-    {
-      title: 'Type',
-      dataIndex: 'type',
-      key: 'type',
-      render: (type: string) => (
-        <Tag color={type === 'Buy' ? 'green' : 'red'}>{type}</Tag>
-      ),
-    },
-    {
-      title: 'Asset',
-      dataIndex: 'asset',
-      key: 'asset',
-    },
-    {
-      title: 'Amount',
-      dataIndex: 'amount',
-      key: 'amount',
-    },
-    {
-      title: 'Value',
-      dataIndex: 'value',
-      key: 'value',
-      render: (val: number) => `$${val.toLocaleString()}`,
-    },
-    {
-      title: 'Trader',
-      dataIndex: 'trader',
-      key: 'trader',
-    },
-    {
-      title: 'Time',
-      dataIndex: 'time',
-      key: 'time',
     },
   ];
 
@@ -341,10 +233,10 @@ export default function DashboardPage() {
       {/* Fund Header */}
       <div style={{ marginBottom: '24px' }}>
         <h1 style={{ marginBottom: '8px', fontFamily: 'var(--font-heading)' }}>
-          {fundMetrics.fundName}
+          {fund.name}
         </h1>
         <p style={{ color: '#8c8c8c', fontSize: '14px' }}>
-          Fund Manager Dashboard
+          {fund.description || t('adminClient.dashboard.subtitle')}
         </p>
       </div>
 
@@ -352,26 +244,25 @@ export default function DashboardPage() {
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Current NAV"
-            value={`$${fundMetrics.currentNAV.toFixed(2)}`}
+            title={t('adminClient.dashboard.currentNAV')}
+            value={`$${(fund.current_nav || 0).toFixed(2)}`}
             icon={<TrophyOutlined />}
-            trend={fundMetrics.monthlyReturn >= 0 ? 'up' : 'down'}
-            trendValue={Math.abs(fundMetrics.monthlyReturn)}
+            trend={{ value: monthly, isPositive: monthly >= 0 }}
             color="#1890ff"
           />
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Total AUM"
-            value={`$${(fundMetrics.totalAUM / 1000000).toFixed(1)}M`}
+            title={t('adminClient.dashboard.totalAUM')}
+            value={`$${((fund.total_aum || 0) / 1000000).toFixed(1)}M`}
             icon={<DollarOutlined />}
             color="#52c41a"
           />
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <StatCard
-            title="Investors"
-            value={fundMetrics.investors.toString()}
+            title={t('adminClient.dashboard.investors')}
+            value={(fundPerformance.total_investors || 0).toString()}
             icon={<TeamOutlined />}
             color="#722ed1"
           />
@@ -379,16 +270,16 @@ export default function DashboardPage() {
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="YTD Return"
-              value={fundMetrics.ytdReturn}
+              title={t('adminClient.dashboard.ytdReturn')}
+              value={ytd}
               precision={1}
-              valueStyle={{ color: '#3f8600' }}
-              prefix={<RiseOutlined />}
+              valueStyle={{ color: ytd >= 0 ? '#3f8600' : '#cf1322' }}
+              prefix={ytd >= 0 ? <RiseOutlined /> : <FallOutlined />}
               suffix="%"
             />
             <Progress
-              percent={fundMetrics.ytdReturn}
-              strokeColor="#52c41a"
+              percent={Math.min(Math.abs(ytd), 100)}
+              strokeColor={ytd >= 0 ? '#52c41a' : '#ff4d4f'}
               showInfo={false}
               style={{ marginTop: 8 }}
             />
@@ -401,8 +292,8 @@ export default function DashboardPage() {
         <Col xs={12} sm={8} lg={6}>
           <Card size="small">
             <Statistic
-              title="Active Traders"
-              value={fundMetrics.tradersActive}
+              title={t('adminClient.dashboard.activeTraders')}
+              value={fundPerformance.active_traders || 0}
               prefix={<SwapOutlined />}
             />
           </Card>
@@ -410,151 +301,29 @@ export default function DashboardPage() {
         <Col xs={12} sm={8} lg={6}>
           <Card size="small">
             <Statistic
-              title="Pending Orders"
-              value={fundMetrics.pendingOrders}
-              valueStyle={{ color: '#fa8c16' }}
+              title="Total Assets"
+              value={fundPerformance.total_assets || 0}
+              valueStyle={{ color: '#1890ff' }}
             />
           </Card>
         </Col>
         <Col xs={12} sm={8} lg={6}>
           <Card size="small">
             <Statistic
-              title="30d Return"
-              value={fundMetrics.monthlyReturn}
+              title={t('adminClient.dashboard.monthlyReturn')}
+              value={monthly}
               precision={1}
               suffix="%"
-              valueStyle={{ color: '#52c41a' }}
-              prefix={<RiseOutlined />}
+              valueStyle={{ color: monthly >= 0 ? '#52c41a' : '#cf1322' }}
+              prefix={monthly >= 0 ? <RiseOutlined /> : <FallOutlined />}
             />
           </Card>
         </Col>
         <Col xs={12} sm={8} lg={6}>
           <Card size="small">
             <Button type="primary" block>
-              View Full NAV Report
+              {t('adminClient.dashboard.viewNavReport')}
             </Button>
-          </Card>
-        </Col>
-      </Row>
-
-      {/* Tokenization Status */}
-      <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
-        <Col span={24}>
-          <Card
-            title={
-              <Space>
-                <RocketOutlined />
-                <span>Fund Tokenization Status</span>
-                <Tag color="green">ACTIVE</Tag>
-              </Space>
-            }
-            bordered={false}
-            extra={
-              <Button
-                type="primary"
-                icon={<FileTextOutlined />}
-                onClick={handleViewFullDetails}
-                loading={loadingDetails}
-              >
-                View Full Details
-              </Button>
-            }
-          >
-            <Row gutter={[16, 16]}>
-              <Col xs={24} md={12} lg={6}>
-                <Card size="small" style={{ marginBottom: 8 }}>
-                  <Statistic
-                    title="Token Symbol"
-                    value={fundTokenizationStatus.tokenSymbol}
-                    valueStyle={{ fontSize: '18px', color: '#1890ff', fontWeight: 'bold' }}
-                  />
-                  <div style={{ fontSize: '12px', color: '#8c8c8c', marginTop: 4 }}>
-                    {fundTokenizationStatus.complianceStandard}
-                  </div>
-                </Card>
-              </Col>
-              <Col xs={24} md={12} lg={6}>
-                <Card size="small" style={{ marginBottom: 8 }}>
-                  <Statistic
-                    title="Tokens Issued"
-                    value={fundTokenizationStatus.totalTokensIssued.toLocaleString()}
-                    valueStyle={{ fontSize: '18px', color: '#52c41a' }}
-                  />
-                  <div style={{ fontSize: '12px', color: '#8c8c8c', marginTop: 4 }}>
-                    {fundTokenizationStatus.blockchain}
-                  </div>
-                </Card>
-              </Col>
-              <Col xs={24} md={12} lg={6}>
-                <Card size="small" style={{ marginBottom: 8 }}>
-                  <Statistic
-                    title="Token Holders"
-                    value={fundTokenizationStatus.tokenHolders}
-                    valueStyle={{ fontSize: '18px', color: '#722ed1' }}
-                    prefix={<TeamOutlined />}
-                  />
-                </Card>
-              </Col>
-              <Col xs={24} md={12} lg={6}>
-                <Card size="small" style={{ marginBottom: 8 }}>
-                  <Statistic
-                    title="Next Audit"
-                    value={fundTokenizationStatus.nextComplianceAudit}
-                    valueStyle={{ fontSize: '14px', color: '#fa8c16' }}
-                  />
-                </Card>
-              </Col>
-            </Row>
-            <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-              <Col xs={24} lg={12}>
-                <Card size="small" title="Smart Contract" style={{ height: '100%' }}>
-                  <Space direction="vertical" style={{ width: '100%' }}>
-                    <div>
-                      <div style={{ fontSize: '12px', color: '#8c8c8c', marginBottom: 4 }}>
-                        Contract Address
-                      </div>
-                      <div style={{ fontFamily: 'monospace', fontSize: '13px', wordBreak: 'break-all' }}>
-                        {fundTokenizationStatus.contractAddress}
-                      </div>
-                    </div>
-                    <Button
-                      type="link"
-                      size="small"
-                      icon={<LinkOutlined />}
-                      style={{ padding: 0 }}
-                      onClick={handleViewOnEtherscan}
-                    >
-                      View on Etherscan →
-                    </Button>
-                  </Space>
-                </Card>
-              </Col>
-              <Col xs={24} lg={12}>
-                <Card size="small" title="Recent Milestones" style={{ height: '100%' }}>
-                  <Timeline
-                    items={fundTokenizationStatus.recentMilestones.map((milestone) => ({
-                      color: milestone.status === 'completed' ? 'green' : 'blue',
-                      dot:
-                        milestone.status === 'completed' ? (
-                          <CheckCircleOutlined style={{ fontSize: '14px' }} />
-                        ) : (
-                          <ClockCircleOutlined style={{ fontSize: '14px' }} />
-                        ),
-                      children: (
-                        <div>
-                          <div style={{ fontSize: '12px', fontWeight: 500 }}>
-                            {milestone.event}
-                          </div>
-                          <div style={{ fontSize: '11px', color: '#8c8c8c' }}>
-                            {milestone.date}
-                          </div>
-                        </div>
-                      ),
-                    }))}
-                  />
-                </Card>
-              </Col>
-            </Row>
           </Card>
         </Col>
       </Row>
@@ -562,30 +331,63 @@ export default function DashboardPage() {
       {/* Charts Section */}
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} lg={16}>
-          <Card title="NAV History" bordered={false}>
-            <Line {...navChartConfig} />
+          <Card title={t('adminClient.dashboard.navHistory')} bordered={false}>
+            {navChartData.length > 0 ? (
+              <Line {...navChartConfig} />
+            ) : (
+              <p>No NAV history available</p>
+            )}
           </Card>
         </Col>
         <Col xs={24} lg={8}>
-          <Card title="Asset Allocation" bordered={false}>
-            <Pie {...assetAllocationConfig} />
+          <Card title={t('adminClient.dashboard.assetAllocation')} bordered={false}>
+            {allocationChartData.length > 0 ? (
+              <Pie {...assetAllocationConfig} />
+            ) : (
+              <p>No asset allocation data available</p>
+            )}
           </Card>
         </Col>
       </Row>
 
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} lg={12}>
-          <Card title="Performance by Asset" bordered={false}>
-            <Column {...performanceConfig} />
+          <Card title={t('adminClient.dashboard.performanceByAsset')} bordered={false}>
+            {performanceChartData.length > 0 ? (
+              <Column {...performanceConfig} />
+            ) : (
+              <p>No performance data available</p>
+            )}
           </Card>
         </Col>
         <Col xs={24} lg={12}>
-          <Card title="Recent Transactions" bordered={false}>
+          <Card title="Top Performing Assets" bordered={false}>
             <Table
-              dataSource={recentTransactions}
-              columns={transactionColumns}
+              dataSource={topAssets}
+              columns={[
+                { title: 'Symbol', dataIndex: 'symbol', key: 'symbol' },
+                { title: 'Name', dataIndex: 'name', key: 'name' },
+                {
+                  title: 'P&L %',
+                  dataIndex: 'pnl_percentage',
+                  key: 'pnl_percentage',
+                  render: (val: number) => (
+                    <Tag color={val >= 0 ? 'green' : 'red'}>
+                      {val >= 0 ? '+' : ''}{val.toFixed(2)}%
+                    </Tag>
+                  ),
+                  sorter: (a: any, b: any) => a.pnl_percentage - b.pnl_percentage
+                },
+                {
+                  title: 'Current Value',
+                  dataIndex: 'current_value',
+                  key: 'current_value',
+                  render: (val: number) => `$${val.toLocaleString()}`
+                }
+              ]}
               pagination={false}
               size="small"
+              rowKey="id"
             />
           </Card>
         </Col>
@@ -594,11 +396,12 @@ export default function DashboardPage() {
       {/* Traders Table */}
       <Row gutter={[16, 16]}>
         <Col span={24}>
-          <Card title="Trader Performance" bordered={false}>
+          <Card title={t('adminClient.dashboard.traderPerformance')} bordered={false}>
             <Table
               dataSource={topTraders}
               columns={traderColumns}
               pagination={{ pageSize: 5 }}
+              rowKey="id"
             />
           </Card>
         </Col>

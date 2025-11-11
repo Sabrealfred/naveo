@@ -1,513 +1,551 @@
 import { useState } from 'react';
-import {
-  Button,
-  Card,
-  Col,
-  Descriptions,
-  Divider,
-  Form,
-  Input,
-  InputNumber,
-  Row,
-  Select,
-  Slider,
-  Space,
-  Steps,
-  Switch,
-  Table,
-  Tag,
-  Typography,
-  message,
-} from 'antd';
+import { Card, Row, Col, Button, Steps, Form, Input, Select, Radio, InputNumber, Switch, Table, Tag, Space, Modal, message, Tabs, Collapse, Divider } from 'antd';
+import { AppstoreOutlined, PlusOutlined, BankOutlined, HomeOutlined, FundOutlined, FileTextOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import {
-  CheckCircleOutlined,
-  DollarOutlined,
-  DownloadOutlined,
-  FileTextOutlined,
-  LeftOutlined,
-  RightOutlined,
-  SaveOutlined,
-} from '@ant-design/icons';
-import { Line } from '@ant-design/charts';
 
-const { Title, Text } = Typography;
-const { TextArea } = Input;
-
-type ProductType = 'open-end-fund' | 'closed-end-fund' | 'spv' | 'note' | 'direct-token';
-
-interface ProductStructure {
-  // Basic Info
-  name: string;
-  description: string;
-  type: ProductType;
-
-  // Economic Terms
-  minInvestment: number;
-  maxInvestment: number;
-  targetRaise: number;
-  hardCap: number;
-
-  // Fee Structure
-  managementFee: number;
-  performanceFee: number;
-  hurdleRate: number;
-  highWaterMark: boolean;
-  subscriptionFee: number;
-  redemptionFee: number;
-  earlyRedemptionPenalty: number;
-
-  // Waterfall Structure
-  waterfallTiers: WaterfallTier[];
-
-  // Liquidity Terms
-  lockupPeriod: number;
-  redemptionFrequency: string;
-  noticePeríod: number;
-
-  // Governance
-  votingRights: boolean;
-  majorityThreshold: number;
-}
-
-interface WaterfallTier {
+interface ShareClass {
   id: string;
   name: string;
-  returnThreshold: number;
-  lpShare: number;
-  gpShare: number;
+  symbol: string;
+  type: 'common' | 'preferred' | 'convertible';
+  votingRights: boolean;
+  dividendPriority: number;
+  liquidationPreference: string;
+  conversionRatio?: string;
+  minInvestment: string;
 }
 
-const mockWaterfallTiers: WaterfallTier[] = [
-  { id: 'tier-1', name: 'Return of Capital', returnThreshold: 0, lpShare: 100, gpShare: 0 },
-  { id: 'tier-2', name: 'Preferred Return (8%)', returnThreshold: 8, lpShare: 100, gpShare: 0 },
-  { id: 'tier-3', name: 'Catch-up (to 20% carry)', returnThreshold: 12, lpShare: 80, gpShare: 20 },
-  { id: 'tier-4', name: 'Carried Interest', returnThreshold: 100, lpShare: 80, gpShare: 20 },
-];
+interface SmartContractLayer {
+  id: string;
+  layer: string;
+  name: string;
+  standard: string;
+  functions: string[];
+  enabled: boolean;
+}
 
+/**
+ * ProductStructuringPage - Complete product configuration studio
+ *
+ * Features inspired by Securitize.io:
+ * - Multi-asset type support (funds, real estate, private equity, fixed income)
+ * - Multiple share classes (Class A/B/C, Preferred, Convertible)
+ * - Layered smart contract architecture (5 layers: Core, Governance, Economic, Compliance, Oracle)
+ * - Token economics configuration
+ * - Compliance policy builder
+ * - Cross-chain deployment options
+ */
 const ProductStructuringPage = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [form] = Form.useForm();
-  const [structure, setStructure] = useState<Partial<ProductStructure>>({
-    managementFee: 2.0,
-    performanceFee: 20,
-    hurdleRate: 8.0,
-    highWaterMark: true,
-    waterfallTiers: mockWaterfallTiers,
-  });
+  const [selectedAssetType, setSelectedAssetType] = useState('fund');
+  const [shareClasses, setShareClasses] = useState<ShareClass[]>([]);
+  const [addShareClassModalVisible, setAddShareClassModalVisible] = useState(false);
 
-  const productTypeOptions = [
-    { label: 'Open-End Fund', value: 'open-end-fund' },
-    { label: 'Closed-End Fund', value: 'closed-end-fund' },
-    { label: 'SPV (Special Purpose Vehicle)', value: 'spv' },
-    { label: 'Note (Debt Instrument)', value: 'note' },
-    { label: 'Direct Token', value: 'direct-token' },
+  const contractLayers: SmartContractLayer[] = [
+    { id: '1', layer: 'Layer 1', name: 'Core Token Contract', standard: 'ERC-3643', functions: ['transfer', 'approve', 'freeze', 'forceTransfer'], enabled: true },
+    { id: '2', layer: 'Layer 2', name: 'Governance & Voting', standard: 'Custom', functions: ['propose', 'vote', 'execute', 'delegate'], enabled: true },
+    { id: '3', layer: 'Layer 3', name: 'Economic Rights', standard: 'Custom', functions: ['distribute', 'waterfall', 'fees', 'redeem'], enabled: true },
+    { id: '4', layer: 'Layer 4', name: 'Compliance Engine', standard: 'Custom', functions: ['verifyKYC', 'checkLimits', 'enforceLockup', 'whitelist'], enabled: true },
+    { id: '5', layer: 'Layer 5', name: 'NAV Oracle Integration', standard: 'Chainlink', functions: ['updateNAV', 'priceDiscovery', 'settlement'], enabled: false },
   ];
 
-  const redemptionFrequencyOptions = [
-    { label: 'Daily', value: 'daily' },
-    { label: 'Weekly', value: 'weekly' },
-    { label: 'Monthly', value: 'monthly' },
-    { label: 'Quarterly', value: 'quarterly' },
-    { label: 'Semi-Annual', value: 'semi-annual' },
-    { label: 'Annual', value: 'annual' },
+  const shareClassColumns: ColumnsType<ShareClass> = [
+    { title: 'Class Name', dataIndex: 'name', key: 'name', render: (name) => <strong>{name}</strong> },
+    { title: 'Symbol', dataIndex: 'symbol', key: 'symbol', render: (s) => <Tag>{s}</Tag> },
+    { title: 'Type', dataIndex: 'type', key: 'type', render: (type) => <Tag color={type === 'common' ? 'blue' : type === 'preferred' ? 'green' : 'purple'}>{type.toUpperCase()}</Tag> },
+    { title: 'Voting', dataIndex: 'votingRights', key: 'votingRights', render: (v) => v ? '✓' : '✗' },
+    { title: 'Dividend Priority', dataIndex: 'dividendPriority', key: 'dividendPriority' },
+    { title: 'Liquidation Pref', dataIndex: 'liquidationPreference', key: 'liquidationPreference' },
+    { title: 'Min Investment', dataIndex: 'minInvestment', key: 'minInvestment' },
+    { title: 'Actions', key: 'actions', render: () => <Space><Button size="small">Edit</Button><Button size="small" danger>Delete</Button></Space> },
   ];
 
-  const handleNext = async () => {
-    try {
-      await form.validateFields();
-      const values = form.getFieldsValue();
-      setStructure({ ...structure, ...values });
-      setCurrentStep(currentStep + 1);
-    } catch (error) {
-      message.error('Please fill in all required fields');
-    }
+  const handleAddShareClass = () => {
+    const classLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
+    const newClass: ShareClass = {
+      id: String(shareClasses.length + 1),
+      name: `Class ${classLetters[shareClasses.length] || shareClasses.length + 1}`,
+      symbol: `NAV-${classLetters[shareClasses.length] || shareClasses.length + 1}`,
+      type: 'common',
+      votingRights: true,
+      dividendPriority: shareClasses.length + 1,
+      liquidationPreference: '1x',
+      minInvestment: '$10,000',
+    };
+    setShareClasses([...shareClasses, newClass]);
+    setAddShareClassModalVisible(false);
+    message.success('Share class added');
   };
-
-  const handlePrevious = () => {
-    const values = form.getFieldsValue();
-    setStructure({ ...structure, ...values });
-    setCurrentStep(currentStep - 1);
-  };
-
-  const handleSaveTemplate = () => {
-    message.success('Structure saved as template!');
-  };
-
-  const handleGenerateDocuments = () => {
-    message.success('Documents generated successfully!');
-  };
-
-  const calculateWaterfallDistribution = (totalReturn: number) => {
-    const invested = 100;
-    const returns = totalReturn - invested;
-    const returnPercent = (returns / invested) * 100;
-
-    const distributions: { tier: string; lp: number; gp: number }[] = [];
-    let remaining = totalReturn;
-
-    // Simplified waterfall calculation
-    if (returnPercent <= 8) {
-      distributions.push({ tier: 'Return of Capital + Pref', lp: totalReturn, gp: 0 });
-    } else if (returnPercent <= 12) {
-      distributions.push({ tier: 'Return of Capital + Pref', lp: 108, gp: 0 });
-      distributions.push({ tier: 'Catch-up', lp: (totalReturn - 108) * 0.8, gp: (totalReturn - 108) * 0.2 });
-    } else {
-      distributions.push({ tier: 'Return of Capital + Pref', lp: 108, gp: 0 });
-      distributions.push({ tier: 'Catch-up', lp: 4 * 0.8, gp: 4 * 0.2 });
-      distributions.push({ tier: 'Carried Interest', lp: (totalReturn - 112) * 0.8, gp: (totalReturn - 112) * 0.2 });
-    }
-
-    return distributions;
-  };
-
-  const waterfallSimulationData = [
-    { totalReturn: 100, lpShare: 100, gpShare: 0 },
-    { totalReturn: 105, lpShare: 105, gpShare: 0 },
-    { totalReturn: 110, lpShare: 110, gpShare: 0 },
-    { totalReturn: 115, lpShare: 113, gpShare: 2 },
-    { totalReturn: 120, lpShare: 116, gpShare: 4 },
-    { totalReturn: 130, lpShare: 124, gpShare: 6 },
-    { totalReturn: 150, lpShare: 140, gpShare: 10 },
-  ];
-
-  const waterfallColumns: ColumnsType<WaterfallTier> = [
-    {
-      title: 'Tier',
-      dataIndex: 'name',
-      key: 'name',
-    },
-    {
-      title: 'Return Threshold (%)',
-      dataIndex: 'returnThreshold',
-      key: 'returnThreshold',
-      render: (val: number) => `${val}%`,
-    },
-    {
-      title: 'LP Share (%)',
-      dataIndex: 'lpShare',
-      key: 'lpShare',
-      render: (val: number) => <Tag color="blue">{val}%</Tag>,
-    },
-    {
-      title: 'GP Share (%)',
-      dataIndex: 'gpShare',
-      key: 'gpShare',
-      render: (val: number) => <Tag color="green">{val}%</Tag>,
-    },
-  ];
-
-  const steps = [
-    { title: 'Basic Info', icon: <FileTextOutlined /> },
-    { title: 'Economic Terms', icon: <DollarOutlined /> },
-    { title: 'Fee Structure', icon: <DollarOutlined /> },
-    { title: 'Waterfall', icon: <DollarOutlined /> },
-    { title: 'Liquidity & Governance', icon: <FileTextOutlined /> },
-    { title: 'Review', icon: <CheckCircleOutlined /> },
-  ];
 
   return (
-    <Space direction="vertical" size="large" style={{ width: '100%' }}>
-      <Row justify="space-between" align="middle">
-        <Col>
-          <Title level={3}>Product Structuring Studio</Title>
-        </Col>
-        <Col>
-          <Space>
-            <Button icon={<SaveOutlined />} onClick={handleSaveTemplate}>
-              Save Template
-            </Button>
-            <Button type="primary" icon={<DownloadOutlined />} onClick={handleGenerateDocuments}>
-              Generate Documents
-            </Button>
-          </Space>
+    <div style={{ padding: 24 }}>
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col span={24}>
+          <Card>
+            <Row align="middle" gutter={24}>
+              <Col flex="auto">
+                <Space direction="vertical" size={0}>
+                  <h2 style={{ margin: 0 }}><AppstoreOutlined /> Product Structuring Studio</h2>
+                  <p style={{ margin: 0, color: '#8c8c8c' }}>Configure tokenized products with multi-layer smart contracts and share classes (Securitize-inspired)</p>
+                </Space>
+              </Col>
+              <Col><Button type="primary" icon={<PlusOutlined />}>Create New Product</Button></Col>
+            </Row>
+          </Card>
         </Col>
       </Row>
 
       <Card>
-        <Steps current={currentStep} items={steps} />
-      </Card>
+        <Steps current={currentStep} onChange={setCurrentStep} style={{ marginBottom: 32 }}>
+          <Steps.Step title="Asset Type" description="Select asset class" />
+          <Steps.Step title="Share Classes" description="Configure classes" />
+          <Steps.Step title="Blockchain" description="Choose L1 & ZK" />
+          <Steps.Step title="Smart Contracts" description="Setup layers" />
+          <Steps.Step title="Token Economics" description="Define terms" />
+          <Steps.Step title="Compliance" description="Set policies" />
+        </Steps>
 
-      <Form form={form} layout="vertical" initialValues={structure}>
-        {/* Step 0: Basic Info */}
         {currentStep === 0 && (
-          <Card title="Basic Information">
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item name="name" label="Product Name" rules={[{ required: true }]}>
-                  <Input placeholder="e.g., Naveo Growth Fund I" />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item name="type" label="Product Type" rules={[{ required: true }]}>
-                  <Select options={productTypeOptions} placeholder="Select product type" />
-                </Form.Item>
-              </Col>
-              <Col span={24}>
-                <Form.Item name="description" label="Description">
-                  <TextArea rows={4} placeholder="Describe the investment strategy and objectives" />
-                </Form.Item>
-              </Col>
+          <div>
+            <h3>Select Asset Type</h3>
+            <p style={{ color: '#8c8c8c', marginBottom: 24 }}>Choose the type of asset you want to tokenize</p>
+            <Row gutter={[16, 16]}>
+              {[
+                { type: 'fund', icon: <FundOutlined />, name: 'Investment Fund', desc: 'Hedge fund, venture fund, index fund' },
+                { type: 'real-estate', icon: <HomeOutlined />, name: 'Real Estate', desc: 'Commercial, residential, REITs' },
+                { type: 'private-equity', icon: <BankOutlined />, name: 'Private Equity', desc: 'GP/LP interests, carried interest' },
+                { type: 'fixed-income', icon: <FileTextOutlined />, name: 'Fixed Income', desc: 'Bonds, notes, structured products' },
+              ].map((asset) => (
+                <Col xs={24} sm={12} lg={6} key={asset.type}>
+                  <Card
+                    hoverable
+                    style={{ border: selectedAssetType === asset.type ? '2px solid #1890ff' : undefined }}
+                    onClick={() => setSelectedAssetType(asset.type)}
+                  >
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: 48, color: '#1890ff', marginBottom: 16 }}>{asset.icon}</div>
+                      <h4>{asset.name}</h4>
+                      <p style={{ fontSize: 12, color: '#8c8c8c', margin: 0 }}>{asset.desc}</p>
+                    </div>
+                  </Card>
+                </Col>
+              ))}
             </Row>
-          </Card>
+
+            <Divider />
+
+            <Form layout="vertical" form={form}>
+              <Row gutter={16}>
+                <Col span={12}><Form.Item label="Product Name" name="productName" rules={[{ required: true }]}><Input placeholder="e.g., Naveo Growth Fund" /></Form.Item></Col>
+                <Col span={12}><Form.Item label="Token Symbol" name="tokenSymbol" rules={[{ required: true }]}><Input placeholder="e.g., NGF" /></Form.Item></Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={12}><Form.Item label="Legal Structure" name="legalStructure"><Select><Select.Option value="spv">SPV</Select.Option><Select.Option value="trust">Trust</Select.Option><Select.Option value="llc">LLC</Select.Option></Select></Form.Item></Col>
+                <Col span={12}><Form.Item label="Jurisdiction" name="jurisdiction"><Select><Select.Option value="us">United States</Select.Option><Select.Option value="cayman">Cayman Islands</Select.Option><Select.Option value="delaware">Delaware</Select.Option></Select></Form.Item></Col>
+              </Row>
+            </Form>
+          </div>
         )}
 
-        {/* Step 1: Economic Terms */}
         {currentStep === 1 && (
-          <Card title="Economic Terms">
+          <div>
+            <Row gutter={24} align="middle" style={{ marginBottom: 16 }}>
+              <Col flex="auto"><h3>Configure Share Classes</h3></Col>
+              <Col><Button type="primary" icon={<PlusOutlined />} onClick={() => setAddShareClassModalVisible(true)}>Add Share Class</Button></Col>
+            </Row>
+            <p style={{ color: '#8c8c8c', marginBottom: 24 }}>
+              Create multiple share classes with different rights and preferences (inspired by Securitize multi-class architecture with Wormhole)
+            </p>
+            <Table columns={shareClassColumns} dataSource={shareClasses} rowKey="id" pagination={false} />
+
+            {shareClasses.length === 0 && (
+              <div style={{ textAlign: 'center', padding: 48, background: '#fafafa', borderRadius: 8 }}>
+                <p style={{ color: '#8c8c8c' }}>No share classes configured yet. Add your first share class to begin.</p>
+                <Button type="dashed" icon={<PlusOutlined />} onClick={() => setAddShareClassModalVisible(true)}>Add Share Class</Button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {currentStep === 2 && (
+          <div>
+            <h3>Blockchain Deployment Configuration</h3>
+            <p style={{ color: '#8c8c8c', marginBottom: 24 }}>
+              Select the Layer 1 blockchain and zero-knowledge options for your tokenized asset deployment
+            </p>
+
+            <Row gutter={[16, 24]}>
+              <Col span={24}>
+                <h4>Select Primary Layer 1 Blockchain</h4>
+                <p style={{ fontSize: 12, color: '#8c8c8c', marginBottom: 16 }}>
+                  Choose the main blockchain network where your smart contracts will be deployed
+                </p>
+              </Col>
+
+              {[
+                {
+                  chain: 'ethereum',
+                  name: 'Ethereum Mainnet',
+                  logo: '⟠',
+                  desc: 'Most secure and decentralized',
+                  gasEstimate: 'High ($50-200)',
+                  deployTime: '15-30 min',
+                  recommended: ['fund', 'private-equity'],
+                  pros: ['Highest security', 'Largest ecosystem', 'Maximum decentralization'],
+                  cons: ['High gas fees', 'Lower throughput'],
+                  color: '#627EEA',
+                },
+                {
+                  chain: 'polygon',
+                  name: 'Polygon PoS',
+                  logo: '⬡',
+                  desc: 'Low-cost, high-speed Ethereum sidechain',
+                  gasEstimate: 'Very Low ($0.01-0.10)',
+                  deployTime: '2-5 min',
+                  recommended: ['real-estate', 'fixed-income'],
+                  pros: ['Very low gas fees', 'Fast finality', 'EVM compatible'],
+                  cons: ['Lower security than Ethereum L1'],
+                  color: '#8247E5',
+                },
+                {
+                  chain: 'arbitrum',
+                  name: 'Arbitrum One',
+                  logo: '🔷',
+                  desc: 'Optimistic rollup L2 on Ethereum',
+                  gasEstimate: 'Low ($1-5)',
+                  deployTime: '5-10 min',
+                  recommended: ['fund', 'private-equity'],
+                  pros: ['Low fees', 'Ethereum security', 'EVM equivalent'],
+                  cons: ['7-day withdrawal period'],
+                  color: '#28A0F0',
+                },
+                {
+                  chain: 'optimism',
+                  name: 'Optimism',
+                  logo: '🔴',
+                  desc: 'Optimistic rollup with public goods focus',
+                  gasEstimate: 'Low ($1-5)',
+                  deployTime: '5-10 min',
+                  recommended: ['fund'],
+                  pros: ['Low fees', 'Ethereum security', 'Retroactive funding'],
+                  cons: ['7-day withdrawal period'],
+                  color: '#FF0420',
+                },
+                {
+                  chain: 'base',
+                  name: 'Base (Coinbase L2)',
+                  logo: '🔵',
+                  desc: 'Coinbase-backed Optimism fork',
+                  gasEstimate: 'Low ($0.50-2)',
+                  deployTime: '3-7 min',
+                  recommended: ['real-estate', 'fixed-income'],
+                  pros: ['Coinbase integration', 'Low fees', 'Growing ecosystem'],
+                  cons: ['Newer network', 'Centralized development'],
+                  color: '#0052FF',
+                },
+                {
+                  chain: 'avalanche',
+                  name: 'Avalanche C-Chain',
+                  logo: '🔺',
+                  desc: 'High-throughput smart contracts platform',
+                  gasEstimate: 'Low ($0.50-3)',
+                  deployTime: '1-3 min',
+                  recommended: ['real-estate'],
+                  pros: ['Sub-second finality', 'Low fees', 'Subnet capabilities'],
+                  cons: ['Smaller ecosystem than Ethereum'],
+                  color: '#E84142',
+                },
+              ].map((l1) => (
+                <Col xs={24} sm={12} lg={8} key={l1.chain}>
+                  <Card
+                    hoverable
+                    style={{
+                      border: form.getFieldValue('blockchain') === l1.chain ? `2px solid ${l1.color}` : undefined,
+                      height: '100%',
+                    }}
+                    onClick={() => form.setFieldsValue({ blockchain: l1.chain })}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: 12 }}>
+                      <span style={{ fontSize: 36, marginRight: 12 }}>{l1.logo}</span>
+                      <div>
+                        <div style={{ fontWeight: 600, fontSize: 16 }}>{l1.name}</div>
+                        <div style={{ fontSize: 11, color: '#8c8c8c' }}>{l1.desc}</div>
+                      </div>
+                    </div>
+
+                    <Divider style={{ margin: '12px 0' }} />
+
+                    <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                      <div style={{ fontSize: 12 }}>
+                        <strong>Gas Estimate:</strong> {l1.gasEstimate}
+                      </div>
+                      <div style={{ fontSize: 12 }}>
+                        <strong>Deploy Time:</strong> {l1.deployTime}
+                      </div>
+                      <div style={{ fontSize: 12 }}>
+                        <strong>Recommended For:</strong>
+                        <div style={{ marginTop: 4 }}>
+                          {l1.recommended.map(r => <Tag key={r} size="small" style={{ marginBottom: 4 }}>{r}</Tag>)}
+                        </div>
+                      </div>
+                    </Space>
+
+                    <Divider style={{ margin: '12px 0' }} />
+
+                    <div style={{ fontSize: 11 }}>
+                      <div style={{ color: '#52c41a', marginBottom: 4 }}>
+                        ✓ {l1.pros.join(' • ')}
+                      </div>
+                      <div style={{ color: '#ff4d4f' }}>
+                        ✗ {l1.cons.join(' • ')}
+                      </div>
+                    </div>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+
+            <Divider />
+
+            <Row gutter={[16, 24]}>
+              <Col span={24}>
+                <h4>Zero-Knowledge (ZK) Options</h4>
+                <p style={{ fontSize: 12, color: '#8c8c8c', marginBottom: 16 }}>
+                  Optionally enable zero-knowledge rollups for enhanced privacy and scalability
+                </p>
+              </Col>
+
+              {[
+                {
+                  zk: 'zksync',
+                  name: 'zkSync Era',
+                  logo: '⚡',
+                  desc: 'ZK rollup with native account abstraction',
+                  benefits: ['Enhanced privacy', 'Lower gas than Optimistic rollups', 'Account abstraction'],
+                  bestFor: 'High privacy requirements, institutional use',
+                  color: '#4E529A',
+                },
+                {
+                  zk: 'starknet',
+                  name: 'Starknet',
+                  logo: '⭐',
+                  desc: 'STARK-based ZK rollup',
+                  benefits: ['Post-quantum security', 'Cairo smart contracts', 'Scalable computation'],
+                  bestFor: 'Complex computation, long-term security',
+                  color: '#EC796B',
+                },
+                {
+                  zk: 'polygon-zkevm',
+                  name: 'Polygon zkEVM',
+                  logo: '⬡',
+                  desc: 'EVM-equivalent ZK rollup',
+                  benefits: ['Full EVM compatibility', 'Easy migration', 'Polygon ecosystem'],
+                  bestFor: 'EVM compatibility, Polygon users',
+                  color: '#8247E5',
+                },
+                {
+                  zk: 'none',
+                  name: 'No ZK Layer',
+                  logo: '⊘',
+                  desc: 'Deploy directly to selected L1',
+                  benefits: ['Simpler architecture', 'Direct L1 security', 'Lower complexity'],
+                  bestFor: 'Standard deployments, lower technical overhead',
+                  color: '#8c8c8c',
+                },
+              ].map((zk) => (
+                <Col xs={24} sm={12} lg={6} key={zk.zk}>
+                  <Card
+                    hoverable
+                    style={{
+                      border: form.getFieldValue('zkOption') === zk.zk ? `2px solid ${zk.color}` : undefined,
+                      height: '100%',
+                    }}
+                    onClick={() => form.setFieldsValue({ zkOption: zk.zk })}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: 12 }}>
+                      <span style={{ fontSize: 32, marginRight: 8 }}>{zk.logo}</span>
+                      <div style={{ fontWeight: 600, fontSize: 14 }}>{zk.name}</div>
+                    </div>
+                    <div style={{ fontSize: 11, color: '#8c8c8c', marginBottom: 12 }}>{zk.desc}</div>
+
+                    <div style={{ fontSize: 11, marginBottom: 8 }}>
+                      <strong>Benefits:</strong>
+                      <ul style={{ margin: '4px 0', paddingLeft: 16 }}>
+                        {zk.benefits.map((b, i) => <li key={i}>{b}</li>)}
+                      </ul>
+                    </div>
+
+                    <div style={{ fontSize: 11, color: '#1890ff' }}>
+                      <strong>Best For:</strong> {zk.bestFor}
+                    </div>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+
+            <Divider />
+
             <Row gutter={16}>
+              <Col span={24}>
+                <h4>Additional Deployment Options</h4>
+              </Col>
               <Col span={12}>
-                <Form.Item name="minInvestment" label="Minimum Investment" rules={[{ required: true }]}>
-                  <InputNumber
-                    style={{ width: '100%' }}
-                    formatter={(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                    placeholder="e.g., 100,000"
-                  />
+                <Form layout="vertical">
+                  <Form.Item label="Cross-Chain Bridge">
+                    <Select defaultValue="wormhole" placeholder="Select bridge protocol">
+                      <Select.Option value="wormhole">Wormhole (Recommended by Securitize)</Select.Option>
+                      <Select.Option value="layerzero">LayerZero</Select.Option>
+                      <Select.Option value="axelar">Axelar</Select.Option>
+                      <Select.Option value="none">No cross-chain bridge</Select.Option>
+                    </Select>
+                  </Form.Item>
+                  <p style={{ fontSize: 11, color: '#8c8c8c', marginTop: -16 }}>
+                    Enable token transfers across multiple blockchains (Securitize uses Wormhole for multi-class tokens)
+                  </p>
                 </Form.Item>
               </Col>
               <Col span={12}>
-                <Form.Item name="maxInvestment" label="Maximum Investment">
-                  <InputNumber
-                    style={{ width: '100%' }}
-                    formatter={(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                    placeholder="e.g., 10,000,000"
-                  />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item name="targetRaise" label="Target Raise" rules={[{ required: true }]}>
-                  <InputNumber
-                    style={{ width: '100%' }}
-                    formatter={(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                    placeholder="e.g., 50,000,000"
-                  />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item name="hardCap" label="Hard Cap" rules={[{ required: true }]}>
-                  <InputNumber
-                    style={{ width: '100%' }}
-                    formatter={(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                    placeholder="e.g., 75,000,000"
-                  />
-                </Form.Item>
+                <Form layout="vertical">
+                  <Form.Item label="Multi-Chain Deployment">
+                    <Switch defaultChecked={false} /> <span style={{ marginLeft: 8, fontSize: 12 }}>Deploy to multiple chains simultaneously</span>
+                  </Form.Item>
+                  <Form.Item label="Testnet Deployment First">
+                    <Switch defaultChecked={true} /> <span style={{ marginLeft: 8, fontSize: 12 }}>Deploy to testnet before mainnet</span>
+                  </Form.Item>
+                </Form>
               </Col>
             </Row>
-          </Card>
+          </div>
         )}
 
-        {/* Step 2: Fee Structure */}
-        {currentStep === 2 && (
-          <Card title="Fee Structure">
-            <Space direction="vertical" size="large" style={{ width: '100%' }}>
-              <div>
-                <Text strong>Management Fee (Annual)</Text>
-                <Form.Item name="managementFee">
-                  <Slider
-                    min={0}
-                    max={5}
-                    step={0.1}
-                    marks={{ 0: '0%', 1: '1%', 2: '2%', 3: '3%', 5: '5%' }}
-                    tooltip={{ formatter: (value) => `${value}%` }}
-                  />
-                </Form.Item>
-              </div>
-
-              <div>
-                <Text strong>Performance Fee (Carried Interest)</Text>
-                <Form.Item name="performanceFee">
-                  <Slider
-                    min={0}
-                    max={30}
-                    step={1}
-                    marks={{ 0: '0%', 10: '10%', 20: '20%', 30: '30%' }}
-                    tooltip={{ formatter: (value) => `${value}%` }}
-                  />
-                </Form.Item>
-              </div>
-
-              <Row gutter={16}>
-                <Col span={12}>
-                  <Form.Item name="hurdleRate" label="Hurdle Rate (%)">
-                    <InputNumber min={0} max={20} step={0.5} style={{ width: '100%' }} />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item name="highWaterMark" label="High Water Mark" valuePropName="checked">
-                    <Switch checkedChildren="Yes" unCheckedChildren="No" />
-                  </Form.Item>
-                </Col>
-              </Row>
-
-              <Divider />
-
-              <Row gutter={16}>
-                <Col span={8}>
-                  <Form.Item name="subscriptionFee" label="Subscription Fee (%)">
-                    <InputNumber min={0} max={5} step={0.1} style={{ width: '100%' }} />
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item name="redemptionFee" label="Redemption Fee (%)">
-                    <InputNumber min={0} max={5} step={0.1} style={{ width: '100%' }} />
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item name="earlyRedemptionPenalty" label="Early Redemption Penalty (%)">
-                    <InputNumber min={0} max={10} step={0.5} style={{ width: '100%' }} />
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Space>
-          </Card>
-        )}
-
-        {/* Step 3: Waterfall Structure */}
         {currentStep === 3 && (
-          <Space direction="vertical" size="large" style={{ width: '100%' }}>
-            <Card title="Waterfall Structure">
-              <Table
-                dataSource={structure.waterfallTiers || mockWaterfallTiers}
-                columns={waterfallColumns}
-                rowKey="id"
-                pagination={false}
-              />
-            </Card>
-
-            <Card title="Waterfall Simulation">
-              <Line
-                data={waterfallSimulationData}
-                xField="totalReturn"
-                yField="value"
-                seriesField="type"
-                height={300}
-                smooth
-                legend={{ position: 'top' }}
-                tooltip={{
-                  formatter: (datum: { type: string; value: number }) => ({
-                    name: datum.type,
-                    value: `$${datum.value}`,
-                  }),
-                }}
-              />
-            </Card>
-          </Space>
+          <div>
+            <h3>Smart Contract Layer Configuration</h3>
+            <p style={{ color: '#8c8c8c', marginBottom: 24 }}>Enable and configure multi-layer smart contract architecture (based on Securitize layered design)</p>
+            <Collapse accordion>
+              {contractLayers.map((layer) => (
+                <Collapse.Panel
+                  header={
+                    <Space>
+                      <Switch checked={layer.enabled} />
+                      <strong>{layer.layer}: {layer.name}</strong>
+                      <Tag>{layer.standard}</Tag>
+                    </Space>
+                  }
+                  key={layer.id}
+                >
+                  <p><strong>Functions:</strong></p>
+                  <Space wrap>
+                    {layer.functions.map((func) => <Tag key={func} color="blue">{func}()</Tag>)}
+                  </Space>
+                  <Divider />
+                  <Form layout="vertical" size="small">
+                    <Form.Item label="Contract Template"><Select defaultValue="standard"><Select.Option value="standard">Standard Template</Select.Option><Select.Option value="custom">Custom Implementation</Select.Option></Select></Form.Item>
+                    <Form.Item label="Upgrade Strategy"><Radio.Group defaultValue="diamond"><Radio value="diamond">Diamond Proxy</Radio><Radio value="transparent">Transparent Proxy</Radio><Radio value="immutable">Immutable</Radio></Radio.Group></Form.Item>
+                  </Form>
+                </Collapse.Panel>
+              ))}
+            </Collapse>
+          </div>
         )}
 
-        {/* Step 4: Liquidity & Governance */}
         {currentStep === 4 && (
-          <Card title="Liquidity Terms & Governance">
-            <Space direction="vertical" size="large" style={{ width: '100%' }}>
-              <Title level={5}>Liquidity Terms</Title>
+          <div>
+            <h3>Token Economics & Terms</h3>
+            <p style={{ color: '#8c8c8c', marginBottom: 24 }}>Define the economic parameters and distribution mechanics</p>
+            <Form layout="vertical">
               <Row gutter={16}>
-                <Col span={8}>
-                  <Form.Item name="lockupPeriod" label="Lock-up Period (months)">
-                    <InputNumber min={0} max={60} style={{ width: '100%' }} />
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item name="redemptionFrequency" label="Redemption Frequency">
-                    <Select options={redemptionFrequencyOptions} />
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item name="noticePeriod" label="Notice Period (days)">
-                    <InputNumber min={0} max={90} style={{ width: '100%' }} />
-                  </Form.Item>
-                </Col>
+                <Col span={8}><Form.Item label="Total Token Supply"><InputNumber style={{ width: '100%' }} defaultValue={10000000} formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} /></Form.Item></Col>
+                <Col span={8}><Form.Item label="Initial NAV per Token"><InputNumber style={{ width: '100%' }} prefix="$" defaultValue={10} /></Form.Item></Col>
+                <Col span={8}><Form.Item label="Management Fee (Annual)"><InputNumber style={{ width: '100%' }} suffix="%" defaultValue={2} step={0.1} /></Form.Item></Col>
               </Row>
-
-              <Divider />
-
-              <Title level={5}>Governance</Title>
               <Row gutter={16}>
-                <Col span={12}>
-                  <Form.Item name="votingRights" label="Voting Rights" valuePropName="checked">
-                    <Switch checkedChildren="Enabled" unCheckedChildren="Disabled" />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item name="majorityThreshold" label="Majority Threshold (%)">
-                    <InputNumber min={50} max={100} step={1} style={{ width: '100%' }} />
-                  </Form.Item>
-                </Col>
+                <Col span={12}><Form.Item label="Performance Fee (Carry)"><InputNumber style={{ width: '100%' }} suffix="%" defaultValue={20} /></Form.Item></Col>
+                <Col span={12}><Form.Item label="Hurdle Rate"><InputNumber style={{ width: '100%' }} suffix="%" defaultValue={8} /></Form.Item></Col>
               </Row>
-            </Space>
-          </Card>
+              <Form.Item label="Distribution Frequency"><Select defaultValue="quarterly"><Select.Option value="monthly">Monthly</Select.Option><Select.Option value="quarterly">Quarterly</Select.Option><Select.Option value="annually">Annually</Select.Option></Select></Form.Item>
+              <Form.Item label="Waterfall Structure"><Radio.Group defaultValue="european"><Radio value="american">American (Deal-by-Deal)</Radio><Radio value="european">European (Portfolio)</Radio></Radio.Group></Form.Item>
+            </Form>
+          </div>
         )}
 
-        {/* Step 5: Review */}
         {currentStep === 5 && (
-          <Card title="Structure Summary">
-            <Descriptions bordered column={2}>
-              <Descriptions.Item label="Product Name" span={2}>
-                {structure.name || 'N/A'}
-              </Descriptions.Item>
-              <Descriptions.Item label="Product Type" span={2}>
-                {structure.type || 'N/A'}
-              </Descriptions.Item>
-              <Descriptions.Item label="Target Raise">
-                ${structure.targetRaise?.toLocaleString() || 'N/A'}
-              </Descriptions.Item>
-              <Descriptions.Item label="Hard Cap">
-                ${structure.hardCap?.toLocaleString() || 'N/A'}
-              </Descriptions.Item>
-              <Descriptions.Item label="Management Fee">
-                {structure.managementFee}% annual
-              </Descriptions.Item>
-              <Descriptions.Item label="Performance Fee">
-                {structure.performanceFee}%
-              </Descriptions.Item>
-              <Descriptions.Item label="Hurdle Rate">
-                {structure.hurdleRate}%
-              </Descriptions.Item>
-              <Descriptions.Item label="High Water Mark">
-                {structure.highWaterMark ? 'Yes' : 'No'}
-              </Descriptions.Item>
-              <Descriptions.Item label="Lock-up Period">
-                {structure.lockupPeriod} months
-              </Descriptions.Item>
-              <Descriptions.Item label="Redemption Frequency">
-                {structure.redemptionFrequency}
-              </Descriptions.Item>
-            </Descriptions>
-          </Card>
+          <div>
+            <h3>Compliance Policies</h3>
+            <p style={{ color: '#8c8c8c', marginBottom: 24 }}>Configure regulatory compliance and transfer restrictions</p>
+            <Tabs items={[
+              {
+                key: 'investor',
+                label: 'Investor Requirements',
+                children: (
+                  <Form layout="vertical">
+                    <Form.Item label="Investor Type"><Radio.Group defaultValue="accredited"><Radio value="any">Any Investor</Radio><Radio value="accredited">Accredited Only</Radio><Radio value="qualified">Qualified Purchaser</Radio></Radio.Group></Form.Item>
+                    <Form.Item label="Minimum Net Worth"><InputNumber style={{ width: 300 }} prefix="$" defaultValue={1000000} /></Form.Item>
+                    <Form.Item label="KYC/AML Provider"><Select style={{ width: 300 }} defaultValue="persona"><Select.Option value="persona">Persona</Select.Option><Select.Option value="onfido">Onfido</Select.Option><Select.Option value="jumio">Jumio</Select.Option></Select></Form.Item>
+                  </Form>
+                ),
+              },
+              {
+                key: 'transfer',
+                label: 'Transfer Restrictions',
+                children: (
+                  <Form layout="vertical">
+                    <Form.Item label="Lock-up Period"><InputNumber style={{ width: 200 }} suffix="months" defaultValue={12} /></Form.Item>
+                    <Form.Item label="Transfer Whitelist"><Switch defaultChecked /> <span style={{ marginLeft: 8 }}>Only allow transfers to whitelisted addresses</span></Form.Item>
+                    <Form.Item label="Max Holders Per Jurisdiction"><InputNumber style={{ width: 200 }} defaultValue={2000} /></Form.Item>
+                    <Form.Item label="Concentration Limit"><InputNumber style={{ width: 200 }} suffix="%" defaultValue={10} /> <span style={{ marginLeft: 8 }}>per investor</span></Form.Item>
+                  </Form>
+                ),
+              },
+              {
+                key: 'regulatory',
+                label: 'Regulatory Framework',
+                children: (
+                  <Form layout="vertical">
+                    <Form.Item label="Securities Exemption"><Select style={{ width: 300 }} defaultValue="reg-d"><Select.Option value="reg-d">Regulation D (506c)</Select.Option><Select.Option value="reg-s">Regulation S</Select.Option><Select.Option value="reg-a">Regulation A+</Select.Option></Select></Form.Item>
+                    <Form.Item label="Jurisdictions"><Select mode="multiple" style={{ width: '100%' }} defaultValue={['US']}><Select.Option value="US">United States</Select.Option><Select.Option value="EU">European Union</Select.Option><Select.Option value="UK">United Kingdom</Select.Option><Select.Option value="SG">Singapore</Select.Option></Select></Form.Item>
+                    <Form.Item label="Audit Frequency"><Select style={{ width: 200 }} defaultValue="annual"><Select.Option value="quarterly">Quarterly</Select.Option><Select.Option value="annual">Annual</Select.Option></Select></Form.Item>
+                  </Form>
+                ),
+              },
+            ]} />
+          </div>
         )}
-      </Form>
 
-      {/* Navigation Buttons */}
-      <Card>
+        <Divider />
+
         <Row justify="space-between">
+          <Col>{currentStep > 0 && <Button onClick={() => setCurrentStep(currentStep - 1)}>Previous</Button>}</Col>
           <Col>
-            <Button
-              icon={<LeftOutlined />}
-              onClick={handlePrevious}
-              disabled={currentStep === 0}
-            >
-              Previous
-            </Button>
-          </Col>
-          <Col>
-            <Space>
-              <Text type="secondary">
-                Step {currentStep + 1} of {steps.length}
-              </Text>
-            </Space>
-          </Col>
-          <Col>
-            {currentStep < steps.length - 1 ? (
-              <Button type="primary" icon={<RightOutlined />} onClick={handleNext}>
-                Next
-              </Button>
+            {currentStep < 4 ? (
+              <Button type="primary" onClick={() => setCurrentStep(currentStep + 1)}>Next</Button>
             ) : (
-              <Button type="primary" icon={<CheckCircleOutlined />} onClick={handleGenerateDocuments}>
-                Finalize & Generate
-              </Button>
+              <Button type="primary" onClick={() => message.success('Product structured successfully!')}>Complete Structure</Button>
             )}
           </Col>
         </Row>
       </Card>
-    </Space>
+
+      <Modal
+        title="Add Share Class"
+        open={addShareClassModalVisible}
+        onCancel={() => setAddShareClassModalVisible(false)}
+        onOk={handleAddShareClass}
+        width={600}
+      >
+        <Form layout="vertical">
+          <Form.Item label="Class Name"><Input placeholder="e.g., Class A" /></Form.Item>
+          <Form.Item label="Class Type"><Select><Select.Option value="common">Common</Select.Option><Select.Option value="preferred">Preferred</Select.Option><Select.Option value="convertible">Convertible</Select.Option></Select></Form.Item>
+          <Row gutter={16}>
+            <Col span={12}><Form.Item label="Voting Rights"><Switch defaultChecked /></Form.Item></Col>
+            <Col span={12}><Form.Item label="Dividend Priority"><InputNumber min={1} defaultValue={1} /></Form.Item></Col>
+          </Row>
+          <Form.Item label="Liquidation Preference"><Input placeholder="e.g., 1x, 2x, 1.5x" defaultValue="1x" /></Form.Item>
+          <Form.Item label="Minimum Investment"><Input prefix="$" defaultValue="10,000" /></Form.Item>
+        </Form>
+      </Modal>
+    </div>
   );
 };
 

@@ -1,21 +1,97 @@
-import { useState } from 'react';
-import { Table, Tag, Button, Space, Tabs } from 'antd';
+import { useState, useEffect, useMemo } from 'react';
+import { Table, Tag, Button, Space, Tabs, Spin, message } from 'antd';
 import { DownloadOutlined, EyeOutlined } from '@ant-design/icons';
 import { AdvancedFilter } from '../../../components/filters';
 import type { TabsProps } from 'antd';
+import { useTranslation } from 'react-i18next';
+import { transactionsService, fundsService } from '../../../services';
+import type { Transaction } from '../../../services/types';
+
+interface TransactionDisplay {
+  key: string;
+  date: string;
+  type: string;
+  asset: string;
+  amount: string;
+  price: string;
+  total: string;
+  status: string;
+  fund_id: string | null;
+  shares: number | null;
+  nav_at_time: number | null;
+}
 
 const TransactionsPage = () => {
-  const [filteredData, setFilteredData] = useState<any[]>([]);
+  const { t } = useTranslation();
+  const [loading, setLoading] = useState(true);
+  const [transactions, setTransactions] = useState<TransactionDisplay[]>([]);
+  const [filteredData, setFilteredData] = useState<TransactionDisplay[]>([]);
+  const [fundNames, setFundNames] = useState<Record<string, string>>({});
+
+  // Mock user ID (in real app, get from auth context)
+  const userId = '10000000-0000-0000-0000-000000000001';
+
+  useEffect(() => {
+    loadTransactions();
+  }, []);
+
+  const loadTransactions = async () => {
+    try {
+      setLoading(true);
+
+      // Load all funds first to get names
+      const funds = await fundsService.getAllFunds();
+      const fundNamesMap = funds.reduce((acc, fund) => {
+        acc[fund.id] = fund.name;
+        return acc;
+      }, {} as Record<string, string>);
+      setFundNames(fundNamesMap);
+
+      // Load user transactions
+      const dbTransactions = await transactionsService.getTransactionsByUser(userId);
+
+      // Map to display format
+      const displayTransactions = dbTransactions.map(mapTransactionToDisplay);
+      setTransactions(displayTransactions);
+
+    } catch (error: any) {
+      console.error('Error loading transactions:', error);
+      message.error('Failed to load transactions: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const mapTransactionToDisplay = (tx: Transaction): TransactionDisplay => {
+    const fundName = tx.fund_id ? (fundNames[tx.fund_id] || 'Unknown Fund') : 'N/A';
+    const shares = tx.shares || 0;
+    const navAtTime = tx.nav_at_time || 0;
+    const amount = tx.amount || 0;
+
+    return {
+      key: tx.id,
+      date: new Date(tx.created_at).toISOString().split('T')[0],
+      type: tx.type || 'unknown',
+      asset: fundName,
+      amount: shares > 0 ? `${shares.toFixed(4)} shares` : '-',
+      price: navAtTime > 0 ? navAtTime.toFixed(2) : '-',
+      total: amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      status: tx.status || 'pending',
+      fund_id: tx.fund_id,
+      shares: tx.shares,
+      nav_at_time: tx.nav_at_time,
+    };
+  };
 
   const columns = [
     {
-      title: 'Fecha',
+      title: t('transactionsPage.date'),
       dataIndex: 'date',
       key: 'date',
       sorter: (a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime(),
     },
     {
-      title: 'Tipo',
+      title: t('transactionsPage.type'),
       dataIndex: 'type',
       key: 'type',
       render: (type: string) => {
@@ -26,39 +102,39 @@ const TransactionsPage = () => {
           withdrawal: 'purple',
         };
         const labelMap: Record<string, string> = {
-          buy: 'Compra',
-          sell: 'Venta',
-          deposit: 'Depósito',
-          withdrawal: 'Retiro',
+          buy: t('transactionsPage.buy'),
+          sell: t('transactionsPage.sell'),
+          deposit: t('transactionsPage.deposit'),
+          withdrawal: t('transactionsPage.withdrawal'),
         };
         return <Tag color={colorMap[type]}>{labelMap[type]}</Tag>;
       },
     },
     {
-      title: 'Activo',
+      title: t('transactionsPage.asset'),
       dataIndex: 'asset',
       key: 'asset',
     },
     {
-      title: 'Cantidad',
+      title: t('transactionsPage.amount'),
       dataIndex: 'amount',
       key: 'amount',
     },
     {
-      title: 'Precio',
+      title: t('transactionsPage.price'),
       dataIndex: 'price',
       key: 'price',
       render: (price: string) => `$${price}`,
     },
     {
-      title: 'Total',
+      title: t('transactionsPage.total'),
       dataIndex: 'total',
       key: 'total',
       render: (total: string) => `$${total}`,
       sorter: (a: any, b: any) => parseFloat(a.total.replace(/,/g, '')) - parseFloat(b.total.replace(/,/g, '')),
     },
     {
-      title: 'Estado',
+      title: t('transactionsPage.status'),
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => {
@@ -68,15 +144,15 @@ const TransactionsPage = () => {
           failed: 'error',
         };
         const labelMap: Record<string, string> = {
-          completed: 'Completado',
-          pending: 'Pendiente',
-          failed: 'Fallido',
+          completed: t('transactionsPage.completed'),
+          pending: t('transactionsPage.pending'),
+          failed: t('transactionsPage.failed'),
         };
         return <Tag color={colorMap[status]}>{labelMap[status]}</Tag>;
       },
     },
     {
-      title: 'Acciones',
+      title: t('transactionsPage.actions'),
       key: 'actions',
       render: (_: any, record: any) => (
         <Space>
@@ -85,107 +161,55 @@ const TransactionsPage = () => {
             size="small"
             icon={<EyeOutlined />}
           >
-            Ver
+            {t('transactionsPage.viewDetails')}
           </Button>
           <Button
             type="link"
             size="small"
             icon={<DownloadOutlined />}
           >
-            Recibo
+            {t('transactionsPage.downloadReceipt')}
           </Button>
         </Space>
       ),
     },
   ];
 
-  const allTransactions = [
-    {
-      key: '1',
-      date: '2024-11-09',
-      type: 'buy',
-      asset: 'Alpha Capital Fund',
-      amount: '50 units',
-      price: '135.45',
-      total: '6,772.50',
-      status: 'completed',
-    },
-    {
-      key: '2',
-      date: '2024-11-08',
-      type: 'deposit',
-      asset: 'USD',
-      amount: '-',
-      price: '-',
-      total: '25,000.00',
-      status: 'completed',
-    },
-    {
-      key: '3',
-      date: '2024-11-07',
-      type: 'sell',
-      asset: 'Beta Investments',
-      amount: '30 units',
-      price: '98.42',
-      total: '2,952.60',
-      status: 'completed',
-    },
-    {
-      key: '4',
-      date: '2024-11-06',
-      type: 'buy',
-      asset: 'Gamma Token',
-      amount: '200 units',
-      price: '18.75',
-      total: '3,750.00',
-      status: 'completed',
-    },
-    {
-      key: '5',
-      date: '2024-11-05',
-      type: 'withdrawal',
-      asset: 'USD',
-      amount: '-',
-      price: '-',
-      total: '10,000.00',
-      status: 'pending',
-    },
-    {
-      key: '6',
-      date: '2024-11-04',
-      type: 'buy',
-      asset: 'Delta Token',
-      amount: '100 units',
-      price: '25.30',
-      total: '2,530.00',
-      status: 'completed',
-    },
-    {
-      key: '7',
-      date: '2024-11-03',
-      type: 'deposit',
-      asset: 'USDC',
-      amount: '50,000 USDC',
-      price: '1.00',
-      total: '50,000.00',
-      status: 'completed',
-    },
-    {
-      key: '8',
-      date: '2024-11-02',
-      type: 'buy',
-      asset: 'Alpha Capital Fund',
-      amount: '100 units',
-      price: '132.10',
-      total: '13,210.00',
-      status: 'completed',
-    },
-  ];
-
   const handleFilter = (values: any) => {
     console.log('Filter values:', values);
-    // Aquí se implementaría la lógica de filtrado
-    setFilteredData(allTransactions);
+    // Apply filters to transactions
+    let filtered = [...transactions];
+
+    // Filter by type if specified
+    if (values.type && values.type !== 'all') {
+      filtered = filtered.filter(tx => tx.type === values.type);
+    }
+
+    // Filter by status if specified
+    if (values.status && values.status !== 'all') {
+      filtered = filtered.filter(tx => tx.status === values.status);
+    }
+
+    // Filter by date range if specified
+    if (values.dateRange && values.dateRange.length === 2) {
+      const [startDate, endDate] = values.dateRange;
+      filtered = filtered.filter(tx => {
+        const txDate = new Date(tx.date);
+        return txDate >= startDate && txDate <= endDate;
+      });
+    }
+
+    // Filter by amount range if specified
+    if (values.minAmount !== undefined || values.maxAmount !== undefined) {
+      filtered = filtered.filter(tx => {
+        const amount = parseFloat(tx.total.replace(/,/g, ''));
+        const minOk = values.minAmount === undefined || amount >= values.minAmount;
+        const maxOk = values.maxAmount === undefined || amount <= values.maxAmount;
+        return minOk && maxOk;
+      });
+    }
+
+    setFilteredData(filtered);
   };
 
   const handleClearFilter = () => {
@@ -195,7 +219,7 @@ const TransactionsPage = () => {
   const tabItems: TabsProps['items'] = [
     {
       key: 'all',
-      label: 'Todas',
+      label: t('transactionsPage.allTransactions'),
       children: (
         <div>
           <AdvancedFilter
@@ -205,64 +229,80 @@ const TransactionsPage = () => {
           />
           <Table
             columns={columns}
-            dataSource={filteredData.length > 0 ? filteredData : allTransactions}
+            dataSource={filteredData.length > 0 ? filteredData : transactions}
             pagination={{ pageSize: 10 }}
+            loading={loading}
           />
         </div>
       ),
     },
     {
       key: 'buys',
-      label: 'Compras',
+      label: t('transactionsPage.purchases'),
       children: (
         <Table
           columns={columns}
-          dataSource={allTransactions.filter(t => t.type === 'buy')}
+          dataSource={transactions.filter(t => t.type === 'buy')}
           pagination={{ pageSize: 10 }}
+          loading={loading}
         />
       ),
     },
     {
       key: 'sells',
-      label: 'Ventas',
+      label: t('transactionsPage.sales'),
       children: (
         <Table
           columns={columns}
-          dataSource={allTransactions.filter(t => t.type === 'sell')}
+          dataSource={transactions.filter(t => t.type === 'sell')}
           pagination={{ pageSize: 10 }}
+          loading={loading}
         />
       ),
     },
     {
       key: 'deposits',
-      label: 'Depósitos',
+      label: t('transactionsPage.deposits'),
       children: (
         <Table
           columns={columns}
-          dataSource={allTransactions.filter(t => t.type === 'deposit')}
+          dataSource={transactions.filter(t => t.type === 'deposit')}
           pagination={{ pageSize: 10 }}
+          loading={loading}
         />
       ),
     },
     {
       key: 'withdrawals',
-      label: 'Retiros',
+      label: t('transactionsPage.withdrawals'),
       children: (
         <Table
           columns={columns}
-          dataSource={allTransactions.filter(t => t.type === 'withdrawal')}
+          dataSource={transactions.filter(t => t.type === 'withdrawal' || t.type === 'withdraw')}
           pagination={{ pageSize: 10 }}
+          loading={loading}
         />
       ),
     },
   ];
 
+  if (loading) {
+    return (
+      <div style={{ padding: '24px', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+        <Spin size="large" tip="Loading transactions..." />
+      </div>
+    );
+  }
+
   return (
-    <div>
+    <div style={{ padding: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <h1 style={{ margin: 0 }}>Historial de Transacciones</h1>
+        <div>
+          <h1 style={{ margin: 0, fontFamily: 'var(--font-heading)' }}>{t('transactionsPage.title')}</h1>
+          <p style={{ color: '#8c8c8c', fontSize: '14px', marginTop: 8 }}>{t('transactionsPage.subtitle')}</p>
+        </div>
         <Button type="primary" icon={<DownloadOutlined />}>
-          Exportar a Excel
+          {t('transactionsPage.exportAll')}
         </Button>
       </div>
 

@@ -9,12 +9,8 @@ import {
   SafetyOutlined,
   SwapOutlined,
   UserSwitchOutlined,
-  CalendarOutlined,
-  DollarOutlined,
-  SyncOutlined,
   BarChartOutlined,
-  LockOutlined,
-  RobotOutlined,
+  BellOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import {
@@ -23,19 +19,10 @@ import {
   AssetsManagementPage,
   OfficersManagementPage,
   TradersManagementPage,
-  SubscriptionCalendarPage,
-  CapitalCallPage,
-  RebalancingPage,
-  TradingDashboardPage,
-  RiskDashboardPage,
-  GateManagementPage,
-  PortfolioManagementPage,
-  InvestorsManagementPage,
-  SubAdminsManagementPage,
-  TransactionsPage,
-  CompliancePage,
-  FundReportsPage,
-  AIStrategyManagementPage,
+  KYCManagementPage,
+  AnalyticsPage,
+  ReportsPage,
+  NotificationsCenterPage,
 } from './pages';
 
 const AdminClientPortal = () => {
@@ -56,49 +43,19 @@ const AdminClientPortal = () => {
       label: 'Mi Portafolio',
     },
     {
-      key: '/admin-client/ai-strategy',
-      icon: <RobotOutlined />,
-      label: 'Estrategias AI',
-    },
-    {
       key: '/admin-client/nav',
       icon: <LineChartOutlined />,
       label: 'Sistema NAV',
     },
     {
-      key: '/admin-client/rebalancing',
-      icon: <SyncOutlined />,
-      label: 'Portfolio Rebalancing',
-    },
-    {
-      key: '/admin-client/trading',
+      key: '/admin-client/analytics',
       icon: <BarChartOutlined />,
-      label: 'Trading Dashboard',
-    },
-    {
-      key: '/admin-client/risk',
-      icon: <SafetyOutlined />,
-      label: 'Risk Dashboard',
+      label: 'Analytics',
     },
     {
       key: '/admin-client/investors',
       icon: <TeamOutlined />,
       label: 'Mis Inversionistas',
-    },
-    {
-      key: '/admin-client/subscription-calendar',
-      icon: <CalendarOutlined />,
-      label: 'Subscription Calendar',
-    },
-    {
-      key: '/admin-client/capital-calls',
-      icon: <DollarOutlined />,
-      label: 'Capital Calls',
-    },
-    {
-      key: '/admin-client/gate-management',
-      icon: <LockOutlined />,
-      label: 'Gate Management',
     },
     {
       key: 'team',
@@ -125,6 +82,11 @@ const AdminClientPortal = () => {
       icon: <FileTextOutlined />,
       label: 'Reportes',
     },
+    {
+      key: '/admin-client/notifications',
+      icon: <BellOutlined />,
+      label: 'Notifications',
+    },
   ];
 
   return (
@@ -136,22 +98,18 @@ const AdminClientPortal = () => {
       <Routes>
         <Route index element={<DashboardPage />} />
         <Route path="nav" element={<NAVSystemPage />} />
-        <Route path="rebalancing" element={<RebalancingPage />} />
-        <Route path="trading" element={<TradingDashboardPage />} />
-        <Route path="risk" element={<RiskDashboardPage />} />
+        <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="assets" element={<AssetsManagementPage />} />
-        <Route path="portfolio" element={<PortfolioManagementPage />} />
-        <Route path="ai-strategy" element={<AIStrategyManagementPage />} />
-        <Route path="investors" element={<InvestorsManagementPage />} />
         <Route path="traders" element={<TradersManagementPage />} />
-        <Route path="subscription-calendar" element={<SubscriptionCalendarPage />} />
-        <Route path="capital-calls" element={<CapitalCallPage />} />
-        <Route path="gate-management" element={<GateManagementPage />} />
+        {/* Temporary placeholder for missing pages */}
+        <Route path="portfolio" element={<div style={{ padding: 24 }}><h2>Portfolio - Coming Soon</h2></div>} />
+        <Route path="investors" element={<div style={{ padding: 24 }}><h2>Investors Management - Coming Soon</h2></div>} />
         <Route path="officers" element={<OfficersManagementPage />} />
-        <Route path="admins" element={<SubAdminsManagementPage />} />
-        <Route path="transactions" element={<TransactionsPage />} />
-        <Route path="compliance" element={<CompliancePage />} />
-        <Route path="reports" element={<FundReportsPage />} />
+        <Route path="admins" element={<div style={{ padding: 24 }}><h2>Sub-Admins - Coming Soon</h2></div>} />
+        <Route path="transactions" element={<div style={{ padding: 24 }}><h2>Transactions - Coming Soon</h2></div>} />
+        <Route path="compliance" element={<KYCManagementPage />} />
+        <Route path="reports" element={<ReportsPage />} />
+        <Route path="notifications" element={<NotificationsCenterPage />} />
       </Routes>
     </DashboardLayout>
   );

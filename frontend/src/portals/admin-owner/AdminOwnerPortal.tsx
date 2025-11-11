@@ -11,7 +11,12 @@ import {
   BellOutlined,
   AuditOutlined,
   ProjectOutlined,
-  RocketOutlined,
+  WalletOutlined,
+  DollarCircleOutlined,
+  ShareAltOutlined,
+  FireOutlined,
+  ApartmentOutlined,
+  CheckCircleOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import {
@@ -31,12 +36,13 @@ import {
   AuditLogsPage,
   NotificationsCenterPage,
   AssetPipelinePage,
-  DueDiligencePage,
+  WalletManagementPage,
+  BankingIntegrationsPage,
+  DistributionChannelsPage,
+  TokenLifecyclePage,
+  BusinessRulesPage,
+  ApprovalWorkflowsPage,
   ProductStructuringPage,
-  KYCAMLManagementPage,
-  TokenizationFlowPage,
-  TokenizationWizardPage,
-  TokenizationAnalyticsPage,
 } from './pages';
 
 const AdminOwnerPortal = () => {
@@ -58,29 +64,16 @@ const AdminOwnerPortal = () => {
       label: 'Asset Pipeline',
     },
     {
-      key: '/admin-owner/due-diligence',
-      icon: <FileTextOutlined />,
-      label: 'Due Diligence',
-    },
-    {
-      key: '/admin-owner/product-structuring',
-      icon: <ProjectOutlined />,
-      label: 'Product Structuring',
-    },
-    {
       key: 'tokenization',
-      icon: <RocketOutlined />,
+      icon: <DollarCircleOutlined />,
       label: 'Tokenization',
       children: [
-        { key: '/admin-owner/tokenization-flow', label: 'Process Tracking' },
-        { key: '/admin-owner/tokenization-wizard', label: 'Start New Tokenization' },
-        { key: '/admin-owner/tokenization-analytics', label: 'Analytics & Insights' },
+        { key: '/admin-owner/product-structuring', label: 'Product Structuring', icon: <ProjectOutlined /> },
+        { key: '/admin-owner/token-lifecycle', label: 'Token Lifecycle', icon: <FireOutlined /> },
+        { key: '/admin-owner/smart-contracts', label: 'Smart Contracts', icon: <ApartmentOutlined /> },
+        { key: '/admin-owner/business-rules', label: 'Business Rules', icon: <SettingOutlined /> },
+        { key: '/admin-owner/approval-workflows', label: 'Approval Workflows', icon: <CheckCircleOutlined /> },
       ],
-    },
-    {
-      key: '/admin-owner/kyc-aml',
-      icon: <SafetyOutlined />,
-      label: 'KYC/AML Management',
     },
     {
       key: '/admin-owner/clients',
@@ -97,6 +90,9 @@ const AdminOwnerPortal = () => {
       icon: <GlobalOutlined />,
       label: 'Integraciones',
       children: [
+        { key: '/admin-owner/integrations/wallets', label: 'Wallets', icon: <WalletOutlined /> },
+        { key: '/admin-owner/integrations/banking', label: 'Banking', icon: <BankOutlined /> },
+        { key: '/admin-owner/integrations/distribution', label: 'Distribution Channels', icon: <ShareAltOutlined /> },
         { key: '/admin-owner/integrations/kyc', label: 'KYC/KYB (Persona)' },
         { key: '/admin-owner/integrations/onramp', label: 'On/Off Ramp' },
         { key: '/admin-owner/integrations/blockchain', label: 'Blockchain' },
@@ -139,21 +135,28 @@ const AdminOwnerPortal = () => {
         <Route index element={<DashboardPage />} />
         <Route path="funds" element={<FundsManagementPage />} />
         <Route path="asset-pipeline" element={<AssetPipelinePage />} />
-        <Route path="due-diligence" element={<DueDiligencePage />} />
+
+        {/* Tokenization Routes */}
         <Route path="product-structuring" element={<ProductStructuringPage />} />
-        <Route path="tokenization-flow" element={<TokenizationFlowPage />} />
-        <Route path="tokenization-wizard" element={<TokenizationWizardPage />} />
-        <Route path="tokenization-analytics" element={<TokenizationAnalyticsPage />} />
-        <Route path="kyc-aml" element={<KYCAMLManagementPage />} />
+        <Route path="token-lifecycle" element={<TokenLifecyclePage />} />
+        <Route path="smart-contracts" element={<SmartContractsPage />} />
+        <Route path="business-rules" element={<BusinessRulesPage />} />
+        <Route path="approval-workflows" element={<ApprovalWorkflowsPage />} />
+
         <Route path="clients" element={<ClientsManagementPage />} />
         <Route path="users" element={<UsersPermissionsPage />} />
+
+        {/* Integrations Routes */}
+        <Route path="integrations/wallets" element={<WalletManagementPage />} />
+        <Route path="integrations/banking" element={<BankingIntegrationsPage />} />
+        <Route path="integrations/distribution" element={<DistributionChannelsPage />} />
         <Route path="integrations/kyc" element={<IntegrationsKYCPage />} />
         <Route path="integrations/onramp" element={<IntegrationsOnRampPage />} />
         <Route path="integrations/blockchain" element={<IntegrationsBlockchainPage />} />
+
         <Route path="compliance" element={<CompliancePage />} />
         <Route path="reports" element={<ReportsPage />} />
         <Route path="analytics" element={<PlatformAnalyticsPage />} />
-        <Route path="smart-contracts" element={<SmartContractsPage />} />
         <Route path="fee-structure" element={<FeeStructurePage />} />
         <Route path="audit-logs" element={<AuditLogsPage />} />
         <Route path="notifications" element={<NotificationsCenterPage />} />

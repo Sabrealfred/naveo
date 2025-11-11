@@ -8,6 +8,7 @@ import enUS from 'antd/locale/en_US';
 import esES from 'antd/locale/es_ES';
 import { useTranslation } from 'react-i18next';
 import { supabaseClient } from './services/supabaseClient';
+import './i18n'; // Initialize i18n
 
 // Import portal components (will create these next)
 import AdminOwnerPortal from './portals/admin-owner/AdminOwnerPortal';

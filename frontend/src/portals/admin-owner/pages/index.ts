@@ -5,7 +5,6 @@ export { default as AssetPipelinePage } from './AssetPipelinePage';
 export { default as DueDiligencePage } from './DueDiligencePage';
 export { default as ProductStructuringPage } from './ProductStructuringPage';
 export { default as KYCAMLManagementPage } from './KYCAMLManagementPage';
-
 export { default as CompliancePage } from './CompliancePage';
 export { default as ReportsPage } from './ReportsPage';
 export { default as UsersPermissionsPage } from './UsersPermissionsPage';
@@ -21,3 +20,9 @@ export { default as NotificationsCenterPage } from './NotificationsCenterPage';
 export { default as TokenizationFlowPage } from './TokenizationFlowPage';
 export { default as TokenizationWizardPage } from './TokenizationWizardPage';
 export { default as TokenizationAnalyticsPage } from './TokenizationAnalyticsPage';
+export { default as WalletManagementPage } from './WalletManagementPage';
+export { default as BankingIntegrationsPage } from './BankingIntegrationsPage';
+export { default as DistributionChannelsPage } from './DistributionChannelsPage';
+export { default as TokenLifecyclePage } from './TokenLifecyclePage';
+export { default as BusinessRulesPage } from './BusinessRulesPage';
+export { default as ApprovalWorkflowsPage } from './ApprovalWorkflowsPage';
