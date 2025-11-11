@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, Col, Row, Statistic, Table, Tag, Button, Space, Avatar } from 'antd';
+import { Card, Col, Row, Statistic, Table, Tag, Button, Space, Avatar, message } from 'antd';
 import {
   DollarOutlined,
   RiseOutlined,
@@ -12,7 +12,7 @@ import {
 } from '@ant-design/icons';
 import { Line, Pie } from '@ant-design/charts';
 import { StatCard } from '../../../components/common';
-import { BuySellModal } from '../../../components/modals';
+import { BuySellModal, DepositModal, WithdrawalModal } from '../../../components/modals';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -23,6 +23,8 @@ export default function DashboardPage() {
   const [buySellModalVisible, setBuySellModalVisible] = useState(false);
   const [transactionType, setTransactionType] = useState<'buy' | 'sell'>('buy');
   const [selectedFund, setSelectedFund] = useState<any>(null);
+  const [depositModalVisible, setDepositModalVisible] = useState(false);
+  const [withdrawalModalVisible, setWithdrawalModalVisible] = useState(false);
 
   const handleBuySell = (type: 'buy' | 'sell', fund: any) => {
     setTransactionType(type);
@@ -37,6 +39,18 @@ export default function DashboardPage() {
 
   const handleBuySellSubmit = (values: any) => {
     console.log('Transaction submitted:', values);
+    // In production: Send to Supabase
+  };
+
+  const handleDepositSubmit = (values: any) => {
+    console.log('Deposit submitted:', values);
+    message.success('Deposit initiated successfully!');
+    // In production: Send to Supabase
+  };
+
+  const handleWithdrawalSubmit = (values: any) => {
+    console.log('Withdrawal submitted:', values);
+    message.success('Withdrawal requested successfully!');
     // In production: Send to Supabase
   };
 
@@ -376,6 +390,7 @@ export default function DashboardPage() {
                 type="primary"
                 icon={<ArrowUpOutlined />}
                 size="large"
+                onClick={() => setDepositModalVisible(true)}
               >
                 {t('dashboard.depositFunds')}
               </Button>
@@ -389,6 +404,7 @@ export default function DashboardPage() {
               <Button
                 icon={<ArrowDownOutlined />}
                 size="large"
+                onClick={() => setWithdrawalModalVisible(true)}
               >
                 {t('dashboard.withdraw')}
               </Button>
@@ -455,6 +471,20 @@ export default function DashboardPage() {
         asset={selectedFund}
         availableBalance={portfolioMetrics.availableCash}
         totalShares={selectedFund?.shares || 0}
+      />
+
+      <DepositModal
+        visible={depositModalVisible}
+        onClose={() => setDepositModalVisible(false)}
+        onSubmit={handleDepositSubmit}
+        currentBalance={portfolioMetrics.availableCash}
+      />
+
+      <WithdrawalModal
+        visible={withdrawalModalVisible}
+        onClose={() => setWithdrawalModalVisible(false)}
+        onSubmit={handleWithdrawalSubmit}
+        availableBalance={portfolioMetrics.availableCash}
       />
     </div>
   );
