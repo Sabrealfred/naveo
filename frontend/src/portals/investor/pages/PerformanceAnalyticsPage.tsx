@@ -23,6 +23,11 @@ import {
 import { Line, Column, Pie } from '@ant-design/charts';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs, { Dayjs } from 'dayjs';
+import {
+  MOCK_PERFORMANCE_SERIES,
+  MOCK_ASSET_PERFORMANCE,
+  MOCK_MONTHLY_RETURNS,
+} from '../mockData';
 
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
@@ -48,68 +53,9 @@ export default function PerformanceAnalyticsPage() {
   const [dateRange, setDateRange] = useState<[Dayjs, Dayjs] | null>(null);
 
   // Mock performance data
-  const performanceData: PerformanceData[] = [
-    { date: '2024-01', portfolioReturn: 2.5, benchmarkReturn: 1.8, value: 102500 },
-    { date: '2024-02', portfolioReturn: 5.2, benchmarkReturn: 3.1, value: 105200 },
-    { date: '2024-03', portfolioReturn: 7.8, benchmarkReturn: 4.5, value: 107800 },
-    { date: '2024-04', portfolioReturn: 11.3, benchmarkReturn: 6.2, value: 111300 },
-    { date: '2024-05', portfolioReturn: 14.5, benchmarkReturn: 8.0, value: 114500 },
-    { date: '2024-06', portfolioReturn: 17.2, benchmarkReturn: 9.5, value: 117200 },
-    { date: '2024-07', portfolioReturn: 19.8, benchmarkReturn: 11.2, value: 119800 },
-    { date: '2024-08', portfolioReturn: 22.5, benchmarkReturn: 12.8, value: 122500 },
-    { date: '2024-09', portfolioReturn: 23.8, benchmarkReturn: 13.5, value: 123800 },
-    { date: '2024-10', portfolioReturn: 25.0, benchmarkReturn: 14.2, value: 125000 },
-    { date: '2024-11', portfolioReturn: 25.0, benchmarkReturn: 14.2, value: 125000 },
-  ];
-
-  const assetPerformance: AssetPerformance[] = [
-    {
-      asset: 'Alpha Growth Fund',
-      allocation: 45,
-      return: 28.5,
-      ytdReturn: 28.5,
-      contribution: 12.8,
-      risk: 'Medium',
-    },
-    {
-      asset: 'Beta Yield Fund',
-      allocation: 30,
-      return: 22.3,
-      ytdReturn: 22.3,
-      contribution: 6.7,
-      risk: 'Low',
-    },
-    {
-      asset: 'Gamma Tech Fund',
-      allocation: 15,
-      return: 35.8,
-      ytdReturn: 35.8,
-      contribution: 5.4,
-      risk: 'High',
-    },
-    {
-      asset: 'Delta Stable Fund',
-      allocation: 10,
-      return: 8.2,
-      ytdReturn: 8.2,
-      contribution: 0.8,
-      risk: 'Very Low',
-    },
-  ];
-
-  const monthlyReturns = [
-    { month: 'Jan', return: 2.5 },
-    { month: 'Feb', return: 2.7 },
-    { month: 'Mar', return: 2.6 },
-    { month: 'Apr', return: 3.5 },
-    { month: 'May', return: 3.2 },
-    { month: 'Jun', return: 2.7 },
-    { month: 'Jul', return: 2.6 },
-    { month: 'Aug', return: 2.7 },
-    { month: 'Sep', return: 1.3 },
-    { month: 'Oct', return: 1.2 },
-    { month: 'Nov', return: 0.0 },
-  ];
+  const performanceData: PerformanceData[] = MOCK_PERFORMANCE_SERIES;
+  const assetPerformance: AssetPerformance[] = MOCK_ASSET_PERFORMANCE;
+  const monthlyReturns = MOCK_MONTHLY_RETURNS;
 
   // Calculate metrics
   const metrics = useMemo(() => {

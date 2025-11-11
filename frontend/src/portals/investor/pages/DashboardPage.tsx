@@ -20,7 +20,9 @@ import {
   MOCK_PORTFOLIO_VALUE,
   MOCK_PORTFOLIO_HOLDINGS,
   MOCK_INVESTOR_TRANSACTIONS,
+  MOCK_PORTFOLIO_HISTORY,
   buildAllocationFromHoldings,
+  MOCK_INVESTOR_FUNDS,
 } from '../mockData';
 
 export default function DashboardPage() {
@@ -98,16 +100,10 @@ export default function DashboardPage() {
     );
   }
 
-  // Calculate portfolio history (mock for now - would need historical snapshots)
-  const portfolioHistoryData = [
-    { date: '6 months ago', value: portfolioValue.total_invested_amount * 0.85 },
-    { date: '5 months ago', value: portfolioValue.total_invested_amount * 0.90 },
-    { date: '4 months ago', value: portfolioValue.total_invested_amount * 0.95 },
-    { date: '3 months ago', value: portfolioValue.total_invested_amount },
-    { date: '2 months ago', value: portfolioValue.total_invested_amount * 1.05 },
-    { date: '1 month ago', value: portfolioValue.total_invested_amount * 1.08 },
-    { date: 'Today', value: portfolioValue.total_current_value },
-  ];
+  const portfolioHistoryData = MOCK_PORTFOLIO_HISTORY.map((point) => ({
+    date: point.label,
+    value: point.value,
+  }));
 
   // Transform allocation for pie chart
   const allocationChartData = portfolioAllocation.map(item => ({
@@ -224,7 +220,13 @@ export default function DashboardPage() {
       title: 'Fund',
       dataIndex: 'fund_id',
       key: 'fund_id',
-      render: (fundId: string) => fundId?.substring(0, 8) + '...',
+      render: (fundId: string) => {
+        const name =
+          holdings.find((h) => h.fund_id === fundId)?.fund_name ||
+          MOCK_INVESTOR_FUNDS.find((f) => f.id === fundId)?.name ||
+          (fundId ? fundId.substring(0, 8) + '...' : 'N/A');
+        return name;
+      },
     },
     {
       title: 'Shares',
