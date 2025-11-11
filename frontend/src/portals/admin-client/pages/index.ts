@@ -9,3 +9,4 @@ export { default as RebalancingPage } from './RebalancingPage';
 export { default as TradingDashboardPage } from './TradingDashboardPage';
 export { default as RiskDashboardPage } from './RiskDashboardPage';
 export { default as GateManagementPage } from './GateManagementPage';
+export { default as AIStrategyManagementPage } from './AIStrategyManagementPage';
