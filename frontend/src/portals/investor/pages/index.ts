@@ -16,3 +16,4 @@ export { default as StatementsPage } from './StatementsPage';
 export { default as TaxDocumentsPage } from './TaxDocumentsPage';
 export { default as NotificationsCenterPage } from './NotificationsCenterPage';
 export { default as IntegrationsPage } from './IntegrationsPage';
+export { default as LendingPage } from './LendingPage';

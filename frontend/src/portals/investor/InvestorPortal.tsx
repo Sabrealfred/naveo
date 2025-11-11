@@ -13,6 +13,7 @@ import {
   AuditOutlined,
   UserAddOutlined,
   LinkOutlined,
+  BankOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import { useTranslation } from 'react-i18next';
@@ -30,6 +31,7 @@ import {
   TaxDocumentsPage,
   NotificationsCenterPage,
   IntegrationsPage,
+  LendingPage,
 } from './pages';
 
 const InvestorPortal = () => {
@@ -50,6 +52,11 @@ const InvestorPortal = () => {
       key: '/investor/performance',
       icon: <LineChartOutlined />,
       label: t('menu.investor.performance'),
+    },
+    {
+      key: '/investor/lending',
+      icon: <BankOutlined />,
+      label: 'Lending & Borrowing',
     },
     {
       key: '/investor/marketplace',
@@ -108,6 +115,7 @@ const InvestorPortal = () => {
         <Route index element={<DashboardPage />} />
         <Route path="portfolio" element={<PortfolioPage />} />
         <Route path="performance" element={<PerformanceAnalyticsPage />} />
+        <Route path="lending" element={<LendingPage />} />
         <Route path="marketplace" element={<MarketplacePage />} />
         <Route path="transactions" element={<TransactionsPage />} />
         <Route path="reports" element={<InvestorReportsPage />} />
