@@ -1,4 +1,5 @@
-import { Card, Col, Row, Statistic, Table, Tag, Progress, Button, Space } from 'antd';
+import { useState } from 'react';
+import { Card, Col, Row, Statistic, Table, Tag, Progress, Button, Space, message } from 'antd';
 import {
   DollarOutlined,
   RiseOutlined,
@@ -8,10 +9,40 @@ import {
 } from '@ant-design/icons';
 import { Line, Column, Pie } from '@ant-design/charts';
 import { StatCard } from '../../../components/common';
+import { TraderManagementModal } from '../../../components/modals';
 import { useNavigate } from 'react-router-dom';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
+  const [traderModalVisible, setTraderModalVisible] = useState(false);
+  const [selectedTrader, setSelectedTrader] = useState<any>(null);
+
+  const handleManageTrader = (trader: any) => {
+    setSelectedTrader({
+      id: trader.key,
+      name: trader.name,
+      email: `${trader.name.toLowerCase().replace(' ', '.')}@fund.com`,
+      role: 'Senior Trader',
+      status: trader.status,
+      joinDate: '2024-01-15',
+      totalTrades: trader.trades,
+      successRate: trader.winRate,
+      pnl: trader.profitLoss,
+      assignedAssets: ['BTC', 'ETH', 'SOL'],
+      tradingLimit: {
+        daily: 500000,
+        monthly: 10000000,
+      },
+    });
+    setTraderModalVisible(true);
+  };
+
+  const handleTraderSubmit = (values: any) => {
+    console.log('Trader settings updated:', values);
+    message.success('Trader settings updated successfully!');
+    // In production: Send to Supabase
+  };
+
   // Mock data for Fund Manager Dashboard - Replace with real Supabase data
   const fundMetrics = {
     fundName: 'Alpha Growth Fund',
@@ -216,10 +247,10 @@ export default function DashboardPage() {
     {
       title: 'Actions',
       key: 'actions',
-      render: () => (
+      render: (_: any, record: any) => (
         <Space>
-          <Button type="link" size="small">View</Button>
-          <Button type="link" size="small">Manage</Button>
+          <Button type="link" size="small" onClick={() => navigate('/admin-client/traders')}>View</Button>
+          <Button type="link" size="small" onClick={() => handleManageTrader(record)}>Manage</Button>
         </Space>
       ),
     },
@@ -406,6 +437,14 @@ export default function DashboardPage() {
           </Card>
         </Col>
       </Row>
+
+      {/* Trader Management Modal */}
+      <TraderManagementModal
+        visible={traderModalVisible}
+        onClose={() => setTraderModalVisible(false)}
+        onSubmit={handleTraderSubmit}
+        trader={selectedTrader}
+      />
     </div>
   );
 }
