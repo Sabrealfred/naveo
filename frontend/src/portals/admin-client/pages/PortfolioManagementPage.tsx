@@ -1,16 +1,38 @@
-import { Card, Col, Row, Statistic, Table, Tag, Progress } from 'antd';
+import { useState } from 'react';
+import { Card, Col, Row, Statistic, Table, Tag, Progress, Button, Space, message } from 'antd';
 import {
   DollarOutlined,
   RiseOutlined,
   FundProjectionScreenOutlined,
   BarChartOutlined,
+  ThunderboltOutlined,
+  TeamOutlined,
+  RobotOutlined,
 } from '@ant-design/icons';
 import { Pie, Column } from '@ant-design/charts';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { StatCard } from '../../../components/common';
+import { PortfolioRebalanceModal, MUMStrategyModal } from '../../../components/modals';
 
 export default function PortfolioManagementPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [rebalanceModalVisible, setRebalanceModalVisible] = useState(false);
+  const [mumModalVisible, setMumModalVisible] = useState(false);
+
+  const handleRebalanceSubmit = (values: any) => {
+    console.log('Rebalance submitted:', values);
+    message.success(t('ai.rebalance.submitted'));
+    // In production: Send to Supabase
+  };
+
+  const handleMumSubmit = (values: any) => {
+    console.log('MUM Strategy created:', values);
+    message.success(t('ai.mum.strategyCreated'));
+    // In production: Send to Supabase
+  };
+
   // Mock data - Fund's portfolio allocation
   const portfolioMetrics = {
     totalAUM: 85000000, // $85M
@@ -124,14 +146,43 @@ export default function PortfolioManagementPage() {
 
   return (
     <div style={{ padding: '24px', background: 'var(--color-background)' }}>
-      <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ marginBottom: '8px', fontFamily: 'var(--font-heading)' }}>
-          {t('portfolio.title')}
-        </h1>
-        <p style={{ color: 'var(--color-secondary)', fontSize: '14px' }}>
-          {t('portfolio.subtitle')}
-        </p>
-      </div>
+      {/* Page Header with AI Actions */}
+      <Row justify="space-between" align="middle" style={{ marginBottom: '24px' }}>
+        <Col>
+          <h1 style={{ marginBottom: '8px', fontFamily: 'var(--font-heading)' }}>
+            {t('portfolio.title')}
+          </h1>
+          <p style={{ color: 'var(--color-secondary)', fontSize: '14px', margin: 0 }}>
+            {t('portfolio.subtitle')}
+          </p>
+        </Col>
+        <Col>
+          <Space>
+            <Button
+              icon={<RobotOutlined />}
+              size="large"
+              onClick={() => navigate('/admin-client/ai-strategy')}
+            >
+              {t('ai.title')}
+            </Button>
+            <Button
+              type="primary"
+              icon={<ThunderboltOutlined />}
+              size="large"
+              onClick={() => setRebalanceModalVisible(true)}
+            >
+              {t('ai.portfolioRebalancing')}
+            </Button>
+            <Button
+              icon={<TeamOutlined />}
+              size="large"
+              onClick={() => setMumModalVisible(true)}
+            >
+              {t('ai.mumStrategies')}
+            </Button>
+          </Space>
+        </Col>
+      </Row>
 
       {/* Key Metrics */}
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
@@ -200,6 +251,22 @@ export default function PortfolioManagementPage() {
           </Card>
         </Col>
       </Row>
+
+      {/* AI Modals */}
+      <PortfolioRebalanceModal
+        visible={rebalanceModalVisible}
+        onClose={() => setRebalanceModalVisible(false)}
+        onSubmit={handleRebalanceSubmit}
+        currentAllocations={assetAllocation}
+        totalValue={portfolioMetrics.totalAUM}
+      />
+
+      <MUMStrategyModal
+        visible={mumModalVisible}
+        onClose={() => setMumModalVisible(false)}
+        onSubmit={handleMumSubmit}
+        mode="create"
+      />
     </div>
   );
 }

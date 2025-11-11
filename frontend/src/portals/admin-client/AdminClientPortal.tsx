@@ -9,6 +9,7 @@ import {
   SafetyOutlined,
   SwapOutlined,
   UserSwitchOutlined,
+  RobotOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import {
@@ -23,6 +24,7 @@ import {
   TransactionsPage,
   CompliancePage,
   FundReportsPage,
+  AIStrategyManagementPage,
 } from './pages';
 
 const AdminClientPortal = () => {
@@ -41,6 +43,11 @@ const AdminClientPortal = () => {
       key: '/admin-client/portfolio',
       icon: <FundProjectionScreenOutlined />,
       label: 'Mi Portafolio',
+    },
+    {
+      key: '/admin-client/ai-strategy',
+      icon: <RobotOutlined />,
+      label: 'Estrategias AI',
     },
     {
       key: '/admin-client/nav',
@@ -90,6 +97,7 @@ const AdminClientPortal = () => {
         <Route path="nav" element={<NAVSystemPage />} />
         <Route path="assets" element={<AssetsManagementPage />} />
         <Route path="portfolio" element={<PortfolioManagementPage />} />
+        <Route path="ai-strategy" element={<AIStrategyManagementPage />} />
         <Route path="investors" element={<InvestorsManagementPage />} />
         <Route path="traders" element={<TradersManagementPage />} />
         <Route path="officers" element={<OfficersManagementPage />} />
