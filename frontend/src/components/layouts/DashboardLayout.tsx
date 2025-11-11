@@ -209,8 +209,8 @@ const DashboardLayout = ({
   const logoContent = (
     <div
       style={{
-        height: 72,
-        padding: collapsed ? '18px 8px' : '18px 16px',
+        height: 60,
+        padding: collapsed ? '16px 6px' : '16px 14px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -230,7 +230,7 @@ const DashboardLayout = ({
           M
         </div>
       ) : (
-        <MiraLogo variant="light" size="sm" />
+        <MiraLogo variant="light" size="xs" />
       )}
     </div>
   );
@@ -472,54 +472,38 @@ const DashboardLayout = ({
           style={{
             background: palette.footerBg,
             borderTop: `1px solid ${palette.footerBorder}`,
-            padding: isMobile ? '32px 16px' : '40px 48px',
+            padding: isMobile ? '28px 16px' : '32px 48px',
             color: '#F8FBFF',
           }}
         >
           <div
             style={{
-              display: 'flex',
-              flexDirection: isMobile ? 'column' : 'row',
-              justifyContent: 'space-between',
+              display: 'grid',
+              gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, minmax(140px, 1fr))',
               gap: 24,
             }}
           >
-            <div style={{ maxWidth: 320 }}>
-              <MiraLogo variant="light" size="sm" className="animate-float" />
-              <p style={{ color: palette.mutedText, marginTop: 12, lineHeight: 1.5 }}>
-                Secure infrastructure for tokenized assets, institutional workflows, and AI-native automation.
-              </p>
-            </div>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, minmax(140px, 1fr))',
-                gap: 24,
-                flex: 1,
-              }}
-            >
-              {footerLinks.map((section) => (
-                <div key={section.title}>
-                  <div style={{ fontWeight: 600, marginBottom: 12 }}>{section.title}</div>
-                  <Space direction="vertical">
-                    {section.links.map((link) => (
-                      <Button
-                        key={link.label}
-                        type="link"
-                        onClick={() => navigate(link.path)}
-                        style={{ padding: 0, color: palette.mutedText }}
-                      >
-                        {link.label}
-                      </Button>
-                    ))}
-                  </Space>
-                </div>
-              ))}
-            </div>
+            {footerLinks.map((section) => (
+              <div key={section.title}>
+                <div style={{ fontWeight: 600, marginBottom: 12, color: '#fff' }}>{section.title}</div>
+                <Space direction="vertical">
+                  {section.links.map((link) => (
+                    <Button
+                      key={link.label}
+                      type="link"
+                      onClick={() => navigate(link.path)}
+                      style={{ padding: 0, color: palette.mutedText }}
+                    >
+                      {link.label}
+                    </Button>
+                  ))}
+                </Space>
+              </div>
+            ))}
           </div>
           <div
             style={{
-              marginTop: 32,
+              marginTop: 24,
               paddingTop: 16,
               borderTop: `1px solid ${palette.footerBorder}`,
               display: 'flex',
