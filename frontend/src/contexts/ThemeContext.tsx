@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { ConfigProvider, theme as antdTheme } from 'antd';
 
 type ThemeMode = 'light' | 'dark';
 
@@ -53,32 +52,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, isDark }}>
-      <ConfigProvider
-        theme={{
-          algorithm: theme === 'dark' ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
-          token: {
-            colorPrimary: '#1890ff',
-            borderRadius: 6,
-            fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-          },
-          components: {
-            Layout: {
-              headerBg: theme === 'dark' ? '#141414' : '#ffffff',
-              siderBg: theme === 'dark' ? '#1f1f1f' : '#001529',
-              bodyBg: theme === 'dark' ? '#141414' : '#f0f2f5',
-            },
-            Menu: {
-              darkItemBg: theme === 'dark' ? '#1f1f1f' : '#001529',
-              darkSubMenuItemBg: theme === 'dark' ? '#141414' : '#000c17',
-            },
-            Card: {
-              colorBgContainer: theme === 'dark' ? '#1f1f1f' : '#ffffff',
-            },
-          },
-        }}
-      >
-        {children}
-      </ConfigProvider>
+      {children}
     </ThemeContext.Provider>
   );
 };
