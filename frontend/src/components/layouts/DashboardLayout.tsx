@@ -209,10 +209,10 @@ const DashboardLayout = ({
     <div
       style={{
         height: 60,
-        padding: collapsed ? '16px 6px' : '16px 18px',
+        padding: '16px 12px',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: collapsed ? 'center' : 'flex-start',
+        justifyContent: 'center',
         transition: 'all 0.2s ease',
         borderBottom: `1px solid ${palette.sidebarBorder}`,
       }}
@@ -220,15 +220,13 @@ const DashboardLayout = ({
       <div
         style={{
           fontWeight: 700,
-          letterSpacing: '0.15em',
-          fontSize: collapsed ? 18 : 20,
+          letterSpacing: '0.2em',
+          fontSize: collapsed && !isMobile ? 18 : 20,
           textTransform: 'uppercase',
-          background: 'linear-gradient(120deg, #5F9BFF 0%, #7BD8FF 60%, #FFFFFF 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
+          color: '#fff',
         }}
       >
-        {collapsed && !isMobile ? 'M' : 'MIRA'}
+        MIRA
       </div>
     </div>
   );
@@ -525,6 +523,7 @@ const DashboardLayout = ({
                 Contact
               </Button>
             </Space>
+            <div style={{ fontWeight: 700, letterSpacing: '0.14em', color: '#fff' }}>MIRA</div>
           </div>
         </Footer>
         <Modal
