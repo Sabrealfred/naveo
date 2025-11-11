@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import {
   DashboardOutlined,
@@ -20,6 +21,7 @@ import {
   ClusterOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
+import { useTranslation } from 'react-i18next';
 import {
   DashboardPage,
   FundsManagementPage,
@@ -49,93 +51,94 @@ import {
 } from './pages';
 
 const AdminOwnerPortal = () => {
-  // Menu items para el sidebar
-  const menuItems = [
+  const { t } = useTranslation();
+
+  const menuItems = useMemo(() => [
     {
       key: '/admin-owner',
       icon: <DashboardOutlined />,
-      label: 'Dashboard',
+      label: t('menu.adminOwner.dashboard'),
     },
     {
       key: '/admin-owner/funds',
       icon: <BankOutlined />,
-      label: 'Gestión de Fondos',
+      label: t('menu.adminOwner.funds'),
     },
     {
       key: '/admin-owner/asset-pipeline',
       icon: <ProjectOutlined />,
-      label: 'Asset Pipeline',
+      label: t('menu.adminOwner.assetPipeline'),
     },
     {
       key: '/admin-owner/capital-partners',
       icon: <ClusterOutlined />,
-      label: 'Capital Partners',
+      label: t('menu.adminOwner.capitalPartners'),
     },
     {
       key: 'tokenization',
       icon: <DollarCircleOutlined />,
-      label: 'Tokenization',
+      label: t('menu.adminOwner.tokenization'),
       children: [
-        { key: '/admin-owner/product-structuring', label: 'Product Structuring', icon: <ProjectOutlined /> },
-        { key: '/admin-owner/token-lifecycle', label: 'Token Lifecycle', icon: <FireOutlined /> },
-        { key: '/admin-owner/smart-contracts', label: 'Smart Contracts', icon: <ApartmentOutlined /> },
-        { key: '/admin-owner/business-rules', label: 'Business Rules', icon: <SettingOutlined /> },
-        { key: '/admin-owner/approval-workflows', label: 'Approval Workflows', icon: <CheckCircleOutlined /> },
+        { key: '/admin-owner/product-structuring', label: t('menu.adminOwner.productStructuring'), icon: <ProjectOutlined /> },
+        { key: '/admin-owner/token-lifecycle', label: t('menu.adminOwner.tokenLifecycle'), icon: <FireOutlined /> },
+        { key: '/admin-owner/smart-contracts', label: t('menu.adminOwner.smartContracts'), icon: <ApartmentOutlined /> },
+        { key: '/admin-owner/business-rules', label: t('menu.adminOwner.businessRules'), icon: <SettingOutlined /> },
+        { key: '/admin-owner/approval-workflows', label: t('menu.adminOwner.approvalWorkflows'), icon: <CheckCircleOutlined /> },
       ],
     },
     {
       key: '/admin-owner/clients',
       icon: <TeamOutlined />,
-      label: 'Gestión de Clientes',
+      label: t('menu.adminOwner.clients'),
     },
     {
       key: 'users-and-roles',
       icon: <UserOutlined />,
-      label: 'Users & Roles',
+      label: t('menu.adminOwner.usersAndRoles'),
       children: [
-        { key: '/admin-owner/users', label: 'Platform Users', icon: <UserOutlined /> },
-        { key: '/admin-owner/fund-roles', label: 'Fund Roles', icon: <SafetyOutlined /> },
+        { key: '/admin-owner/users', label: t('menu.adminOwner.platformUsers'), icon: <UserOutlined /> },
+        { key: '/admin-owner/fund-roles', label: t('menu.adminOwner.fundRoles'), icon: <SafetyOutlined /> },
       ],
     },
     {
       key: 'integrations',
       icon: <GlobalOutlined />,
-      label: 'Integraciones',
+      label: t('menu.adminOwner.integrations'),
       children: [
-        { key: '/admin-owner/integrations/wallets', label: 'Wallets', icon: <WalletOutlined /> },
-        { key: '/admin-owner/integrations/banking', label: 'Banking', icon: <BankOutlined /> },
-        { key: '/admin-owner/integrations/distribution', label: 'Distribution Channels', icon: <ShareAltOutlined /> },
-        { key: '/admin-owner/integrations/kyc', label: 'KYC/KYB (Persona)' },
-        { key: '/admin-owner/integrations/onramp', label: 'On/Off Ramp' },
-        { key: '/admin-owner/integrations/blockchain', label: 'Blockchain' },
+        { key: '/admin-owner/integrations/wallets', label: t('menu.adminOwner.wallets'), icon: <WalletOutlined /> },
+        { key: '/admin-owner/integrations/banking', label: t('menu.adminOwner.banking'), icon: <BankOutlined /> },
+        { key: '/admin-owner/integrations/distribution', label: t('menu.adminOwner.distribution'), icon: <ShareAltOutlined /> },
+        { key: '/admin-owner/integrations/kyc', label: t('menu.adminOwner.kyc') },
+        { key: '/admin-owner/integrations/onramp', label: t('menu.adminOwner.onramp') },
+        { key: '/admin-owner/integrations/blockchain', label: t('menu.adminOwner.blockchain') },
       ],
     },
     {
       key: '/admin-owner/compliance',
       icon: <SafetyOutlined />,
-      label: 'Compliance y Auditoría',
+      label: t('menu.adminOwner.compliance'),
     },
     {
       key: '/admin-owner/reports',
       icon: <FileTextOutlined />,
-      label: 'Reporting',
+      label: t('menu.adminOwner.reports'),
     },
     {
       key: '/admin-owner/audit-logs',
       icon: <AuditOutlined />,
-      label: 'Audit Logs',
+      label: t('menu.adminOwner.auditLogs'),
     },
     {
       key: '/admin-owner/notifications',
       icon: <BellOutlined />,
-      label: 'Notifications',
+      label: t('menu.adminOwner.notifications'),
     },
     {
       key: '/admin-owner/settings',
       icon: <SettingOutlined />,
-      label: 'Configuración',
+      label: t('menu.adminOwner.settings'),
     },
-  ];
+  ], [t]);
 
   return (
     <DashboardLayout

@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import {
   DashboardOutlined,
@@ -13,6 +14,7 @@ import {
   UserAddOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
+import { useTranslation } from 'react-i18next';
 import {
   DashboardPage,
   PortfolioPage,
@@ -29,58 +31,65 @@ import {
 } from './pages';
 
 const InvestorPortal = () => {
-  const menuItems = [
+  const { t } = useTranslation();
+
+  const menuItems = useMemo(() => [
     {
       key: '/investor',
       icon: <DashboardOutlined />,
-      label: 'Dashboard',
+      label: t('menu.investor.dashboard'),
     },
     {
       key: '/investor/portfolio',
       icon: <WalletOutlined />,
-      label: 'Mi Portafolio',
+      label: t('menu.investor.portfolio'),
     },
     {
       key: '/investor/performance',
       icon: <LineChartOutlined />,
-      label: 'Performance Analytics',
+      label: t('menu.investor.performance'),
     },
     {
       key: '/investor/marketplace',
       icon: <ShoppingOutlined />,
-      label: 'Marketplace',
+      label: t('menu.investor.marketplace'),
     },
     {
       key: '/investor/transactions',
       icon: <SwapOutlined />,
-      label: 'Transacciones',
+      label: t('menu.investor.transactions'),
     },
     {
       key: '/investor/reports',
       icon: <FileTextOutlined />,
-      label: 'Reportes',
+      label: t('menu.investor.reports'),
     },
     {
       key: '/investor/statements',
       icon: <FilePdfOutlined />,
-      label: 'Statements',
+      label: t('menu.investor.statements'),
     },
     {
       key: '/investor/tax-documents',
       icon: <AuditOutlined />,
-      label: 'Tax Documents',
+      label: t('menu.investor.taxDocuments'),
     },
     {
       key: '/investor/notifications',
       icon: <BellOutlined />,
-      label: 'Notifications',
+      label: t('menu.investor.notifications'),
     },
     {
       key: '/investor/profile',
       icon: <UserOutlined />,
-      label: 'Mi Perfil',
+      label: t('menu.investor.profile'),
     },
-  ];
+    {
+      key: '/investor/onboarding',
+      icon: <UserAddOutlined />,
+      label: t('menu.investor.onboarding'),
+    },
+  ], [t]);
 
   return (
     <DashboardLayout

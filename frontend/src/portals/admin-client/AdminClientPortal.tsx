@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import {
   DashboardOutlined,
@@ -19,6 +20,7 @@ import {
   SyncOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
+import { useTranslation } from 'react-i18next';
 import {
   DashboardPage,
   NAVSystemPage,
@@ -45,108 +47,110 @@ import {
 } from './pages';
 
 const AdminClientPortal = () => {
-  const menuItems = [
+  const { t } = useTranslation();
+
+  const menuItems = useMemo(() => [
     {
       key: '/admin-client',
       icon: <DashboardOutlined />,
-      label: 'Dashboard',
+      label: t('menu.adminClient.dashboard'),
     },
     {
       key: '/admin-client/assets',
       icon: <AppstoreAddOutlined />,
-      label: 'Activos del Fondo',
+      label: t('menu.adminClient.assets'),
     },
     {
       key: '/admin-client/portfolio',
       icon: <FundProjectionScreenOutlined />,
-      label: 'Mi Portafolio',
+      label: t('menu.adminClient.portfolio'),
     },
     {
       key: '/admin-client/ai-strategy',
       icon: <RobotOutlined />,
-      label: 'Estrategias AI',
+      label: t('menu.adminClient.aiStrategy'),
     },
     {
       key: '/admin-client/ai-agent',
       icon: <CommentOutlined />,
-      label: 'AI Agent Asistente',
+      label: t('menu.adminClient.aiAgent'),
     },
     {
       key: '/admin-client/nav',
       icon: <LineChartOutlined />,
-      label: 'Sistema NAV',
+      label: t('menu.adminClient.nav'),
     },
     {
       key: '/admin-client/rebalancing',
       icon: <SyncOutlined />,
-      label: 'Portfolio Rebalancing',
+      label: t('menu.adminClient.rebalancing'),
     },
     {
       key: '/admin-client/trading',
       icon: <BarChartOutlined />,
-      label: 'Trading Dashboard',
+      label: t('menu.adminClient.trading'),
     },
     {
       key: '/admin-client/risk',
       icon: <SafetyOutlined />,
-      label: 'Risk Dashboard',
+      label: t('menu.adminClient.risk'),
     },
     {
       key: '/admin-client/analytics',
       icon: <BarChartOutlined />,
-      label: 'Analytics',
+      label: t('menu.adminClient.analytics'),
     },
     {
       key: '/admin-client/investors',
       icon: <TeamOutlined />,
-      label: 'Mis Inversionistas',
+      label: t('menu.adminClient.investors'),
     },
     {
       key: '/admin-client/subscription-calendar',
       icon: <CalendarOutlined />,
-      label: 'Subscription Calendar',
+      label: t('menu.adminClient.subscriptionCalendar'),
     },
     {
       key: '/admin-client/capital-calls',
       icon: <DollarOutlined />,
-      label: 'Capital Calls',
+      label: t('menu.adminClient.capitalCalls'),
     },
     {
       key: '/admin-client/gate-management',
       icon: <LockOutlined />,
-      label: 'Gate Management',
+      label: t('menu.adminClient.gateManagement'),
     },
     {
       key: 'team',
       icon: <UserSwitchOutlined />,
-      label: 'Equipo y Permisos',
+      label: t('menu.adminClient.team'),
       children: [
-        { key: '/admin-client/traders', label: 'Traders' },
-        { key: '/admin-client/officers', label: 'Compliance Officers' },
-        { key: '/admin-client/admins', label: 'Sub-Admins' },
+        { key: '/admin-client/traders', label: t('menu.adminClient.traders') },
+        { key: '/admin-client/officers', label: t('menu.adminClient.officers') },
+        { key: '/admin-client/admins', label: t('menu.adminClient.admins') },
       ],
     },
     {
       key: '/admin-client/transactions',
       icon: <SwapOutlined />,
-      label: 'Transacciones',
+      label: t('menu.adminClient.transactions'),
     },
     {
       key: '/admin-client/compliance',
       icon: <SafetyOutlined />,
-      label: 'Compliance',
+      label: t('menu.adminClient.compliance'),
     },
     {
       key: '/admin-client/reports',
       icon: <FileTextOutlined />,
-      label: 'Reportes',
+      label: t('menu.adminClient.reports'),
     },
     {
       key: '/admin-client/notifications',
       icon: <BellOutlined />,
-      label: 'Notifications',
+      label: t('menu.adminClient.notifications'),
     },
-  ];
+  ], [t]);
 
   return (
     <DashboardLayout
