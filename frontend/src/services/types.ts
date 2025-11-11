@@ -237,6 +237,51 @@ export interface FundAnalytics {
   total_asset_value: number;
 }
 
+export interface UserProfile {
+  id: string;
+  full_name: string | null;
+  display_name: string | null;
+  avatar_url: string | null;
+  phone: string | null;
+  date_of_birth: string | null;
+  street_address: string | null;
+  city: string | null;
+  state_province: string | null;
+  postal_code: string | null;
+  country: string | null;
+  investor_type: 'individual' | 'corporate' | 'institutional' | 'trust' | 'other' | null;
+  risk_tolerance: 'conservative' | 'moderate' | 'aggressive' | 'very_aggressive' | null;
+  investment_experience: 'none' | 'limited' | 'intermediate' | 'advanced' | 'expert' | null;
+  accredited_investor: boolean | null;
+  annual_income_range: string | null;
+  net_worth_range: string | null;
+  job_title: string | null;
+  department: string | null;
+  company_name: string | null;
+  professional_bio: string | null;
+  linkedin_url: string | null;
+  language: string | null;
+  timezone: string | null;
+  currency: string | null;
+  notification_preferences: any;
+  tax_id: string | null;
+  passport_number: string | null;
+  id_document_type: string | null;
+  id_document_number: string | null;
+  id_document_expiry: string | null;
+  citizenship: string | null;
+  tax_residency: string | null;
+  onboarding_completed: boolean | null;
+  profile_completed_at: string | null;
+  last_login_at: string | null;
+  login_count: number | null;
+  terms_accepted_at: string | null;
+  privacy_policy_accepted_at: string | null;
+  metadata: any;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface KYCStatistics {
   total_verifications: number;
   pending_count: number;
@@ -304,4 +349,61 @@ export interface CreateReportInput {
   generated_by: string;
   file_format?: 'pdf' | 'excel' | 'csv';
   metadata?: any;
+}
+
+// Capital Partners & Distribution Network
+export interface StrategicPartner {
+  id: string;
+  name: string;
+  type: 'lender' | 'liquidity' | 'leverage';
+  region: string;
+  ticket_size: string | null;
+  ltv_range: string | null;
+  focus_assets: string[] | null;
+  status: 'Active' | 'Negotiation' | 'Prospect';
+  notes: string | null;
+  primary_contact_name: string | null;
+  primary_contact_email: string | null;
+  primary_contact_phone: string | null;
+  website_url: string | null;
+  api_endpoint: string | null;
+  api_key_encrypted: string | null;
+  webhook_url: string | null;
+  integration_status: 'Live' | 'Testing' | 'Pending' | 'Inactive' | null;
+  last_sync_at: string | null;
+  hubspot_deal_id: string | null;
+  notion_page_id: string | null;
+  metadata: any;
+  created_at: string;
+  updated_at: string;
+  created_by: string | null;
+}
+
+export interface DistributionPlatform {
+  id: string;
+  platform: string;
+  region: string;
+  coverage: string;
+  integration_status: 'Live' | 'Sandbox' | 'Planned';
+  channels: string[] | null;
+  api_type: 'REST' | 'GraphQL' | 'WebSocket' | 'FTP' | 'Manual' | null;
+  api_endpoint: string | null;
+  api_key_encrypted: string | null;
+  webhook_url: string | null;
+  supported_formats: string[] | null;
+  technical_contact_name: string | null;
+  technical_contact_email: string | null;
+  business_contact_name: string | null;
+  business_contact_email: string | null;
+  total_assets_under_distribution: number | null;
+  total_investors: number | null;
+  last_sync_at: string | null;
+  sync_frequency: string | null;
+  documentation_url: string | null;
+  onboarding_requirements: string[] | null;
+  compliance_notes: string | null;
+  metadata: any;
+  created_at: string;
+  updated_at: string;
+  created_by: string | null;
 }

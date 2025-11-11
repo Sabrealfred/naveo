@@ -3,11 +3,13 @@ import { RefineKbar, RefineKbarProvider } from '@refinedev/kbar';
 import routerProvider from '@refinedev/react-router';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { dataProvider, liveProvider } from '@refinedev/supabase';
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, theme } from 'antd';
 import enUS from 'antd/locale/en_US';
 import esES from 'antd/locale/es_ES';
 import { useTranslation } from 'react-i18next';
 import { supabaseClient } from './services/supabaseClient';
+import { ThemeProvider, useTheme } from './contexts/ThemeContext';
+import { ErrorBoundary } from './components';
 import './i18n'; // Initialize i18n
 
 // Import portal components (will create these next)
@@ -55,8 +57,10 @@ const miraLabsTheme = {
   },
 };
 
-function App() {
+// Inner component that uses theme hook
+function AppContent() {
   const { i18n } = useTranslation();
+  const { isDark } = useTheme();
 
   // Get Ant Design locale based on current language
   const getAntdLocale = () => {
@@ -64,10 +68,30 @@ function App() {
     return currentLang.startsWith('en') ? enUS : esES;
   };
 
+  // Merge MiraLabs theme with dark/light algorithm
+  const appTheme = {
+    ...miraLabsTheme,
+    algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
+    token: {
+      ...miraLabsTheme.token,
+    },
+    components: {
+      ...miraLabsTheme.components,
+      Layout: {
+        ...miraLabsTheme.components.Layout,
+        colorBgBody: isDark ? '#141414' : '#fafafa',
+      },
+      Card: {
+        ...miraLabsTheme.components.Card,
+        colorBgContainer: isDark ? '#1f1f1f' : '#ffffff',
+      },
+    },
+  };
+
   return (
     <BrowserRouter>
       <RefineKbarProvider>
-        <ConfigProvider theme={miraLabsTheme} locale={getAntdLocale()}>
+        <ConfigProvider theme={appTheme} locale={getAntdLocale()}>
           <Refine
             dataProvider={dataProvider(supabaseClient)}
             liveProvider={liveProvider(supabaseClient)}
@@ -89,6 +113,22 @@ function App() {
         </ConfigProvider>
       </RefineKbarProvider>
     </BrowserRouter>
+  );
+}
+
+function App() {
+  return (
+    <ErrorBoundary
+      onError={(error, errorInfo) => {
+        // In production, you might want to log to an error reporting service
+        console.error('Application Error:', error);
+        console.error('Error Info:', errorInfo);
+      }}
+    >
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 

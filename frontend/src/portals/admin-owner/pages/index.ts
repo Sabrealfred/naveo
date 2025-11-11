@@ -4,6 +4,7 @@ export { default as ClientsManagementPage } from './ClientsManagementPage';
 export { default as AssetPipelinePage } from './AssetPipelinePage';
 export { default as CapitalPartnersPage } from './CapitalPartnersPage';
 export { default as DistributionNetworkPage } from './DistributionNetworkPage';
+export { default as ProfilePage } from './ProfilePage';
 export { default as DueDiligencePage } from './DueDiligencePage';
 export { default as ProductStructuringPage } from './ProductStructuringPage';
 export { default as KYCAMLManagementPage } from './KYCAMLManagementPage';

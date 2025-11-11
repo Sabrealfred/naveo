@@ -648,7 +648,43 @@ Al finalizar estas 5 tareas:
 - [x] TAREA 5: Conectar con Supabase
 - [x] TAREA 6: Internacionalización (i18n)
 
-**¡Éxito en el desarrollo, Gemini! 🚀**
+---
+
+## 🆕 TRABAJO ADICIONAL COMPLETADO (2025-11-11)
+
+### ✅ TAREA 7: Infraestructura de Capital Partners
+**Completado:** 2025-11-11
+**Commit:** 73abdd8
+
+**Database:**
+- Migration 007: `strategic_partners` table (35+ campos)
+- Migration 007: `distribution_platforms` table
+- RLS policies para admin_owner (full), admin_client (read), investors (no access)
+- Seed data con 5 strategic partners y 5 distribution platforms
+
+**Service Layer:**
+- `capitalPartnersService.ts` con 18 funciones CRUD:
+  - Strategic Partners: getAll, create, update, delete, search, statistics, syncHubSpot, syncNotion
+  - Distribution Platforms: getAll, create, update, delete, statistics, updateMetrics
+- TypeScript interfaces completas en `types.ts`
+
+**Page Integrations:**
+- CapitalPartnersPage → Conectado a Supabase (antes mock data)
+- DistributionNetworkPage → Conectado a Supabase (antes mock data)
+- Loading states, error handling, field mapping actualizado
+
+**Portfolio Analytics:**
+- Integración con NAV history real de `nav_history` table
+- Carga 24 meses de datos históricos vía `reportsService.getNavHistory()`
+- Fallback a datos estimados cuando no hay histórico
+- Soporte para múltiples fondos con merge de datos
+
+**UX Improvements:**
+- Keyboard shortcut ⌘K/Ctrl+K para global search
+- Visual hint (kbd tag) en botón de búsqueda
+- Prevención de comportamiento default del navegador
+
+**¡Éxito en el desarrollo! 🚀**
 
 ---
 
