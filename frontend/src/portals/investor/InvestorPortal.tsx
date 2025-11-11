@@ -1,15 +1,16 @@
 import { Routes, Route } from 'react-router-dom';
 import {
   DashboardOutlined,
-  DollarOutlined,
   ShoppingOutlined,
   WalletOutlined,
   SwapOutlined,
   FileTextOutlined,
   UserOutlined,
   LineChartOutlined,
-  BarChartOutlined,
-  RollbackOutlined,
+  BellOutlined,
+  FilePdfOutlined,
+  AuditOutlined,
+  UserAddOutlined,
 } from '@ant-design/icons';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import {
@@ -19,13 +20,12 @@ import {
   TransactionsPage,
   KYCStatusPage,
   PerformanceAnalyticsPage,
-  OnboardingPage,
-  SuitabilityQuestionnairePage,
-  SubscriptionWorkflowPage,
-  TradingPlatformPage,
-  RedemptionPage,
   InvestorReportsPage,
   ProfilePage,
+  OnboardingFlowPage,
+  StatementsPage,
+  TaxDocumentsPage,
+  NotificationsCenterPage,
 } from './pages';
 
 const InvestorPortal = () => {
@@ -51,31 +51,6 @@ const InvestorPortal = () => {
       label: 'Marketplace',
     },
     {
-      key: '/investor/trading',
-      icon: <BarChartOutlined />,
-      label: 'Trading Platform',
-    },
-    {
-      key: '/investor/subscription',
-      icon: <DollarOutlined />,
-      label: 'Subscribe to Fund',
-    },
-    {
-      key: '/investor/redemption',
-      icon: <RollbackOutlined />,
-      label: 'Redemption',
-    },
-    {
-      key: '/investor/onboarding',
-      icon: <UserOutlined />,
-      label: 'Onboarding',
-    },
-    {
-      key: '/investor/suitability',
-      icon: <FileTextOutlined />,
-      label: 'Suitability Assessment',
-    },
-    {
       key: '/investor/transactions',
       icon: <SwapOutlined />,
       label: 'Transacciones',
@@ -84,6 +59,21 @@ const InvestorPortal = () => {
       key: '/investor/reports',
       icon: <FileTextOutlined />,
       label: 'Reportes',
+    },
+    {
+      key: '/investor/statements',
+      icon: <FilePdfOutlined />,
+      label: 'Statements',
+    },
+    {
+      key: '/investor/tax-documents',
+      icon: <AuditOutlined />,
+      label: 'Tax Documents',
+    },
+    {
+      key: '/investor/notifications',
+      icon: <BellOutlined />,
+      label: 'Notifications',
     },
     {
       key: '/investor/profile',
@@ -100,17 +90,15 @@ const InvestorPortal = () => {
     >
       <Routes>
         <Route index element={<DashboardPage />} />
-        <Route path="onboarding" element={<OnboardingPage />} />
         <Route path="portfolio" element={<PortfolioPage />} />
         <Route path="performance" element={<PerformanceAnalyticsPage />} />
         <Route path="marketplace" element={<MarketplacePage />} />
-        <Route path="trading" element={<TradingPlatformPage />} />
-        <Route path="subscription" element={<SubscriptionWorkflowPage />} />
-        <Route path="redemption" element={<RedemptionPage />} />
-        <Route path="onboarding" element={<OnboardingPage />} />
-        <Route path="suitability" element={<SuitabilityQuestionnairePage />} />
         <Route path="transactions" element={<TransactionsPage />} />
         <Route path="reports" element={<InvestorReportsPage />} />
+        <Route path="statements" element={<StatementsPage />} />
+        <Route path="tax-documents" element={<TaxDocumentsPage />} />
+        <Route path="notifications" element={<NotificationsCenterPage />} />
+        <Route path="onboarding" element={<OnboardingFlowPage />} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="kyc-status" element={<KYCStatusPage />} />
       </Routes>

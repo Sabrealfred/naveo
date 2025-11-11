@@ -1,407 +1,137 @@
-import { useState } from 'react';
+import { Card, Row, Col, Button, Table, Progress, Tag, Modal, Form, InputNumber, Select, Space, Statistic, Alert, Timeline } from 'antd';
 import {
-  Alert,
-  Button,
-  Card,
-  Col,
-  Descriptions,
-  Divider,
-  Form,
-  Input,
-  InputNumber,
-  Modal,
-  Progress,
-  Row,
-  Select,
-  Space,
-  Statistic,
-  Steps,
-  Table,
-  Tag,
-  Tooltip,
-  Typography,
-  message,
-} from 'antd';
-import type { ColumnsType } from 'antd/es/table';
-import { Column, Pie, Line } from '@ant-design/charts';
-import {
-  AlertOutlined,
+  SyncOutlined,
   CheckCircleOutlined,
-  DollarOutlined,
-  LineChartOutlined,
-  PlusOutlined,
+  WarningOutlined,
+  ArrowUpOutlined,
+  ArrowDownOutlined,
   ReloadOutlined,
   SaveOutlined,
-  SendOutlined,
-  WarningOutlined,
+  PlayCircleOutlined,
 } from '@ant-design/icons';
-import { StatCard } from '../../../components/common';
+import { Pie, Column } from '@ant-design/charts';
+import { useState } from 'react';
 
-const { Title, Text, Paragraph } = Typography;
-const { Step } = Steps;
-
-type DriftStatus = 'in-range' | 'warning' | 'critical';
-type OrderSide = 'buy' | 'sell';
-type OrderStatus = 'pending' | 'sent' | 'filled' | 'cancelled';
-
-interface AssetAllocation {
-  asset: string;
-  symbol: string;
-  targetWeight: number;
-  currentWeight: number;
-  minWeight: number;
-  maxWeight: number;
-  currentValue: number;
-  drift: number;
-  driftStatus: DriftStatus;
-}
-
-interface TradeOrder {
-  id: string;
-  asset: string;
-  side: OrderSide;
-  quantity: number;
-  estimatedPrice: number;
-  estimatedValue: number;
-  estimatedFees: number;
-  estimatedSlippage: number;
-  totalCost: number;
-  status: OrderStatus;
-}
-
-interface AllocationModel {
-  id: string;
-  name: string;
-  description: string;
-  allocations: { asset: string; targetWeight: number; minWeight: number; maxWeight: number }[];
-}
-
-interface DriftHistoryPoint {
-  date: string;
-  asset: string;
-  drift: number;
-}
-
-const mockAllocations: AssetAllocation[] = [
-  {
-    asset: 'Bitcoin',
-    symbol: 'BTC',
-    targetWeight: 40,
-    currentWeight: 45,
-    minWeight: 35,
-    maxWeight: 45,
-    currentValue: 4500000,
-    drift: 5,
-    driftStatus: 'warning',
-  },
-  {
-    asset: 'Ethereum',
-    symbol: 'ETH',
-    targetWeight: 30,
-    currentWeight: 28,
-    minWeight: 25,
-    maxWeight: 35,
-    currentValue: 2800000,
-    drift: -2,
-    driftStatus: 'in-range',
-  },
-  {
-    asset: 'Solana',
-    symbol: 'SOL',
-    targetWeight: 15,
-    currentWeight: 12,
-    minWeight: 10,
-    maxWeight: 20,
-    currentValue: 1200000,
-    drift: -3,
-    driftStatus: 'in-range',
-  },
-  {
-    asset: 'Avalanche',
-    symbol: 'AVAX',
-    targetWeight: 10,
-    currentWeight: 8,
-    minWeight: 5,
-    maxWeight: 15,
-    currentValue: 800000,
-    drift: -2,
-    driftStatus: 'in-range',
-  },
-  {
-    asset: 'Polygon',
-    symbol: 'MATIC',
-    targetWeight: 5,
-    currentWeight: 7,
-    minWeight: 0,
-    maxWeight: 10,
-    currentValue: 700000,
-    drift: 2,
-    driftStatus: 'in-range',
-  },
-];
-
-const mockAllocationModels: AllocationModel[] = [
-  {
-    id: 'model-1',
-    name: 'Conservative Crypto',
-    description: 'Heavy BTC/ETH allocation with minimal altcoin exposure',
-    allocations: [
-      { asset: 'BTC', targetWeight: 60, minWeight: 55, maxWeight: 65 },
-      { asset: 'ETH', targetWeight: 30, minWeight: 25, maxWeight: 35 },
-      { asset: 'SOL', targetWeight: 10, minWeight: 5, maxWeight: 15 },
-    ],
-  },
-  {
-    id: 'model-2',
-    name: 'Balanced Growth',
-    description: 'Diversified allocation across top assets',
-    allocations: [
-      { asset: 'BTC', targetWeight: 40, minWeight: 35, maxWeight: 45 },
-      { asset: 'ETH', targetWeight: 30, minWeight: 25, maxWeight: 35 },
-      { asset: 'SOL', targetWeight: 15, minWeight: 10, maxWeight: 20 },
-      { asset: 'AVAX', targetWeight: 10, minWeight: 5, maxWeight: 15 },
-      { asset: 'MATIC', targetWeight: 5, minWeight: 0, maxWeight: 10 },
-    ],
-  },
-];
-
-const mockDriftHistory: DriftHistoryPoint[] = [
-  { date: '2025-11-01', asset: 'BTC', drift: 2.1 },
-  { date: '2025-11-02', asset: 'BTC', drift: 3.5 },
-  { date: '2025-11-03', asset: 'BTC', drift: 4.2 },
-  { date: '2025-11-04', asset: 'BTC', drift: 4.8 },
-  { date: '2025-11-05', asset: 'BTC', drift: 5.0 },
-  { date: '2025-11-01', asset: 'ETH', drift: -0.5 },
-  { date: '2025-11-02', asset: 'ETH', drift: -1.2 },
-  { date: '2025-11-03', asset: 'ETH', drift: -1.8 },
-  { date: '2025-11-04', asset: 'ETH', drift: -2.1 },
-  { date: '2025-11-05', asset: 'ETH', drift: -2.0 },
-];
-
-const RebalancingPage = () => {
-  const [allocations, setAllocations] = useState<AssetAllocation[]>(mockAllocations);
-  const [modelModalOpen, setModelModalOpen] = useState(false);
-  const [rebalanceModalOpen, setRebalanceModalOpen] = useState(false);
-  const [rebalanceStep, setRebalanceStep] = useState(0);
-  const [tradeOrders, setTradeOrders] = useState<TradeOrder[]>([]);
+export default function RebalancingPage() {
+  const [rebalanceModalVisible, setRebalanceModalVisible] = useState(false);
+  const [targetModalVisible, setTargetModalVisible] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState<any>(null);
   const [form] = Form.useForm();
 
-  const totalValue = allocations.reduce((sum, a) => sum + a.currentValue, 0);
-  const maxDrift = Math.max(...allocations.map((a) => Math.abs(a.drift)));
-  const outOfBoundsCount = allocations.filter((a) => a.driftStatus !== 'in-range').length;
-  const avgDrift =
-    allocations.reduce((sum, a) => sum + Math.abs(a.drift), 0) / allocations.length;
-
-  const driftStatusConfig: Record<DriftStatus, { color: string; text: string }> = {
-    'in-range': { color: 'success', text: 'In Range' },
-    warning: { color: 'warning', text: 'Warning' },
-    critical: { color: 'error', text: 'Critical' },
-  };
-
-  const orderSideConfig: Record<OrderSide, { color: string; text: string }> = {
-    buy: { color: 'green', text: 'BUY' },
-    sell: { color: 'red', text: 'SELL' },
-  };
-
-  const calculateRebalancingTrades = () => {
-    const trades: TradeOrder[] = [];
-
-    allocations.forEach((allocation) => {
-      const targetValue = (totalValue * allocation.targetWeight) / 100;
-      const difference = targetValue - allocation.currentValue;
-
-      if (Math.abs(difference) > 10000) {
-        // Only create orders for significant differences
-        const side: OrderSide = difference > 0 ? 'buy' : 'sell';
-        const quantity = Math.abs(difference / 50000); // Mock price
-        const estimatedPrice = 50000;
-        const estimatedValue = Math.abs(difference);
-        const estimatedFees = estimatedValue * 0.001; // 0.1% fee
-        const estimatedSlippage = estimatedValue * 0.0005; // 0.05% slippage
-        const totalCost = estimatedValue + estimatedFees + estimatedSlippage;
-
-        trades.push({
-          id: `trade-${allocation.symbol}-${Date.now()}`,
-          asset: allocation.symbol,
-          side,
-          quantity,
-          estimatedPrice,
-          estimatedValue,
-          estimatedFees,
-          estimatedSlippage,
-          totalCost,
-          status: 'pending',
-        });
-      }
-    });
-
-    setTradeOrders(trades);
-  };
-
-  const handleStartRebalancing = () => {
-    calculateRebalancingTrades();
-    setRebalanceStep(0);
-    setRebalanceModalOpen(true);
-  };
-
-  const handleExecuteRebalancing = () => {
-    message.success('Rebalancing orders sent to OMS successfully!');
-    setRebalanceModalOpen(false);
-    setRebalanceStep(0);
-  };
-
-  const handleLoadModel = (modelId: string) => {
-    const model = mockAllocationModels.find((m) => m.id === modelId);
-    if (model) {
-      message.success(`Loaded allocation model: ${model.name}`);
-      setModelModalOpen(false);
-    }
-  };
-
-  const allocationsColumns: ColumnsType<AssetAllocation> = [
+  // Mock data for current portfolio allocation
+  const currentAllocation = [
     {
-      title: 'Asset',
-      dataIndex: 'asset',
-      key: 'asset',
-      render: (text: string, record: AssetAllocation) => (
-        <Space>
-          <Text strong>{text}</Text>
-          <Text type="secondary">({record.symbol})</Text>
-        </Space>
-      ),
+      id: 1,
+      asset: 'Bitcoin (BTC)',
+      current: 35.2,
+      target: 30.0,
+      value: 4326000,
+      amount: 102.5,
+      status: 'over',
+      drift: 5.2
     },
     {
-      title: 'Current Weight',
-      dataIndex: 'currentWeight',
-      key: 'currentWeight',
-      render: (weight: number) => `${weight.toFixed(1)}%`,
-      sorter: (a, b) => a.currentWeight - b.currentWeight,
+      id: 2,
+      asset: 'Ethereum (ETH)',
+      current: 28.5,
+      target: 30.0,
+      value: 3502500,
+      amount: 1556.8,
+      status: 'under',
+      drift: -1.5
     },
     {
-      title: 'Target Weight',
-      dataIndex: 'targetWeight',
-      key: 'targetWeight',
-      render: (weight: number) => `${weight.toFixed(1)}%`,
+      id: 3,
+      asset: 'USD Coin (USDC)',
+      current: 15.0,
+      target: 20.0,
+      value: 1845000,
+      amount: 1845000,
+      status: 'under',
+      drift: -5.0
     },
     {
-      title: 'Range',
-      key: 'range',
-      render: (_: unknown, record: AssetAllocation) => (
-        <Text type="secondary">
-          {record.minWeight}% - {record.maxWeight}%
-        </Text>
-      ),
+      id: 4,
+      asset: 'Polygon (MATIC)',
+      current: 12.3,
+      target: 10.0,
+      value: 1512900,
+      amount: 2106944,
+      status: 'over',
+      drift: 2.3
     },
     {
-      title: 'Drift',
-      dataIndex: 'drift',
-      key: 'drift',
-      render: (drift: number, record: AssetAllocation) => {
-        const color =
-          record.driftStatus === 'in-range'
-            ? '#52c41a'
-            : record.driftStatus === 'warning'
-              ? '#faad14'
-              : '#ff4d4f';
-        return (
-          <Text strong style={{ color }}>
-            {drift > 0 ? '+' : ''}
-            {drift.toFixed(1)}%
-          </Text>
-        );
-      },
-      sorter: (a, b) => Math.abs(b.drift) - Math.abs(a.drift),
-    },
-    {
-      title: 'Current Value',
-      dataIndex: 'currentValue',
-      key: 'currentValue',
-      render: (value: number) => `$${value.toLocaleString()}`,
-      sorter: (a, b) => a.currentValue - b.currentValue,
-    },
-    {
-      title: 'Status',
-      dataIndex: 'driftStatus',
-      key: 'driftStatus',
-      render: (status: DriftStatus) => (
-        <Tag color={driftStatusConfig[status].color}>{driftStatusConfig[status].text}</Tag>
-      ),
-      filters: [
-        { text: 'In Range', value: 'in-range' },
-        { text: 'Warning', value: 'warning' },
-        { text: 'Critical', value: 'critical' },
-      ],
-      onFilter: (value, record) => record.driftStatus === value,
+      id: 5,
+      asset: 'Chainlink (LINK)',
+      current: 9.0,
+      target: 10.0,
+      value: 1107000,
+      amount: 77142,
+      status: 'under',
+      drift: -1.0
     },
   ];
 
-  const tradeOrdersColumns: ColumnsType<TradeOrder> = [
+  const totalPortfolioValue = currentAllocation.reduce((sum, item) => sum + item.value, 0);
+
+  // Calculate rebalancing actions needed
+  const rebalancingActions = currentAllocation.map(item => {
+    const targetValue = (item.target / 100) * totalPortfolioValue;
+    const difference = item.value - targetValue;
+    const action = difference > 0 ? 'Sell' : 'Buy';
+    const amount = Math.abs(difference);
+
+    return {
+      ...item,
+      targetValue,
+      difference,
+      action,
+      actionAmount: amount,
+    };
+  }).filter(item => Math.abs(item.drift) > 0.5); // Only show actions needed
+
+  // Historical rebalancing data
+  const rebalancingHistory = [
     {
-      title: 'Asset',
-      dataIndex: 'asset',
-      key: 'asset',
+      id: 1,
+      date: '2024-10-15',
+      type: 'Scheduled',
+      status: 'Completed',
+      trades: 8,
+      value: 2450000,
+      driftBefore: 6.2,
+      driftAfter: 0.3,
     },
     {
-      title: 'Side',
-      dataIndex: 'side',
-      key: 'side',
-      render: (side: OrderSide) => (
-        <Tag color={orderSideConfig[side].color}>{orderSideConfig[side].text}</Tag>
-      ),
+      id: 2,
+      date: '2024-09-15',
+      type: 'Threshold',
+      status: 'Completed',
+      trades: 5,
+      value: 1820000,
+      driftBefore: 5.8,
+      driftAfter: 0.5,
     },
     {
-      title: 'Quantity',
-      dataIndex: 'quantity',
-      key: 'quantity',
-      render: (qty: number) => qty.toFixed(4),
-    },
-    {
-      title: 'Est. Price',
-      dataIndex: 'estimatedPrice',
-      key: 'estimatedPrice',
-      render: (price: number) => `$${price.toLocaleString()}`,
-    },
-    {
-      title: 'Est. Value',
-      dataIndex: 'estimatedValue',
-      key: 'estimatedValue',
-      render: (value: number) => `$${value.toLocaleString()}`,
-    },
-    {
-      title: 'Fees',
-      dataIndex: 'estimatedFees',
-      key: 'estimatedFees',
-      render: (fees: number) => `$${fees.toLocaleString()}`,
-    },
-    {
-      title: 'Slippage',
-      dataIndex: 'estimatedSlippage',
-      key: 'estimatedSlippage',
-      render: (slip: number) => `$${slip.toLocaleString()}`,
-    },
-    {
-      title: 'Total Cost',
-      dataIndex: 'totalCost',
-      key: 'totalCost',
-      render: (cost: number) => <Text strong>${cost.toLocaleString()}</Text>,
+      id: 3,
+      date: '2024-08-15',
+      type: 'Scheduled',
+      status: 'Completed',
+      trades: 7,
+      value: 2150000,
+      driftBefore: 4.5,
+      driftAfter: 0.4,
     },
   ];
 
-  // Chart data preparation
-  const allocationComparisonData = allocations.flatMap((a) => [
-    { asset: a.symbol, type: 'Current', value: a.currentWeight },
-    { asset: a.symbol, type: 'Target', value: a.targetWeight },
-  ]);
-
-  const currentAllocationPieData = allocations.map((a) => ({
-    type: a.symbol,
-    value: a.currentWeight,
-  }));
-
-  const driftHistoryChartData = mockDriftHistory;
+  // Chart configurations
+  const currentVsTargetData = currentAllocation.map(item => [
+    { asset: item.asset, value: item.current, type: 'Current' },
+    { asset: item.asset, value: item.target, type: 'Target' },
+  ]).flat();
 
   const allocationComparisonConfig = {
-    data: allocationComparisonData,
+    data: currentVsTargetData,
     xField: 'asset',
     yField: 'value',
     seriesField: 'type',
@@ -409,408 +139,459 @@ const RebalancingPage = () => {
     columnStyle: {
       radius: [4, 4, 0, 0],
     },
-    color: ['#1890ff', '#52c41a'],
     label: {
       position: 'top' as const,
-      formatter: (datum: { value: number }) => `${datum.value.toFixed(1)}%`,
-    },
-    legend: {
-      position: 'top' as const,
+      formatter: (datum: any) => `${datum.value.toFixed(1)}%`,
     },
   };
 
-  const pieChartConfig = {
-    data: currentAllocationPieData,
-    angleField: 'value',
-    colorField: 'type',
-    radius: 0.8,
-    label: {
-      type: 'outer' as const,
-      content: '{name} {percentage}',
-    },
-    interactions: [{ type: 'element-active' }],
-  };
+  const driftDistributionData = currentAllocation.map(item => ({
+    asset: item.asset.split(' ')[0],
+    drift: item.drift,
+  }));
 
-  const driftHistoryConfig = {
-    data: driftHistoryChartData,
-    xField: 'date',
+  const driftChartConfig = {
+    data: driftDistributionData,
+    xField: 'asset',
     yField: 'drift',
     seriesField: 'asset',
-    smooth: true,
-    animation: {
-      appear: {
-        animation: 'path-in',
-        duration: 1000,
-      },
+    columnStyle: {
+      radius: [4, 4, 0, 0],
     },
-    yAxis: {
-      label: {
-        formatter: (v: string) => `${v}%`,
-      },
+    color: (datum: any) => {
+      return datum.drift > 0 ? '#ff4d4f' : '#52c41a';
+    },
+    label: {
+      position: 'top' as const,
+      formatter: (datum: any) => `${datum.drift > 0 ? '+' : ''}${datum.drift.toFixed(1)}%`,
     },
   };
 
-  const totalEstimatedCost = tradeOrders.reduce((sum, order) => sum + order.totalCost, 0);
-  const totalEstimatedFees = tradeOrders.reduce((sum, order) => sum + order.estimatedFees, 0);
-  const totalEstimatedSlippage = tradeOrders.reduce(
-    (sum, order) => sum + order.estimatedSlippage,
-    0
-  );
+  // Table columns
+  const allocationColumns = [
+    {
+      title: 'Asset',
+      dataIndex: 'asset',
+      key: 'asset',
+      render: (text: string) => <strong>{text}</strong>,
+    },
+    {
+      title: 'Current %',
+      dataIndex: 'current',
+      key: 'current',
+      sorter: (a: any, b: any) => a.current - b.current,
+      render: (value: number) => `${value.toFixed(2)}%`,
+    },
+    {
+      title: 'Target %',
+      dataIndex: 'target',
+      key: 'target',
+      render: (value: number) => `${value.toFixed(2)}%`,
+    },
+    {
+      title: 'Drift',
+      dataIndex: 'drift',
+      key: 'drift',
+      sorter: (a: any, b: any) => Math.abs(b.drift) - Math.abs(a.drift),
+      render: (drift: number) => (
+        <span style={{ color: Math.abs(drift) > 3 ? '#ff4d4f' : Math.abs(drift) > 1 ? '#fa8c16' : '#52c41a' }}>
+          {drift > 0 ? <ArrowUpOutlined /> : <ArrowDownOutlined />} {Math.abs(drift).toFixed(2)}%
+        </span>
+      ),
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      filters: [
+        { text: 'Over-weighted', value: 'over' },
+        { text: 'Under-weighted', value: 'under' },
+        { text: 'On Target', value: 'target' },
+      ],
+      onFilter: (value: any, record: any) => record.status === value,
+      render: (status: string) => (
+        <Tag color={status === 'over' ? 'red' : status === 'under' ? 'orange' : 'green'}>
+          {status === 'over' ? 'Over-weighted' : status === 'under' ? 'Under-weighted' : 'On Target'}
+        </Tag>
+      ),
+    },
+    {
+      title: 'Current Value',
+      dataIndex: 'value',
+      key: 'value',
+      sorter: (a: any, b: any) => a.value - b.value,
+      render: (value: number) => `$${(value / 1000000).toFixed(2)}M`,
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (_: any, record: any) => (
+        <Button
+          size="small"
+          onClick={() => {
+            setSelectedAsset(record);
+            setTargetModalVisible(true);
+          }}
+        >
+          Adjust Target
+        </Button>
+      ),
+    },
+  ];
+
+  const actionsColumns = [
+    {
+      title: 'Asset',
+      dataIndex: 'asset',
+      key: 'asset',
+    },
+    {
+      title: 'Action',
+      dataIndex: 'action',
+      key: 'action',
+      render: (action: string) => (
+        <Tag color={action === 'Buy' ? 'green' : 'red'}>{action}</Tag>
+      ),
+    },
+    {
+      title: 'Amount',
+      dataIndex: 'actionAmount',
+      key: 'actionAmount',
+      render: (value: number) => `$${(value / 1000).toFixed(2)}K`,
+    },
+    {
+      title: 'Current',
+      dataIndex: 'current',
+      key: 'current',
+      render: (value: number) => `${value.toFixed(2)}%`,
+    },
+    {
+      title: 'Target',
+      dataIndex: 'target',
+      key: 'target',
+      render: (value: number) => `${value.toFixed(2)}%`,
+    },
+  ];
+
+  const historyColumns = [
+    {
+      title: 'Date',
+      dataIndex: 'date',
+      key: 'date',
+      sorter: (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    },
+    {
+      title: 'Type',
+      dataIndex: 'type',
+      key: 'type',
+      render: (type: string) => (
+        <Tag color={type === 'Scheduled' ? 'blue' : 'orange'}>{type}</Tag>
+      ),
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status: string) => (
+        <Tag color="green" icon={<CheckCircleOutlined />}>
+          {status}
+        </Tag>
+      ),
+    },
+    {
+      title: 'Trades',
+      dataIndex: 'trades',
+      key: 'trades',
+    },
+    {
+      title: 'Value Rebalanced',
+      dataIndex: 'value',
+      key: 'value',
+      render: (value: number) => `$${(value / 1000000).toFixed(2)}M`,
+    },
+    {
+      title: 'Drift Before',
+      dataIndex: 'driftBefore',
+      key: 'driftBefore',
+      render: (value: number) => `${value.toFixed(1)}%`,
+    },
+    {
+      title: 'Drift After',
+      dataIndex: 'driftAfter',
+      key: 'driftAfter',
+      render: (value: number) => `${value.toFixed(1)}%`,
+    },
+  ];
+
+  // Calculate max drift
+  const maxDrift = Math.max(...currentAllocation.map(item => Math.abs(item.drift)));
+  const needsRebalancing = maxDrift > 3;
 
   return (
-    <Space direction="vertical" size="large" style={{ width: '100%' }}>
-      <Row justify="space-between" align="middle">
-        <Col>
-          <Title level={3}>Portfolio Rebalancing Manager</Title>
-          <Paragraph type="secondary">
-            Monitor portfolio drift and execute rebalancing trades to maintain target allocation
-          </Paragraph>
-        </Col>
-        <Col>
-          <Space>
-            <Button icon={<SaveOutlined />} onClick={() => setModelModalOpen(true)}>
-              Load Model
-            </Button>
-            <Button icon={<ReloadOutlined />} onClick={() => message.info('Refreshing data...')}>
-              Refresh
-            </Button>
-            <Button
-              type="primary"
-              icon={<SendOutlined />}
-              onClick={handleStartRebalancing}
-              disabled={outOfBoundsCount === 0}
-            >
-              Start Rebalancing
-            </Button>
-          </Space>
-        </Col>
-      </Row>
+    <div style={{ padding: '24px' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+        <div>
+          <h1 style={{ margin: 0, fontFamily: 'var(--font-heading)', fontSize: '28px' }}>
+            Portfolio Rebalancing
+          </h1>
+          <p style={{ margin: '8px 0 0 0', color: '#666' }}>
+            Monitor and execute portfolio rebalancing strategies
+          </p>
+        </div>
+        <Space>
+          <Button icon={<ReloadOutlined />}>Refresh</Button>
+          <Button
+            type="primary"
+            icon={<PlayCircleOutlined />}
+            onClick={() => setRebalanceModalVisible(true)}
+            danger={needsRebalancing}
+          >
+            {needsRebalancing ? 'Execute Rebalancing' : 'Rebalance Portfolio'}
+          </Button>
+        </Space>
+      </div>
 
-      {/* Alert for Critical Drift */}
-      {outOfBoundsCount > 0 && (
+      {/* Alert for rebalancing needed */}
+      {needsRebalancing && (
         <Alert
-          message="Portfolio Drift Detected"
-          description={`${outOfBoundsCount} asset(s) have drifted outside their target ranges. Consider rebalancing to maintain your allocation strategy.`}
+          message="Rebalancing Recommended"
+          description={`Maximum drift detected: ${maxDrift.toFixed(2)}%. Portfolio allocation has deviated beyond acceptable threshold (3%). Consider rebalancing to maintain target allocation.`}
           type="warning"
-          icon={<WarningOutlined />}
           showIcon
-          closable
+          icon={<WarningOutlined />}
+          style={{ marginBottom: 24 }}
+          action={
+            <Button size="small" type="primary" onClick={() => setRebalanceModalVisible(true)}>
+              Rebalance Now
+            </Button>
+          }
         />
       )}
 
-      {/* Metrics */}
-      <Row gutter={[16, 16]}>
-        <Col xs={24} md={6}>
-          <StatCard
-            title="Total Portfolio Value"
-            value={`$${(totalValue / 1000000).toFixed(1)}M`}
-            icon={<DollarOutlined />}
-          />
+      {/* Key Metrics */}
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} sm={12} lg={6}>
+          <Card>
+            <Statistic
+              title="Portfolio Value"
+              value={totalPortfolioValue}
+              precision={2}
+              prefix="$"
+              valueStyle={{ color: '#1890ff', fontSize: '24px' }}
+            />
+          </Card>
         </Col>
-        <Col xs={24} md={6}>
+        <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
               title="Max Drift"
               value={maxDrift}
-              precision={1}
+              precision={2}
               suffix="%"
-              valueStyle={{ color: maxDrift > 3 ? '#ff4d4f' : '#52c41a' }}
-              prefix={maxDrift > 3 ? <AlertOutlined /> : <CheckCircleOutlined />}
+              valueStyle={{
+                color: maxDrift > 5 ? '#ff4d4f' : maxDrift > 3 ? '#fa8c16' : '#52c41a',
+                fontSize: '24px'
+              }}
+              prefix={maxDrift > 3 ? <WarningOutlined /> : <CheckCircleOutlined />}
             />
           </Card>
         </Col>
-        <Col xs={24} md={6}>
+        <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Avg Drift"
-              value={avgDrift}
-              precision={1}
-              suffix="%"
-              valueStyle={{ color: avgDrift > 2 ? '#faad14' : '#52c41a' }}
+              title="Assets Monitored"
+              value={currentAllocation.length}
+              valueStyle={{ fontSize: '24px' }}
             />
           </Card>
         </Col>
-        <Col xs={24} md={6}>
+        <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Out of Bounds"
-              value={outOfBoundsCount}
-              suffix={`/ ${allocations.length}`}
-              valueStyle={{ color: outOfBoundsCount > 0 ? '#ff4d4f' : '#52c41a' }}
+              title="Last Rebalance"
+              value="26"
+              suffix="days ago"
+              valueStyle={{ fontSize: '24px' }}
             />
           </Card>
         </Col>
       </Row>
 
-      {/* Current vs Target Comparison */}
-      <Row gutter={[16, 16]}>
-        <Col xs={24} lg={16}>
-          <Card title={<Space><LineChartOutlined />Current vs Target Allocation</Space>}>
-            <Column {...allocationComparisonConfig} />
+      {/* Charts Row */}
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} lg={12}>
+          <Card title="Current vs Target Allocation">
+            <Column {...allocationComparisonConfig} height={300} />
           </Card>
         </Col>
-        <Col xs={24} lg={8}>
-          <Card title="Current Allocation Breakdown">
-            <Pie {...pieChartConfig} />
+        <Col xs={24} lg={12}>
+          <Card title="Allocation Drift">
+            <Column {...driftChartConfig} height={300} />
           </Card>
         </Col>
       </Row>
 
-      {/* Allocations Table */}
-      <Card title="Asset Allocations">
+      {/* Current Allocation Table */}
+      <Card title="Current Portfolio Allocation" style={{ marginBottom: 24 }}>
         <Table
-          dataSource={allocations}
-          columns={allocationsColumns}
-          rowKey="symbol"
+          columns={allocationColumns}
+          dataSource={currentAllocation}
+          rowKey="id"
           pagination={false}
           rowClassName={(record) =>
-            record.driftStatus === 'critical'
-              ? 'row-critical'
-              : record.driftStatus === 'warning'
-                ? 'row-warning'
-                : ''
+            Math.abs(record.drift) > 5 ? 'rebalance-critical' :
+            Math.abs(record.drift) > 3 ? 'rebalance-warning' : ''
           }
         />
       </Card>
 
-      {/* Drift History Chart */}
-      <Card title="Historical Drift Tracking">
-        <Line {...driftHistoryConfig} />
+      {/* Rebalancing Actions Needed */}
+      {rebalancingActions.length > 0 && (
+        <Card title="Recommended Rebalancing Actions" style={{ marginBottom: 24 }}>
+          <Table
+            columns={actionsColumns}
+            dataSource={rebalancingActions}
+            rowKey="id"
+            pagination={false}
+          />
+        </Card>
+      )}
+
+      {/* Rebalancing History */}
+      <Card title="Rebalancing History">
+        <Table
+          columns={historyColumns}
+          dataSource={rebalancingHistory}
+          rowKey="id"
+          pagination={{ pageSize: 10 }}
+        />
       </Card>
 
-      {/* Allocation Models Modal */}
+      {/* Rebalance Execution Modal */}
       <Modal
-        title="Load Allocation Model"
-        open={modelModalOpen}
-        onCancel={() => setModelModalOpen(false)}
-        footer={null}
+        title="Execute Portfolio Rebalancing"
+        open={rebalanceModalVisible}
+        onCancel={() => setRebalanceModalVisible(false)}
         width={700}
+        footer={[
+          <Button key="cancel" onClick={() => setRebalanceModalVisible(false)}>
+            Cancel
+          </Button>,
+          <Button key="simulate" onClick={() => Modal.info({ title: 'Simulation Complete', content: 'Rebalancing simulation completed. Review actions above.' })}>
+            Simulate
+          </Button>,
+          <Button key="execute" type="primary" danger onClick={() => {
+            Modal.success({
+              title: 'Rebalancing Initiated',
+              content: 'Portfolio rebalancing has been initiated. Trades will be executed shortly.'
+            });
+            setRebalanceModalVisible(false);
+          }}>
+            Execute Rebalancing
+          </Button>,
+        ]}
       >
-        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-          {mockAllocationModels.map((model) => (
-            <Card
-              key={model.id}
-              size="small"
-              hoverable
-              onClick={() => handleLoadModel(model.id)}
-              style={{ cursor: 'pointer' }}
-            >
-              <Space direction="vertical" style={{ width: '100%' }}>
-                <Text strong>{model.name}</Text>
-                <Text type="secondary">{model.description}</Text>
-                <Divider style={{ margin: '8px 0' }} />
-                <Row gutter={8}>
-                  {model.allocations.map((alloc) => (
-                    <Col key={alloc.asset}>
-                      <Tag>{alloc.asset}: {alloc.targetWeight}%</Tag>
-                    </Col>
-                  ))}
-                </Row>
-              </Space>
-            </Card>
-          ))}
-          <Divider />
-          <Button type="dashed" icon={<PlusOutlined />} block>
-            Create New Model
-          </Button>
-        </Space>
+        <div style={{ marginBottom: 16 }}>
+          <Alert
+            message="Review Rebalancing Actions"
+            description="The following trades will be executed to rebalance your portfolio to target allocation."
+            type="info"
+            showIcon
+            style={{ marginBottom: 16 }}
+          />
+        </div>
+
+        <Timeline
+          items={rebalancingActions.map((action, index) => ({
+            color: action.action === 'Buy' ? 'green' : 'red',
+            children: (
+              <div>
+                <strong>{action.action} {action.asset}</strong>
+                <br />
+                <span style={{ color: '#666', fontSize: '13px' }}>
+                  Amount: ${(action.actionAmount / 1000).toFixed(2)}K |
+                  {action.current.toFixed(2)}% → {action.target.toFixed(2)}%
+                </span>
+              </div>
+            ),
+          }))}
+        />
+
+        <div style={{ marginTop: 16, padding: 16, background: '#f5f5f5', borderRadius: 8 }}>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Statistic title="Total Trades" value={rebalancingActions.length} />
+            </Col>
+            <Col span={12}>
+              <Statistic
+                title="Total Value"
+                value={rebalancingActions.reduce((sum, a) => sum + a.actionAmount, 0)}
+                prefix="$"
+                precision={0}
+              />
+            </Col>
+          </Row>
+        </div>
       </Modal>
 
-      {/* Rebalancing Modal */}
+      {/* Target Adjustment Modal */}
       <Modal
-        title="Portfolio Rebalancing"
-        open={rebalanceModalOpen}
-        onCancel={() => {
-          setRebalanceModalOpen(false);
-          setRebalanceStep(0);
+        title={`Adjust Target Allocation - ${selectedAsset?.asset}`}
+        open={targetModalVisible}
+        onCancel={() => setTargetModalVisible(false)}
+        onOk={() => {
+          form.validateFields().then(() => {
+            Modal.success({ title: 'Target Updated', content: 'Target allocation has been updated successfully.' });
+            setTargetModalVisible(false);
+            form.resetFields();
+          });
         }}
-        width={1000}
-        footer={null}
       >
-        <Steps current={rebalanceStep} style={{ marginBottom: 24 }}>
-          <Step title="Review Trades" icon={<LineChartOutlined />} />
-          <Step title="Cost Analysis" icon={<DollarOutlined />} />
-          <Step title="Execute" icon={<SendOutlined />} />
-        </Steps>
+        <Form form={form} layout="vertical" initialValues={{ target: selectedAsset?.target }}>
+          <Form.Item
+            label="Current Allocation"
+            name="current"
+          >
+            <span style={{ fontSize: '16px', fontWeight: 500 }}>
+              {selectedAsset?.current.toFixed(2)}%
+            </span>
+          </Form.Item>
 
-        {rebalanceStep === 0 && (
-          <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-            <Alert
-              message="Calculated Trades"
-              description={`${tradeOrders.length} trade order(s) generated to rebalance portfolio to target allocation.`}
-              type="info"
-              showIcon
+          <Form.Item
+            label="Target Allocation (%)"
+            name="target"
+            rules={[
+              { required: true, message: 'Please enter target allocation' },
+              { type: 'number', min: 0, max: 100, message: 'Must be between 0 and 100' },
+            ]}
+          >
+            <InputNumber
+              style={{ width: '100%' }}
+              min={0}
+              max={100}
+              step={0.1}
+              precision={1}
             />
-            <Table
-              dataSource={tradeOrders}
-              columns={tradeOrdersColumns}
-              rowKey="id"
-              pagination={false}
-              summary={(data) => (
-                <Table.Summary>
-                  <Table.Summary.Row>
-                    <Table.Summary.Cell index={0} colSpan={4}>
-                      <Text strong>Total</Text>
-                    </Table.Summary.Cell>
-                    <Table.Summary.Cell index={1}>
-                      <Text strong>
-                        $
-                        {data
-                          .reduce((sum, record) => sum + record.estimatedValue, 0)
-                          .toLocaleString()}
-                      </Text>
-                    </Table.Summary.Cell>
-                    <Table.Summary.Cell index={2}>
-                      <Text>${totalEstimatedFees.toLocaleString()}</Text>
-                    </Table.Summary.Cell>
-                    <Table.Summary.Cell index={3}>
-                      <Text>${totalEstimatedSlippage.toLocaleString()}</Text>
-                    </Table.Summary.Cell>
-                    <Table.Summary.Cell index={4}>
-                      <Text strong>${totalEstimatedCost.toLocaleString()}</Text>
-                    </Table.Summary.Cell>
-                  </Table.Summary.Row>
-                </Table.Summary>
-              )}
-            />
-          </Space>
-        )}
+          </Form.Item>
 
-        {rebalanceStep === 1 && (
-          <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-            <Card title="Transaction Cost Analysis" size="small">
-              <Row gutter={16}>
-                <Col span={6}>
-                  <Statistic title="Total Trade Value" value={`$${(totalEstimatedCost - totalEstimatedFees - totalEstimatedSlippage).toLocaleString()}`} />
-                </Col>
-                <Col span={6}>
-                  <Statistic
-                    title="Estimated Fees"
-                    value={`$${totalEstimatedFees.toLocaleString()}`}
-                    valueStyle={{ color: '#faad14' }}
-                  />
-                </Col>
-                <Col span={6}>
-                  <Statistic
-                    title="Estimated Slippage"
-                    value={`$${totalEstimatedSlippage.toLocaleString()}`}
-                    valueStyle={{ color: '#ff7875' }}
-                  />
-                </Col>
-                <Col span={6}>
-                  <Statistic
-                    title="Total Cost"
-                    value={`$${totalEstimatedCost.toLocaleString()}`}
-                    valueStyle={{ color: '#1890ff' }}
-                  />
-                </Col>
-              </Row>
-            </Card>
-
-            <Card title="Cost vs Benefit Analysis" size="small">
-              <Descriptions column={1} bordered size="small">
-                <Descriptions.Item label="Current Max Drift">
-                  {maxDrift.toFixed(2)}%
-                </Descriptions.Item>
-                <Descriptions.Item label="Expected Max Drift After Rebalancing">
-                  0.00%
-                </Descriptions.Item>
-                <Descriptions.Item label="Total Rebalancing Cost">
-                  ${totalEstimatedCost.toLocaleString()}
-                </Descriptions.Item>
-                <Descriptions.Item label="Cost as % of Portfolio">
-                  {((totalEstimatedCost / totalValue) * 100).toFixed(3)}%
-                </Descriptions.Item>
-                <Descriptions.Item label="Market Impact">
-                  Low (estimated 5 bps)
-                </Descriptions.Item>
-                <Descriptions.Item label="Recommendation">
-                  <Tag color="green">PROCEED - Cost is justified</Tag>
-                </Descriptions.Item>
-              </Descriptions>
-            </Card>
-
-            <Alert
-              message="Best Execution"
-              description="Orders will be executed using TWAP strategy over 30 minutes to minimize market impact."
-              type="info"
-              showIcon
-            />
-          </Space>
-        )}
-
-        {rebalanceStep === 2 && (
-          <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-            <Alert
-              message="Ready to Execute"
-              description="Review all details before submitting orders to the Order Management System (OMS)."
-              type="warning"
-              showIcon
-              icon={<WarningOutlined />}
-            />
-
-            <Card title="Execution Summary" size="small">
-              <Descriptions column={2} bordered>
-                <Descriptions.Item label="Number of Orders">{tradeOrders.length}</Descriptions.Item>
-                <Descriptions.Item label="Total Value">
-                  ${(totalEstimatedCost - totalEstimatedFees - totalEstimatedSlippage).toLocaleString()}
-                </Descriptions.Item>
-                <Descriptions.Item label="Execution Strategy">TWAP (30 min)</Descriptions.Item>
-                <Descriptions.Item label="Destination">Primary Exchange</Descriptions.Item>
-                <Descriptions.Item label="Time in Force">Good Till Cancel (GTC)</Descriptions.Item>
-                <Descriptions.Item label="Pre-Trade Compliance">
-                  <Tag color="green" icon={<CheckCircleOutlined />}>
-                    PASSED
-                  </Tag>
-                </Descriptions.Item>
-              </Descriptions>
-            </Card>
-
-            <Card title="Target Allocation After Rebalancing" size="small">
-              <Row gutter={8}>
-                {allocations.map((alloc) => (
-                  <Col key={alloc.symbol} span={4}>
-                    <Tooltip title={`${alloc.asset} will be at ${alloc.targetWeight}%`}>
-                      <Progress
-                        type="circle"
-                        percent={alloc.targetWeight}
-                        width={80}
-                        format={(percent) => `${alloc.symbol}\n${percent}%`}
-                      />
-                    </Tooltip>
-                  </Col>
-                ))}
-              </Row>
-            </Card>
-          </Space>
-        )}
-
-        <Row justify="end" style={{ marginTop: 24 }}>
-          <Space>
-            <Button onClick={() => setRebalanceModalOpen(false)}>Cancel</Button>
-            {rebalanceStep > 0 && (
-              <Button onClick={() => setRebalanceStep(rebalanceStep - 1)}>Previous</Button>
-            )}
-            {rebalanceStep < 2 && (
-              <Button type="primary" onClick={() => setRebalanceStep(rebalanceStep + 1)}>
-                Next
-              </Button>
-            )}
-            {rebalanceStep === 2 && (
-              <Button
-                type="primary"
-                danger
-                icon={<SendOutlined />}
-                onClick={handleExecuteRebalancing}
-              >
-                Execute Rebalancing
-              </Button>
-            )}
-          </Space>
-        </Row>
+          <Alert
+            message="Note"
+            description="Changing target allocation will affect the overall portfolio balance. Ensure total allocations sum to 100%."
+            type="info"
+            showIcon
+          />
+        </Form>
       </Modal>
-    </Space>
-  );
-};
 
-export default RebalancingPage;
+      <style>{`
+        .rebalance-critical {
+          background-color: #fff2f0 !important;
+        }
+        .rebalance-warning {
+          background-color: #fffbe6 !important;
+        }
+      `}</style>
+    </div>
+  );
+}
