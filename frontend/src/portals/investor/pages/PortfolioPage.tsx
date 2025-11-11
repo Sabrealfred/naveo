@@ -33,8 +33,8 @@ import {
 import { Line, Pie, Column, Heatmap, DualAxes, Area } from '@ant-design/charts';
 import { StatCard } from '../../../components/common';
 import { useTranslation } from 'react-i18next';
-import { portfolioService, fundsService, transactionsService } from '../../../services';
-import type { PortfolioHolding } from '../../../services/types';
+import { portfolioService, fundsService, transactionsService, reportsService } from '../../../services';
+import type { PortfolioHolding, NavHistory } from '../../../services/types';
 import dayjs from 'dayjs';
 
 const { Title, Text } = Typography;
@@ -75,6 +75,7 @@ const PortfolioPage = () => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [holdings, setHoldings] = useState<PortfolioHolding[]>([]);
+  const [rawNavHistory, setRawNavHistory] = useState<Record<string, NavHistory[]>>({});
   const [period, setPeriod] = useState('1Y');
   const [selectedMetric, setSelectedMetric] = useState<'value' | 'return' | 'risk'>('value');
   const [dateRange, setDateRange] = useState<[dayjs.Dayjs, dayjs.Dayjs] | null>(null);
@@ -93,6 +94,31 @@ const PortfolioPage = () => {
       // Load portfolio holdings
       const portfolioHoldings = await portfolioService.getPortfolioHoldings(userId);
       setHoldings(portfolioHoldings);
+
+      // Load NAV history for each fund (last 24 months)
+      const navHistoryMap: Record<string, NavHistory[]> = {};
+      const startDate = dayjs().subtract(24, 'months').format('YYYY-MM-DD');
+      const endDate = dayjs().format('YYYY-MM-DD');
+
+      await Promise.all(
+        portfolioHoldings.map(async (holding) => {
+          if (holding.fund_id) {
+            try {
+              const history = await reportsService.getNavHistory(
+                holding.fund_id,
+                startDate,
+                endDate
+              );
+              navHistoryMap[holding.fund_id] = history;
+            } catch (error) {
+              console.error(`Error loading NAV history for fund ${holding.fund_id}:`, error);
+              // Don't fail the whole load if one fund's history fails
+            }
+          }
+        })
+      );
+
+      setRawNavHistory(navHistoryMap);
 
     } catch (error: any) {
       console.error('Error loading portfolio:', error);
@@ -138,32 +164,54 @@ const PortfolioPage = () => {
     };
   }, [holdings]);
 
-  // Generate detailed NAV history
+  // Generate detailed NAV history from real data or fallback to estimated
   const navHistory = useMemo((): NAVData[] => {
     const data: NAVData[] = [];
-    const months = 24; // 2 years of data
 
     holdings.forEach(holding => {
-      const currentNav = holding.current_nav || 100;
-      const avgGrowth = ((holding.return_percentage || 0) / 100) / months;
+      if (!holding.fund_id) return;
 
-      for (let i = months; i >= 0; i--) {
-        const date = dayjs().subtract(i, 'month').format('YYYY-MM');
-        const historicalNav = currentNav / Math.pow(1 + avgGrowth, i);
-        const prevNav = i < months ? historicalNav * 0.98 : historicalNav;
+      const history = rawNavHistory[holding.fund_id];
 
-        data.push({
-          date,
-          nav: historicalNav,
-          fund: holding.fund_name || 'Unknown Fund',
-          change: historicalNav - prevNav,
-          changePercent: ((historicalNav - prevNav) / prevNav) * 100,
+      if (history && history.length > 0) {
+        // Use real NAV history from database
+        history.forEach((navEntry, index) => {
+          const prevNav = index > 0 ? history[index - 1].nav : navEntry.nav;
+          const change = navEntry.nav - prevNav;
+          const changePercent = prevNav > 0 ? (change / prevNav) * 100 : 0;
+
+          data.push({
+            date: dayjs(navEntry.calculation_date).format('YYYY-MM'),
+            nav: navEntry.nav,
+            fund: holding.fund_name || 'Unknown Fund',
+            change,
+            changePercent,
+          });
         });
+      } else {
+        // Fallback to estimated data if no history available
+        const months = 24;
+        const currentNav = holding.current_nav || 100;
+        const avgGrowth = ((holding.return_percentage || 0) / 100) / months;
+
+        for (let i = months; i >= 0; i--) {
+          const date = dayjs().subtract(i, 'month').format('YYYY-MM');
+          const historicalNav = currentNav / Math.pow(1 + avgGrowth, i);
+          const prevNav = i < months ? historicalNav * 0.98 : historicalNav;
+
+          data.push({
+            date,
+            nav: historicalNav,
+            fund: holding.fund_name || 'Unknown Fund',
+            change: historicalNav - prevNav,
+            changePercent: ((historicalNav - prevNav) / prevNav) * 100,
+          });
+        }
       }
     });
 
-    return data;
-  }, [holdings]);
+    return data.sort((a, b) => a.date.localeCompare(b.date));
+  }, [holdings, rawNavHistory]);
 
   // Calculate contribution to return
   const contributionData = useMemo((): ContributionData[] => {

@@ -54,6 +54,21 @@ const DashboardLayout = ({
     }
   }, [screens.md, screens.lg]);
 
+  // Keyboard shortcut for search (⌘K / Ctrl+K)
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+        event.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
   // Handle menu navigation
   const handleMenuClick = ({ key }: { key: string }) => {
     navigate(key);
@@ -273,7 +288,21 @@ const DashboardLayout = ({
               type="text"
               onClick={() => setSearchOpen(true)}
             >
-              {!isMobile && t('layout.search')}
+              {!isMobile && (
+                <span>
+                  {t('layout.search')}{' '}
+                  <kbd style={{
+                    padding: '2px 6px',
+                    fontSize: '11px',
+                    backgroundColor: '#f5f5f5',
+                    border: '1px solid #d9d9d9',
+                    borderRadius: '3px',
+                    marginLeft: '8px'
+                  }}>
+                    ⌘K
+                  </kbd>
+                </span>
+              )}
             </Button>
             {!isMobile && <LanguageSwitcher />}
 

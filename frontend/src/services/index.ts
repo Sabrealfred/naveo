@@ -35,3 +35,6 @@ export * as reportsService from './reportsService';
 
 // Profile Service
 export * as profileService from './profileService';
+
+// Capital Partners & Distribution Service
+export * as capitalPartnersService from './capitalPartnersService';

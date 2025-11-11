@@ -350,3 +350,60 @@ export interface CreateReportInput {
   file_format?: 'pdf' | 'excel' | 'csv';
   metadata?: any;
 }
+
+// Capital Partners & Distribution Network
+export interface StrategicPartner {
+  id: string;
+  name: string;
+  type: 'lender' | 'liquidity' | 'leverage';
+  region: string;
+  ticket_size: string | null;
+  ltv_range: string | null;
+  focus_assets: string[] | null;
+  status: 'Active' | 'Negotiation' | 'Prospect';
+  notes: string | null;
+  primary_contact_name: string | null;
+  primary_contact_email: string | null;
+  primary_contact_phone: string | null;
+  website_url: string | null;
+  api_endpoint: string | null;
+  api_key_encrypted: string | null;
+  webhook_url: string | null;
+  integration_status: 'Live' | 'Testing' | 'Pending' | 'Inactive' | null;
+  last_sync_at: string | null;
+  hubspot_deal_id: string | null;
+  notion_page_id: string | null;
+  metadata: any;
+  created_at: string;
+  updated_at: string;
+  created_by: string | null;
+}
+
+export interface DistributionPlatform {
+  id: string;
+  platform: string;
+  region: string;
+  coverage: string;
+  integration_status: 'Live' | 'Sandbox' | 'Planned';
+  channels: string[] | null;
+  api_type: 'REST' | 'GraphQL' | 'WebSocket' | 'FTP' | 'Manual' | null;
+  api_endpoint: string | null;
+  api_key_encrypted: string | null;
+  webhook_url: string | null;
+  supported_formats: string[] | null;
+  technical_contact_name: string | null;
+  technical_contact_email: string | null;
+  business_contact_name: string | null;
+  business_contact_email: string | null;
+  total_assets_under_distribution: number | null;
+  total_investors: number | null;
+  last_sync_at: string | null;
+  sync_frequency: string | null;
+  documentation_url: string | null;
+  onboarding_requirements: string[] | null;
+  compliance_notes: string | null;
+  metadata: any;
+  created_at: string;
+  updated_at: string;
+  created_by: string | null;
+}

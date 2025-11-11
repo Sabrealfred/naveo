@@ -1,13 +1,32 @@
-import { useMemo, useState } from 'react';
-import { Card, Col, Row, Tabs, Tag, Table, Statistic, Space, Typography, Input, Segmented } from 'antd';
+import { useMemo, useState, useEffect } from 'react';
+import { Card, Col, Row, Tabs, Tag, Table, Statistic, Space, Typography, Input, Segmented, Spin, message } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { capitalPartners } from '../../../mocks/capitalPartners';
+import { capitalPartnersService, type StrategicPartner } from '../../../services';
 
 const { Title, Text } = Typography;
 
 const CapitalPartnersPage = () => {
   const [typeFilter, setTypeFilter] = useState<'all' | 'lender' | 'liquidity' | 'leverage'>('all');
   const [search, setSearch] = useState('');
+  const [capitalPartners, setCapitalPartners] = useState<StrategicPartner[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadCapitalPartners();
+  }, []);
+
+  const loadCapitalPartners = async () => {
+    try {
+      setLoading(true);
+      const data = await capitalPartnersService.getAllStrategicPartners();
+      setCapitalPartners(data);
+    } catch (error) {
+      console.error('Error loading capital partners:', error);
+      message.error('Failed to load capital partners');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredPartners = useMemo(() => {
     return capitalPartners.filter((partner) => {
@@ -15,12 +34,12 @@ const CapitalPartnersPage = () => {
       const matchesSearch =
         partner.name.toLowerCase().includes(search.toLowerCase()) ||
         partner.region.toLowerCase().includes(search.toLowerCase()) ||
-        partner.focusAssets.some((asset) => asset.toLowerCase().includes(search.toLowerCase()));
+        (partner.focus_assets || []).some((asset) => asset.toLowerCase().includes(search.toLowerCase()));
       return matchesType && matchesSearch;
     });
-  }, [typeFilter, search]);
+  }, [typeFilter, search, capitalPartners]);
 
-  const columns: ColumnsType<typeof capitalPartners[number]> = [
+  const columns: ColumnsType<StrategicPartner> = [
     {
       title: 'Partner',
       dataIndex: 'name',
@@ -38,19 +57,19 @@ const CapitalPartnersPage = () => {
     },
     {
       title: 'Ticket Size',
-      dataIndex: 'ticketSize',
+      dataIndex: 'ticket_size',
     },
     {
       title: 'LTV Range',
-      dataIndex: 'ltvRange',
+      dataIndex: 'ltv_range',
       render: (value) => value || 'N/A',
     },
     {
       title: 'Enfoque',
-      dataIndex: 'focusAssets',
-      render: (focus: string[]) => (
+      dataIndex: 'focus_assets',
+      render: (focus: string[] | null) => (
         <Space wrap>
-          {focus.map((item) => (
+          {(focus || []).map((item) => (
             <Tag key={item}>{item}</Tag>
           ))}
         </Space>
@@ -76,7 +95,15 @@ const CapitalPartnersPage = () => {
     const negotiation = capitalPartners.filter((p) => p.status === 'Negotiation').length;
     const prospect = capitalPartners.filter((p) => p.status === 'Prospect').length;
     return { active, negotiation, prospect };
-  }, []);
+  }, [capitalPartners]);
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
@@ -144,8 +171,8 @@ const CapitalPartnersPage = () => {
                       <Space direction="vertical">
                         <Text strong>{partner.name}</Text>
                         <Text type="secondary">{partner.region}</Text>
-                        <Text>LTV: {partner.ltvRange || 'Según negociación'}</Text>
-                        <Text>Ticket: {partner.ticketSize}</Text>
+                        <Text>LTV: {partner.ltv_range || 'Según negociación'}</Text>
+                        <Text>Ticket: {partner.ticket_size}</Text>
                         <Text>Notas: {partner.notes}</Text>
                       </Space>
                     </Card>

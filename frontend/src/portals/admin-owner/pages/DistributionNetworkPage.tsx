@@ -1,11 +1,32 @@
-import { Card, Col, Row, Table, Tag, Typography, Space } from 'antd';
+import { useEffect, useState } from 'react';
+import { Card, Col, Row, Table, Tag, Typography, Space, Spin, message } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { distributionPartners } from '../../../mocks/capitalPartners';
+import { capitalPartnersService, type DistributionPlatform } from '../../../services';
 
 const { Title, Text } = Typography;
 
 const DistributionNetworkPage = () => {
-  const columns: ColumnsType<typeof distributionPartners[number]> = [
+  const [distributionPartners, setDistributionPartners] = useState<DistributionPlatform[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadDistributionPlatforms();
+  }, []);
+
+  const loadDistributionPlatforms = async () => {
+    try {
+      setLoading(true);
+      const data = await capitalPartnersService.getAllDistributionPlatforms();
+      setDistributionPartners(data);
+    } catch (error) {
+      console.error('Error loading distribution platforms:', error);
+      message.error('Failed to load distribution platforms');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const columns: ColumnsType<DistributionPlatform> = [
     {
       title: 'Plataforma',
       dataIndex: 'platform',
@@ -33,13 +54,21 @@ const DistributionNetworkPage = () => {
     },
     {
       title: 'Integración',
-      dataIndex: 'integrationStatus',
+      dataIndex: 'integration_status',
       render: (status) => {
         const color = status === 'Live' ? 'green' : status === 'Sandbox' ? 'orange' : 'blue';
         return <Tag color={color}>{status}</Tag>;
       },
     },
   ];
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
@@ -50,7 +79,7 @@ const DistributionNetworkPage = () => {
           <Card>
             <Text type="secondary">Plataformas activas</Text>
             <Title level={3} style={{ margin: 0 }}>
-              {distributionPartners.filter((p) => p.integrationStatus === 'Live').length}
+              {distributionPartners.filter((p) => p.integration_status === 'Live').length}
             </Title>
           </Card>
         </Col>
@@ -58,7 +87,7 @@ const DistributionNetworkPage = () => {
           <Card>
             <Text type="secondary">Integraciones sandbox</Text>
             <Title level={3} style={{ margin: 0 }}>
-              {distributionPartners.filter((p) => p.integrationStatus === 'Sandbox').length}
+              {distributionPartners.filter((p) => p.integration_status === 'Sandbox').length}
             </Title>
           </Card>
         </Col>
@@ -66,7 +95,7 @@ const DistributionNetworkPage = () => {
           <Card>
             <Text type="secondary">Canales cubiertos</Text>
             <Title level={3} style={{ margin: 0 }}>
-              {new Set(distributionPartners.flatMap((p) => p.channels)).size}
+              {new Set(distributionPartners.flatMap((p) => p.channels || [])).size}
             </Title>
           </Card>
         </Col>
